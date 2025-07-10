@@ -5,7 +5,8 @@ import { User, Session } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut, User as UserIcon, Heart, Stethoscope } from "lucide-react";
+import { LogOut, User as UserIcon, Heart, Stethoscope, Mic } from "lucide-react";
+import VoiceInterface from "@/components/VoiceInterface";
 
 type UserRole = "individual" | "therapy_client" | "therapist";
 
@@ -193,20 +194,61 @@ const AppDashboard = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Getting Started</CardTitle>
+              <CardTitle className="flex items-center gap-3">
+                <Mic className="h-6 w-6 text-primary" />
+                Voice Assistant
+              </CardTitle>
               <CardDescription>
-                Your personalized SORA experience is being prepared based on your account type.
+                Connect with SORA for immediate 24/7 mental health support through voice conversations
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
-                This is where your {getRoleLabel(profile.role).toLowerCase()} dashboard will be. 
-                More features are coming soon!
+              <p className="text-muted-foreground mb-4">
+                SORA is your AI-powered mental health companion, trained to provide compassionate support, 
+                active listening, and guidance whenever you need it. Simply click "Connect to SORA" below 
+                to start a voice conversation.
               </p>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>• 24/7 availability for immediate support</p>
+                <p>• Compassionate and non-judgmental responses</p>
+                <p>• Secure and private conversations</p>
+                <p>• Professional-grade mental health guidance</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Additional Features</CardTitle>
+              <CardDescription>
+                More tools and resources coming to enhance your mental health journey
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 border rounded-lg">
+                  <h4 className="font-semibold mb-2">Assessment Tools</h4>
+                  <p className="text-sm text-muted-foreground">Professional mental health assessments and screening tools</p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <h4 className="font-semibold mb-2">Progress Tracking</h4>
+                  <p className="text-sm text-muted-foreground">Monitor your mental health journey over time</p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <h4 className="font-semibold mb-2">Resource Library</h4>
+                  <p className="text-sm text-muted-foreground">Curated mental health resources and educational content</p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <h4 className="font-semibold mb-2">Crisis Support</h4>
+                  <p className="text-sm text-muted-foreground">Immediate access to crisis intervention resources</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
       </main>
+      
+      <VoiceInterface />
     </div>
   );
 };
