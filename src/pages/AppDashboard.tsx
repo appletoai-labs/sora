@@ -146,11 +146,13 @@ const AppDashboardContent = () => {
     );
   }
 
-  const RoleIcon = getRoleIcon(profile.role);
+  console.log("Dashboard rendering with:", { user: !!user, profile: !!profile, loading });
+
+  const RoleIcon = profile ? getRoleIcon(profile.role) : UserIcon;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background/50">
-      <header className="border-b bg-card/95 backdrop-blur-sm">
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="border-b bg-card border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
