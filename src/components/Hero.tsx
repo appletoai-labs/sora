@@ -1,0 +1,70 @@
+import { Button } from "@/components/ui/button";
+import { Brain, Heart, Shield } from "lucide-react";
+import heroImage from "@/assets/hero-brain.jpg";
+
+const Hero = () => {
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-br from-background via-warm-peach/20 to-accent/30 py-20 md:py-32">
+      <div className="container mx-auto px-4">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-lg font-medium text-calm-purple">
+                <Brain className="w-6 h-6" />
+                <span>🧠 SORA: Your Neurodivergent Ally</span>
+              </div>
+              
+              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+                <span className="bg-gradient-to-r from-calm-purple to-soft-blue bg-clip-text text-transparent">
+                  Thrive in Your Own Rhythm
+                </span>
+              </h1>
+              
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
+                Your 24/7 AI companion designed for ADHD + Autism. 
+                Not here to "fix" you, but to help you work <em>with</em> your brain, not against it.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-6 text-sm text-neural-gray">
+              <div className="flex items-center gap-2">
+                <Heart className="w-4 h-4 text-gentle-green" />
+                <span>Non-judgmental</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-soft-blue" />
+                <span>Safe space to unmask</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button variant="hero" size="lg" className="text-lg px-8 py-4">
+                Start Your Journey
+              </Button>
+              <Button variant="gentle" size="lg" className="text-lg px-8 py-4">
+                Learn More
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="relative rounded-2xl overflow-hidden shadow-float">
+              <img 
+                src={heroImage} 
+                alt="Abstract brain illustration representing neurodivergent support"
+                className="w-full h-auto object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-calm-purple/20 to-transparent" />
+            </div>
+            
+            {/* Floating elements */}
+            <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-gentle-green to-warm-peach rounded-full opacity-80 animate-pulse" />
+            <div className="absolute -bottom-6 -left-6 w-12 h-12 bg-gradient-to-br from-soft-blue to-calm-purple rounded-full opacity-60 animate-pulse delay-1000" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;

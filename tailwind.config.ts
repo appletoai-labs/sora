@@ -52,6 +52,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// SORA specific colors
+				'calm-purple': 'hsl(var(--calm-purple))',
+				'soft-blue': 'hsl(var(--soft-blue))',
+				'gentle-green': 'hsl(var(--gentle-green))',
+				'warm-peach': 'hsl(var(--warm-peach))',
+				'neural-gray': 'hsl(var(--neural-gray))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
