@@ -1,5 +1,6 @@
-import { Brain, Heart, Mail, Shield } from "lucide-react";
+import { Heart, Mail, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import SoraLogo from "@/components/SoraLogo";
 
 const Footer = () => {
   return (
@@ -8,12 +9,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sora-teal to-sora-orange flex items-center justify-center">
-                <Brain className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold">SORA</span>
-            </div>
+            <SoraLogo className="text-foreground" />
             <p className="text-sm text-muted-foreground leading-relaxed">
               Your neurodivergent journey deserves a companion who truly gets it.
             </p>

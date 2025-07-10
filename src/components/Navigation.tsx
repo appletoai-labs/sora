@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Brain, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import SoraLogo from "@/components/SoraLogo";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,12 +18,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sora-teal to-sora-orange flex items-center justify-center">
-              <Brain className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold">SORA</span>
-          </div>
+          <SoraLogo className="text-foreground" />
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Brain, Heart, Shield } from "lucide-react";
+import { Heart, Shield } from "lucide-react";
 import heroImage from "@/assets/hero-brain.jpg";
+import SoraLogo from "@/components/SoraLogo";
 
 const Hero = () => {
   return (
@@ -9,9 +10,8 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-lg font-medium text-sora-teal">
-                <Brain className="w-6 h-6" />
-                <span>🧠 SORA: Your Neurodivergent Ally</span>
+              <div className="flex items-center justify-center mb-6">
+                <SoraLogo size="large" className="text-sora-teal" />
               </div>
               
               <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
