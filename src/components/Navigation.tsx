@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import SoraLogo from "@/components/SoraLogo";
@@ -35,8 +36,8 @@ const Navigation = () => {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button variant="hero" size="sm">
-              Get Started
+            <Button variant="hero" size="sm" asChild>
+              <Link to="/auth">Get Started</Link>
             </Button>
           </div>
 
@@ -63,8 +64,8 @@ const Navigation = () => {
                   {item.label}
                 </a>
               ))}
-              <Button variant="hero" size="sm" className="self-start">
-                Get Started
+              <Button variant="hero" size="sm" className="self-start" asChild>
+                <Link to="/auth">Get Started</Link>
               </Button>
             </div>
           </div>
