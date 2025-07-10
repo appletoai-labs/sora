@@ -71,7 +71,7 @@ export const SignUpForm = () => {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/app`;
+      const redirectUrl = `${window.location.origin}/verify-email`;
       
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
@@ -99,6 +99,9 @@ export const SignUpForm = () => {
         // If email confirmation is disabled, redirect immediately
         if (data.session) {
           navigate("/app");
+        } else {
+          // If email confirmation is enabled, redirect to verification page
+          navigate("/verify-email");
         }
       }
     } catch (err) {

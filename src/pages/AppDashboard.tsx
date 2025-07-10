@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { LogOut, User as UserIcon, Heart, Stethoscope, Mic } from "lucide-react";
 import VoiceInterface from "@/components/VoiceInterface";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 type UserRole = "individual" | "therapy_client" | "therapist";
 
@@ -20,7 +21,7 @@ interface Profile {
   updated_at: string;
 }
 
-const AppDashboard = () => {
+const AppDashboardContent = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -89,10 +90,8 @@ const AppDashboard = () => {
   useEffect(() => {
     if (user) {
       fetchProfile();
-    } else if (!loading) {
-      navigate("/auth");
     }
-  }, [user, loading, navigate]);
+  }, [user]);
 
   const fetchProfile = async () => {
     if (!user) return;
@@ -148,7 +147,14 @@ const AppDashboard = () => {
   }
 
   if (!user || !profile) {
-    return null; // Will redirect to auth
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-background/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading profile...</p>
+        </div>
+      </div>
+    );
   }
 
   const RoleIcon = getRoleIcon(profile.role);
@@ -250,6 +256,14 @@ const AppDashboard = () => {
       
       <VoiceInterface />
     </div>
+  );
+};
+
+const AppDashboard = () => {
+  return (
+    <ProtectedRoute requireEmailVerified={true}>
+      <AppDashboardContent />
+    </ProtectedRoute>
   );
 };
 
