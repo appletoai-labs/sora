@@ -4,18 +4,18 @@ import heroImage from "@/assets/hero-brain.jpg";
 
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-background via-warm-peach/20 to-accent/30 py-20 md:py-32">
+    <section className="relative overflow-hidden bg-sora-dark py-20 md:py-32">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-lg font-medium text-calm-purple">
+              <div className="flex items-center gap-3 text-lg font-medium text-sora-teal">
                 <Brain className="w-6 h-6" />
                 <span>🧠 SORA: Your Neurodivergent Ally</span>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                <span className="bg-gradient-to-r from-calm-purple to-soft-blue bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
+                <span className="bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent">
                   Thrive in Your Own Rhythm
                 </span>
               </h1>
@@ -26,13 +26,13 @@ const Hero = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-6 text-sm text-neural-gray">
+            <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-gentle-green" />
+                <Heart className="w-4 h-4 text-sora-teal" />
                 <span>Non-judgmental</span>
               </div>
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-soft-blue" />
+                <Shield className="w-4 h-4 text-sora-orange" />
                 <span>Safe space to unmask</span>
               </div>
             </div>
@@ -41,7 +41,7 @@ const Hero = () => {
               <Button variant="hero" size="lg" className="text-lg px-8 py-4">
                 Start Your Journey
               </Button>
-              <Button variant="gentle" size="lg" className="text-lg px-8 py-4">
+              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
                 Learn More
               </Button>
             </div>
@@ -54,12 +54,12 @@ const Hero = () => {
                 alt="Abstract brain illustration representing neurodivergent support"
                 className="w-full h-auto object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-calm-purple/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-sora-teal/20 to-transparent" />
             </div>
             
             {/* Floating elements */}
-            <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-gentle-green to-warm-peach rounded-full opacity-80 animate-pulse" />
-            <div className="absolute -bottom-6 -left-6 w-12 h-12 bg-gradient-to-br from-soft-blue to-calm-purple rounded-full opacity-60 animate-pulse delay-1000" />
+            <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-sora-teal to-sora-orange rounded-full opacity-80 animate-pulse" />
+            <div className="absolute -bottom-6 -left-6 w-12 h-12 bg-gradient-to-br from-sora-orange to-sora-teal rounded-full opacity-60 animate-pulse delay-1000" />
           </div>
         </div>
       </div>

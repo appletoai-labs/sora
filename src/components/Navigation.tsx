@@ -13,12 +13,12 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-sora-dark/90 backdrop-blur-md border-b border-sora-teal/20">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-calm-purple to-soft-blue flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sora-teal to-sora-orange flex items-center justify-center">
               <Brain className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold">SORA</span>
@@ -30,7 +30,7 @@ const Navigation = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-sm font-medium text-muted-foreground hover:text-calm-purple transition-colors"
+                className="text-sm font-medium text-muted-foreground hover:text-sora-teal transition-colors"
               >
                 {item.label}
               </a>
@@ -55,13 +55,13 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden border-t border-border/50 py-4">
+          <div className="md:hidden border-t border-sora-teal/20 py-4">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
                 <a
                   key={item.label}
                   href={item.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-calm-purple transition-colors"
+                  className="text-sm font-medium text-muted-foreground hover:text-sora-teal transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.label}

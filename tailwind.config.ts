@@ -52,12 +52,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// SORA specific colors
-				'calm-purple': 'hsl(var(--calm-purple))',
-				'soft-blue': 'hsl(var(--soft-blue))',
-				'gentle-green': 'hsl(var(--gentle-green))',
-				'warm-peach': 'hsl(var(--warm-peach))',
-				'neural-gray': 'hsl(var(--neural-gray))',
+				// SORA brand colors
+				'sora-teal': 'hsl(var(--sora-teal))',
+				'sora-orange': 'hsl(var(--sora-orange))',
+				'sora-dark': 'hsl(var(--sora-dark))',
+				'sora-card': 'hsl(var(--sora-card))',
+				'sora-muted': 'hsl(var(--sora-muted))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

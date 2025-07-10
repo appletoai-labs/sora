@@ -27,14 +27,14 @@ const values = [
 
 const About = () => {
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 bg-sora-dark">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
               <h2 className="text-3xl md:text-4xl font-bold">
                 Understanding Meets{" "}
-                <span className="bg-gradient-to-r from-calm-purple to-soft-blue bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent">
                   Action
                 </span>
               </h2>
@@ -54,7 +54,7 @@ const About = () => {
                   "Sensory-aware responses based on your state"
                 ].map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-gentle-green flex items-center justify-center mt-0.5">
+                    <div className="w-5 h-5 rounded-full bg-sora-teal flex items-center justify-center mt-0.5">
                       <Check className="w-3 h-3 text-white" />
                     </div>
                     <span className="text-muted-foreground">{item}</span>
@@ -79,11 +79,11 @@ const About = () => {
                 <Card key={index} className="group hover:shadow-card transition-all duration-300 border-none bg-gradient-card">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-calm-purple/20 to-soft-blue/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <value.icon className="w-5 h-5 text-calm-purple" />
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-sora-teal/20 to-sora-orange/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <value.icon className="w-5 h-5 text-sora-teal" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-foreground mb-2 group-hover:text-calm-purple transition-colors">
+                        <h4 className="font-semibold text-foreground mb-2 group-hover:text-sora-teal transition-colors">
                           {value.title}
                         </h4>
                         <p className="text-sm text-muted-foreground leading-relaxed">
