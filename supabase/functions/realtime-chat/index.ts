@@ -31,9 +31,22 @@ serve(async (req) => {
       
       // Connect to OpenAI Realtime API
       try {
+        // Use proper authentication via headers instead of exposing API key in protocol
+        openaiWs = new WebSocket("wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17");
+        
+        // Add authentication header after connection is established
+        const authHeader = `Bearer ${OPENAI_API_KEY}`;
+        
+        // Note: WebSocket headers must be set during connection establishment
+        // For OpenAI Realtime API, we'll use the Authorization header method
         openaiWs = new WebSocket(
           "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17",
-          ["realtime", `openai-insecure-api-key.${OPENAI_API_KEY}`, "openai-beta.realtime-v1"]
+          {
+            headers: {
+              "Authorization": authHeader,
+              "OpenAI-Beta": "realtime=v1"
+            }
+          } as any
         );
 
         openaiWs.onopen = () => {
