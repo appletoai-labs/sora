@@ -8,6 +8,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { UserCheck, Heart, Stethoscope } from "lucide-react";
+import { signUpSchema, type SignUpFormData } from "@/lib/validation";
+import { PasswordStrength } from "@/components/ui/password-strength";
+import { authLimiter, sanitizeInput } from "@/lib/security";
 
 const accountTypes = [
   {
@@ -49,18 +52,38 @@ export const SignUpForm = () => {
   };
 
   const validateForm = () => {
-    if (!formData.firstName.trim()) return "First name is required";
-    if (!formData.lastName.trim()) return "Last name is required";
-    if (!formData.email.trim()) return "Email is required";
-    if (formData.password.length < 6) return "Password must be at least 6 characters";
-    if (formData.password !== formData.confirmPassword) return "Passwords do not match";
-    if (!formData.accountType) return "Please select an account type";
-    return null;
+    try {
+      // Sanitize inputs
+      const sanitizedData = {
+        firstName: sanitizeInput(formData.firstName),
+        lastName: sanitizeInput(formData.lastName),
+        email: sanitizeInput(formData.email),
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        accountType: formData.accountType as "individual" | "therapy_client" | "therapist"
+      };
+
+      signUpSchema.parse(sanitizedData);
+      return null;
+    } catch (error: any) {
+      if (error.errors) {
+        return error.errors[0].message;
+      }
+      return "Validation error";
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Rate limiting check
+    const clientId = `signup_${formData.email}`;
+    if (!authLimiter.isAllowed(clientId, 3, 15 * 60 * 1000)) { // 3 attempts per 15 minutes
+      const remainingTime = authLimiter.getRemainingTime(clientId, 15 * 60 * 1000);
+      setError(`Too many signup attempts. Please try again in ${Math.ceil(remainingTime / 60000)} minutes.`);
+      return;
+    }
 
     const validationError = validateForm();
     if (validationError) {
@@ -157,16 +180,19 @@ export const SignUpForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Create a password (min. 6 characters)</Label>
+        <Label htmlFor="password">Create a password</Label>
         <Input
           id="password"
           type="password"
           value={formData.password}
           onChange={(e) => handleInputChange("password", e.target.value)}
-          placeholder="Create a password"
-          minLength={6}
+          placeholder="Create a secure password"
+          minLength={8}
           required
         />
+        {formData.password && (
+          <PasswordStrength password={formData.password} />
+        )}
       </div>
 
       <div className="space-y-2">

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { authLimiter, sanitizeInput } from "@/lib/security";
 
 export const SignInForm = () => {
   const [email, setEmail] = useState("");
@@ -20,9 +21,21 @@ export const SignInForm = () => {
     setLoading(true);
     setError("");
 
+    // Rate limiting check
+    const clientId = `signin_${email}`;
+    if (!authLimiter.isAllowed(clientId, 5, 15 * 60 * 1000)) { // 5 attempts per 15 minutes
+      const remainingTime = authLimiter.getRemainingTime(clientId, 15 * 60 * 1000);
+      setError(`Too many signin attempts. Please try again in ${Math.ceil(remainingTime / 60000)} minutes.`);
+      setLoading(false);
+      return;
+    }
+
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email);
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: sanitizedEmail,
         password,
       });
 

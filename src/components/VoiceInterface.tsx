@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { AudioRecorder, encodeAudioForAPI, playAudioData } from '@/utils/RealtimeAudio';
-import { Mic, MicOff, Phone, PhoneOff } from 'lucide-react';
+import { Mic, MicOff, Phone, PhoneOff, Clock } from 'lucide-react';
+import { voiceConnectionLimiter, SessionManager } from '@/lib/security';
 
 interface VoiceInterfaceProps {
   onSpeakingChange?: (speaking: boolean) => void;
@@ -23,9 +24,37 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
   const recorderRef = useRef<AudioRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const [sessionReady, setSessionReady] = useState(false);
+  const [sessionDuration, setSessionDuration] = useState(0);
+  const [connectionAttempts, setConnectionAttempts] = useState(0);
+  const sessionManagerRef = useRef<SessionManager | null>(null);
 
   const connectToSora = async () => {
     try {
+      // Rate limiting check
+      const clientId = 'voice_connection';
+      if (!voiceConnectionLimiter.isAllowed(clientId, 5, 60 * 1000)) { // 5 attempts per minute
+        const remainingTime = voiceConnectionLimiter.getRemainingTime(clientId, 60 * 1000);
+        toast({
+          title: "Connection Rate Limited",
+          description: `Please wait ${Math.ceil(remainingTime / 1000)} seconds before trying again`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check maximum daily connections
+      const dailyKey = `voice_daily_${new Date().toDateString()}`;
+      if (!voiceConnectionLimiter.isAllowed(dailyKey, 50, 24 * 60 * 60 * 1000)) { // 50 per day
+        toast({
+          title: "Daily Connection Limit Reached",
+          description: "You've reached the maximum daily voice connections. Please try again tomorrow.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setConnectionAttempts(prev => prev + 1);
+
       if (!audioContextRef.current) {
         audioContextRef.current = new AudioContext({ sampleRate: 24000 });
       }
@@ -37,6 +66,28 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
       wsRef.current.onopen = () => {
         console.log('Connected to SORA');
         setIsConnected(true);
+        setSessionDuration(0);
+        
+        // Start session management
+        sessionManagerRef.current = new SessionManager(
+          () => {
+            toast({
+              title: "Session Warning",
+              description: "Your session will expire in 5 minutes due to inactivity",
+              variant: "destructive",
+            });
+          },
+          () => {
+            toast({
+              title: "Session Expired",
+              description: "Your session has expired due to inactivity",
+              variant: "destructive",
+            });
+            disconnect();
+          }
+        );
+        sessionManagerRef.current.startSession();
+        
         toast({
           title: "Connected to SORA",
           description: "Your 24/7 mental health assistant is ready",
@@ -125,7 +176,12 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
         setSessionReady(false);
         setIsRecording(false);
         setIsSpeaking(false);
+        setSessionDuration(0);
         stopRecording();
+        if (sessionManagerRef.current) {
+          sessionManagerRef.current.endSession();
+          sessionManagerRef.current = null;
+        }
       };
 
     } catch (error) {
@@ -146,6 +202,11 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
         variant: "destructive",
       });
       return;
+    }
+
+    // Extend session on activity
+    if (sessionManagerRef.current) {
+      sessionManagerRef.current.extendSession();
     }
 
     try {
@@ -193,11 +254,30 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
+    if (sessionManagerRef.current) {
+      sessionManagerRef.current.endSession();
+      sessionManagerRef.current = null;
+    }
     setIsConnected(false);
     setSessionReady(false);
     setIsSpeaking(false);
     setTranscript('');
+    setSessionDuration(0);
+    setConnectionAttempts(0);
   };
+
+  // Session duration timer
+  useEffect(() => {
+    let timer: number;
+    if (isConnected) {
+      timer = window.setInterval(() => {
+        setSessionDuration(prev => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isConnected]);
 
   useEffect(() => {
     return () => {
@@ -218,6 +298,12 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
                 : "Initializing..."
             }
           </p>
+          {isConnected && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              <Clock className="w-3 h-3" />
+              <span>Session: {Math.floor(sessionDuration / 60)}:{(sessionDuration % 60).toString().padStart(2, '0')}</span>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-center gap-3">
