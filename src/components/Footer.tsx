@@ -1,6 +1,7 @@
 import { Heart, Mail, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SoraLogo from "@/components/SoraLogo";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -44,14 +45,40 @@ const Footer = () => {
           {/* Privacy */}
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Privacy & Trust</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <Shield className="w-3 h-3 text-sora-orange" />
-                Tiered Privacy Model
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link 
+                  to="/privacy" 
+                  className="flex items-center gap-2 text-muted-foreground hover:text-sora-teal transition-colors"
+                >
+                  <Shield className="w-3 h-3 text-sora-orange" />
+                  Privacy Policy
+                </Link>
               </li>
-              <li>Data Protection</li>
-              <li>Terms of Service</li>
-              <li>Accessibility</li>
+              <li>
+                <Link 
+                  to="/privacy" 
+                  className="text-muted-foreground hover:text-sora-teal transition-colors"
+                >
+                  Data Protection
+                </Link>
+              </li>
+              <li>
+                <a 
+                  href="#" 
+                  className="text-muted-foreground hover:text-sora-teal transition-colors"
+                >
+                  Terms of Service
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="#" 
+                  className="text-muted-foreground hover:text-sora-teal transition-colors"
+                >
+                  Accessibility
+                </a>
+              </li>
             </ul>
           </div>
         </div>
