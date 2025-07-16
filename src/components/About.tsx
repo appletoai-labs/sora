@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Users, Heart, Shield, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const values = [
   {
@@ -26,6 +27,8 @@ const values = [
 ];
 
 const About = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 bg-sora-dark">
       <div className="container mx-auto px-4">
@@ -63,7 +66,7 @@ const About = () => {
               </div>
             </div>
 
-            <Button variant="hero" size="lg" className="text-lg px-8 py-4">
+            <Button variant="hero" size="lg" className="text-lg px-8 py-4" onClick={() => navigate("/chat")}>
               Experience SORA
             </Button>
           </div>

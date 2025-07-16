@@ -7,7 +7,6 @@ import Footer from "@/components/Footer";
 const Privacy = () => {
   return (
     <div className="min-h-screen">
-      <Navigation />
       <main className="pt-20">
         {/* Hero Section */}
         <section className="py-16 bg-gradient-to-br from-background to-muted/30">
@@ -189,7 +188,6 @@ const Privacy = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };
