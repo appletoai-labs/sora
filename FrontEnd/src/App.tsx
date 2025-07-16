@@ -10,6 +10,7 @@ import AppDashboard from './pages/AppDashboard';
 import VerifyEmail from './pages/VerifyEmail';
 import Privacy from './pages/Privacy';
 import { ChatInterface } from '@/components/chat/index';
+import  {ImmediateSupport} from '../src/components/imediateSupport';
 import Layout from '@/components/layout';
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
             <BrowserRouter>
                 <Routes>
                     <Route element={<Layout />}>
+                    <Route path="/immediate-support" element={<ImmediateSupport />} />
                         <Route path="/" element={<Index />} />
                         <Route path="/auth" element={<Auth />} />
                         <Route path="/verify-email" element={<VerifyEmail />} />
