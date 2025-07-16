@@ -12,3 +12,8 @@ SORA helps users recognize patterns, prevent burnout, and navigate shutdowns thr
 
 > Built and maintained by [appletoai-labs](https://github.com/appletoai-labs)  
 > Created with lived experience, not assumptions.
+## 🛡️ License
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](http://creativecommons.org/licenses/by-nc/4.0/).
+
+> 🔒 *This project is in active development. Please do not reuse this code for commercial purposes without written permission.*
