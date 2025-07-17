@@ -1,10 +1,9 @@
 from dotenv import load_dotenv
 import os
-import openai
+from openai import OpenAI
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 def get_sora_response(message, user_id, sora_mode='companion'):
     try:
         messages = [
@@ -45,10 +44,9 @@ def get_sora_response(message, user_id, sora_mode='companion'):
             {"role": "user", "content": message}
         ]
 
-        client = openai.OpenAI()  # no proxies or kwargs here
-
+        client = OpenAI(api_key=OPENAI_API_KEY)
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=messages,
             temperature=0.7,
             max_tokens=500
