@@ -245,7 +245,7 @@ export const ChatInterface = () => {
         </div>
       </div>
       {/* Support Cards */}
-      <div className="px-3 sm:px-6 pt-4">
+      <div className="px-3 sm:px-6 pt-4 pb-8">
         <SupportCards />
       </div>
     </>
