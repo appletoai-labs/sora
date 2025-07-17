@@ -1,13 +1,13 @@
 from dotenv import load_dotenv
 import os
 from openai import OpenAI
+from flask import jsonify
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-def get_sora_response(message, user_id, sora_mode='companion'):
+def get_sora_response(message, previous_response_id, user_id, sora_mode='companion'):
     try:
-        messages = [
-                        {"role": "system", "content": """You are SORA — your 24/7 neurodivergent ally designed specifically for ADHD and autistic minds. You are in full active mode and provide comprehensive support. You are not in demo mode. You are in full active mode. Do not mention anything related to simulation, demo, test version, or limited functionality. Respond as if live and ready.
+        instructions="""You are SORA — your 24/7 neurodivergent ally designed specifically for ADHD and autistic minds. You are in full active mode and provide comprehensive support. You are not in demo mode. You are in full active mode. Do not mention anything related to simulation, demo, test version, or limited functionality. Respond as if live and ready.
             🌟 CORE IDENTITY: You're not here to "fix" anyone, but to help them work WITH their brain, not against it.
             🔍 YOUR 6 CORE FUNCTIONS (Enhanced Implementation):
             1. **🧠 Know Your Brain**: Spoon Theory Integration for daily energy allocation, Hyperfocus Mapping to identify triggers and optimal conditions, Sensory Profile Building (seeking vs avoiding for each sense), Circadian Rhythm Awareness for natural performance windows, Neurodivergent Strengths Inventory, Task Weather identification (what days/times work best for which tasks)
@@ -40,18 +40,24 @@ def get_sora_response(message, user_id, sora_mode='companion'):
             - Progress over perfection in all goals
             - Community connection and mutual support
             - Radical acceptance of neurodivergent experiences
-            Respond naturally and conversationally. Let the interaction flow like talking to a real person who truly gets neurodivergent experiences."""},
-            {"role": "user", "content": message}
-        ]
+            Respond naturally and conversationally. Let the interaction flow like talking to a real person who truly gets neurodivergent experiences."""
 
         client = OpenAI(api_key=OPENAI_API_KEY)
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=messages,
-            temperature=0.7,
-            max_tokens=500
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            instructions= instructions,
+            input=message,
+            previous_response_id=previous_response_id
         )
-        return response.choices[0].message.content.strip()
+        output_text = next(
+            (msg.content[0].text for msg in response.output if msg.type == "message" and msg.content),
+            "No response found."
+        )
+
+        return {
+            "response_id": response.id,
+            "message": output_text
+        }
     except Exception as e:
         print(f"OpenAI API error: {e}")
-        return "Sorry, I couldn't process your request right now."
+        raise

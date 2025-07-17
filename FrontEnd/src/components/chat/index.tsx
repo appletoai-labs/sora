@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SupportCards from "../../components/supportCards";
+import axios from "axios";
 
 interface Message {
   id: string;
@@ -34,6 +35,7 @@ export const ChatInterface = () => {
       timestamp: new Date(),
     },
   ]);
+  const [previousResponseId, setPreviousResponseId] = useState<String>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
@@ -62,6 +64,38 @@ export const ChatInterface = () => {
     speechSynthesis.speak(utterance);
   };
 
+  const formatResponse = (text) => {
+        // Remove text inside [...] or 【...】
+        text = text.replace(/\[.*?\]|\u3010.*?\u3011/g, '');
+
+        // Convert **bold** Markdown to <strong> HTML tags
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // Convert ###text### to <h3>text</h3>
+        text = text.replace(/###(.*?)###/g, '<h3>$1</h3>');
+
+        // Convert ##text## to <h2>text</h2>
+        text = text.replace(/##(.*?)##/g, '<h2>$1</h2>');
+
+        // Convert lines starting with "- " to bullet points "• "
+        // We process line by line before converting newlines to <br>
+        text = text
+            .split('\n')
+            .map((line) => {
+                const trimmed = line.trimStart();
+                if (trimmed.startsWith('- ')) {
+                    return '• ' + trimmed.slice(2);
+                }
+                return line;
+            })
+            .join('\n');
+
+        // Replace all newlines with HTML line breaks
+        text = text.split('\n').join('<br>');
+
+        return text;
+    };
+
   const handleSendMessage = async (text: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -75,30 +109,27 @@ export const ChatInterface = () => {
     setShowSuggestions(false);
 
     try {
-      const response = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const response = await axios.post(`${import.meta.env.REACT_APP_BACKEND_URL}/api/chat`, {
           message: text,
           user_id: "demo_user",
-          account_type: "individual"
-        }),
+          account_type: "individual",
+          previous_response_id: previousResponseId
       }); 
-
-      const data = await response.json();
-      if (data.success) {
+      const botText = response.data.message || "Sorry, I couldn't process your request.";
+      setPreviousResponseId(response.data.response_id);
+      if (response.status==200) {
         const botMessage: Message = {
-          id: data.message_id,
-          text: data.response,
+          id: response.data.response_id,
+          text: formatResponse(botText),
           isUser: false,
           timestamp: new Date(),
         };
         setMessages(prev => [...prev, botMessage]);
-        speak(data.response); // speak the response aloud
+        speak(response.data.message);
       } else {
         toast({
           title: "Chat Error",
-          description: data.error || "Something went wrong",
+          description: "Something went wrong",
         });
       }
     } catch (err) {
@@ -149,6 +180,7 @@ export const ChatInterface = () => {
       }
     ]);
     setShowSuggestions(true);
+    setPreviousResponseId(null);
     toast({
       title: "Chat cleared",
       description: "Your conversation has been reset.",
