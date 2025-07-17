@@ -7,9 +7,10 @@ from gamification import add_xp
 from gtts import gTTS
 import io
 import base64
+import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=['http://localhost:3000','https://sora-henna-six.vercel.app'])
 
 @app.route('/api/chat', methods=['POST'])
 def api_chat():
@@ -91,5 +92,5 @@ def api_chat_history():
         return jsonify({'success': False, 'error': 'Failed to load chat history'}), 500
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.getenv("PORT", 5000)))
