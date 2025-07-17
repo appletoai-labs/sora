@@ -83,7 +83,7 @@ export const ChatInterface = () => {
           user_id: "demo_user",
           account_type: "individual"
         }),
-      });
+      }); 
 
       const data = await response.json();
       if (data.success) {
