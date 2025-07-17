@@ -179,6 +179,7 @@ export const ChatInterface = () => {
         timestamp: new Date(),
       }
     ]);
+    speechSynthesis.cancel();
     setShowSuggestions(true);
     setPreviousResponseId(null);
     toast({
