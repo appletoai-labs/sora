@@ -7,56 +7,48 @@ from gamification import add_xp
 from gtts import gTTS
 import io
 import base64
+import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=['http://localhost:8080','https://sora-henna-six.vercel.app'])
 
 @app.route('/api/chat', methods=['POST'])
 def api_chat():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({'success': False, 'error': 'No data provided'}), 400
+            return jsonify({'error': 'No data provided'}), 400
 
         message = data.get('message', '').strip()
         user_id = data.get('user_id', 'demo_user')
+        previous_response_id = data.get('previous_response_id')
         account_type = data.get('account_type', 'individual')
-        speak = data.get('speak', False)  # <-- NEW flag for speech
+        speak = data.get('speak', False)
 
         if not message:
-            return jsonify({'success': False, 'error': 'Message is required'}), 400
+            return jsonify({'error': 'Message is required'}), 400
 
         save_user_message_to_session(user_id, message, 'user')
-        user_session = get_user_session(user_id)
-        recent_messages = user_session['messages'][-10:]
-
-        conversation_history = []
-        for msg in recent_messages:
-            if msg['sender'] == 'user':
-                conversation_history.append(f"User: {msg['content']}")
-            else:
-                conversation_history.append(f"SORA: {msg['content']}")
-
         sora_mode = 'companion' if account_type == 'individual' else 'coaching'
-        response_result = get_sora_response(message=message, user_id=user_id, sora_mode=sora_mode)
 
-        if isinstance(response_result, tuple):
-            response = response_result[0]
-        else:
-            response = response_result
-
-        save_user_message_to_session(user_id, response, 'sora')
+        result = get_sora_response(
+            message=message,
+            previous_response_id=previous_response_id,
+            user_id=user_id,
+            sora_mode=sora_mode
+        )
+        # Save SORA's reply only (not the dict)
+        save_user_message_to_session(user_id, result['message'], 'sora')
         add_xp(user_id, 8, "Chat interaction with SORA")
 
         response_payload = {
-            'success': True,
-            'response': response,
-            'message_id': f"{datetime.now().timestamp()}"
+            'response_id': result['response_id'],
+            'message': result['message']
         }
 
-        # If frontend requests speech audio, generate TTS and include base64 audio
+        # Add TTS audio if requested
         if speak:
-            tts = gTTS(text=response, lang='en')
+            tts = gTTS(text=result['message'], lang='en')
             audio_buffer = io.BytesIO()
             tts.write_to_fp(audio_buffer)
             audio_buffer.seek(0)
@@ -64,11 +56,9 @@ def api_chat():
             response_payload['audio'] = f"data:audio/mp3;base64,{b64_audio}"
 
         return jsonify(response_payload)
-
     except Exception as e:
         print("Chat API error:", str(e))
-        return jsonify({'success': False, 'error': 'Failed to process message'}), 500
-
+        return jsonify({'error': 'Failed to process message', 'details': str(e)}), 500
 
 @app.route('/api/chat-history', methods=['GET'])
 def api_chat_history():
@@ -91,5 +81,5 @@ def api_chat_history():
         return jsonify({'success': False, 'error': 'Failed to load chat history'}), 500
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.getenv("PORT", 5050)))

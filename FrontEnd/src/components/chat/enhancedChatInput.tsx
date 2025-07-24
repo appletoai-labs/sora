@@ -1,3 +1,4 @@
+// components/chat/enhancedChatInput.tsx
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,47 +40,43 @@ export const EnhancedChatInput = ({
   };
 
   return (
-    <div className="space-y-4 p-6 bg-chat-surface border-t border-border">
-      {/* Voice Control Button */}
+    <div className="space-y-2 px-2 py-3 sm:px-4 sm:py-5 bg-chat-surface border-t border-border">
+      {/* Speech Toggle */}
       <div className="flex justify-center">
         <Button
           type="button"
           onClick={onToggleSpeech}
           className={cn(
-            "rounded-full px-6 py-3 transition-all duration-300",
+            "rounded-full px-3 py-1 text-[10px] sm:text-sm transition-all duration-300",
             isSpeechEnabled 
               ? "bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-90" 
               : "bg-gradient-surface text-foreground hover:bg-chat-surface-elevated"
           )}
         >
-          <Volume2 className="h-4 w-4 mr-2" />
+          <Volume2 className="h-4 w-4 mr-1" />
           {isSpeechEnabled ? "Speech On" : "Speak responses"}
         </Button>
       </div>
 
-      {/* Input Area */}
-      <form onSubmit={handleSubmit} className="relative">
-        <div className="flex items-center gap-3">
-          {/* Voice Input Button */}
+      {/* Input Row */}
+      <form onSubmit={handleSubmit} className="w-full">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mic Button */}
           <Button
             type="button"
             onClick={onToggleVoice}
             className={cn(
-              "flex-shrink-0 w-12 h-12 rounded-xl transition-all duration-300",
+              "w-9 h-9 sm:w-12 sm:h-12 flex-shrink-0 rounded-xl transition-all duration-300",
               isListening 
                 ? "bg-gradient-primary text-primary-foreground animate-pulse-glow" 
                 : "bg-gradient-surface text-foreground hover:bg-chat-surface-elevated"
             )}
           >
-            {isListening ? (
-              <MicOff className="h-5 w-5" />
-            ) : (
-              <Mic className="h-5 w-5" />
-            )}
+            {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
           </Button>
 
-          {/* Text Input */}
-          <div className="flex-1 relative">
+          {/* Input + Send */}
+          <div className="flex-1 relative min-w-0">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -87,24 +84,22 @@ export const EnhancedChatInput = ({
               placeholder={isListening ? "Listening..." : "Type your message..."}
               disabled={disabled || isListening}
               className={cn(
-                "h-12 pr-14 bg-background border-2 rounded-xl text-foreground placeholder:text-muted-foreground transition-all duration-300",
+                "h-9 sm:h-12 w-full pr-10 sm:pr-12 bg-background border-2 rounded-xl text-xs sm:text-sm text-foreground placeholder:text-muted-foreground transition-all duration-300",
                 "focus:ring-2 focus:ring-primary/50 focus:border-primary",
                 isListening && "border-primary bg-primary/5"
               )}
             />
-            
-            {/* Send Button */}
             <Button 
-              type="submit" 
+              type="submit"
               disabled={!message.trim() || disabled || isListening}
               className={cn(
-                "absolute right-1 top-1 h-10 w-10 rounded-lg transition-all duration-300",
+                "absolute right-1 top-1 h-7 w-7 sm:h-10 sm:w-10 rounded-lg transition-all duration-300",
                 (!message.trim() || disabled || isListening)
                   ? "bg-muted text-muted-foreground cursor-not-allowed"
                   : "bg-gradient-primary text-primary-foreground hover:shadow-glow hover:scale-105"
               )}
             >
-              <Send className="h-4 w-4" />
+              <Send className="h-3.5 w-3.5" />
             </Button>
           </div>
         </div>

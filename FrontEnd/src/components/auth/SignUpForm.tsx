@@ -1,16 +1,18 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { UserCheck, Heart, Stethoscope } from "lucide-react";
-import { signUpSchema, type SignUpFormData } from "@/lib/validation";
-import { PasswordStrength } from "@/components/ui/password-strength";
-import { authLimiter, sanitizeInput } from "@/lib/security";
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useToast } from "@/hooks/use-toast"
+import { UserCheck, Heart, Stethoscope } from "lucide-react"
+import { PasswordStrength } from "@/components/ui/password-strength"
+import { useAuth } from "@/hooks/useAuth"
 
 const accountTypes = [
   {
@@ -31,7 +33,7 @@ const accountTypes = [
     description: "Professional tools for client management",
     icon: Stethoscope,
   },
-];
+]
 
 export const SignUpForm = () => {
   const [formData, setFormData] = useState({
@@ -41,100 +43,64 @@ export const SignUpForm = () => {
     password: "",
     confirmPassword: "",
     accountType: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const navigate = useNavigate()
+  const { toast } = useToast()
+  const { register } = useAuth()
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
 
   const validateForm = () => {
-    try {
-      // Sanitize inputs
-      const sanitizedData = {
-        firstName: sanitizeInput(formData.firstName),
-        lastName: sanitizeInput(formData.lastName),
-        email: sanitizeInput(formData.email),
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-        accountType: formData.accountType as "individual" | "therapy_client" | "therapist"
-      };
-
-      signUpSchema.parse(sanitizedData);
-      return null;
-    } catch (error: any) {
-      if (error.errors) {
-        return error.errors[0].message;
-      }
-      return "Validation error";
+    if (formData.password !== formData.confirmPassword) {
+      return "Passwords do not match"
     }
-  };
+    if (formData.password.length < 8) {
+      return "Password must be at least 8 characters long"
+    }
+    if (!formData.accountType) {
+      return "Please select an account type"
+    }
+    return null
+  }
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+    e.preventDefault()
+    setError("")
 
-    // Rate limiting check
-    const clientId = `signup_${formData.email}`;
-    if (!authLimiter.isAllowed(clientId, 3, 15 * 60 * 1000)) { // 3 attempts per 15 minutes
-      const remainingTime = authLimiter.getRemainingTime(clientId, 15 * 60 * 1000);
-      setError(`Too many signup attempts. Please try again in ${Math.ceil(remainingTime / 60000)} minutes.`);
-      return;
-    }
-
-    const validationError = validateForm();
+    const validationError = validateForm()
     if (validationError) {
-      setError(validationError);
-      return;
+      setError(validationError)
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const redirectUrl = `${window.location.origin}/verify-email`;
-      
-      const { data, error } = await supabase.auth.signUp({
+      await register({
         email: formData.email,
         password: formData.password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            role: formData.accountType,
-          },
-        },
-      });
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        role: formData.accountType as "individual" | "therapy_client" | "therapist",
+      })
 
-      if (error) {
-        setError(error.message);
-        return;
-      }
-
-      if (data.user) {
-        toast({
-          title: "Account created successfully!",
-          description: "Please check your email to verify your account.",
-        });
-        // If email confirmation is disabled, redirect immediately
-        if (data.session) {
-          navigate("/app");
-        } else {
-          // If email confirmation is enabled, redirect to verification page
-          navigate("/verify-email");
-        }
-      }
-    } catch (err) {
-      setError("An unexpected error occurred");
+      toast({
+        title: "Account created successfully!",
+        description: "Welcome to SORA!",
+      })
+      navigate("/app")
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const selectedAccountType = accountTypes.find(type => type.value === formData.accountType);
+  const selectedAccountType = accountTypes.find((type) => type.value === formData.accountType)
 
   return (
     <form onSubmit={handleSignUp} className="space-y-4">
@@ -190,9 +156,7 @@ export const SignUpForm = () => {
           minLength={8}
           required
         />
-        {formData.password && (
-          <PasswordStrength password={formData.password} />
-        )}
+        {formData.password && <PasswordStrength password={formData.password} />}
       </div>
 
       <div className="space-y-2">
@@ -215,7 +179,7 @@ export const SignUpForm = () => {
           </SelectTrigger>
           <SelectContent>
             {accountTypes.map((type) => {
-              const Icon = type.icon;
+              const Icon = type.icon
               return (
                 <SelectItem key={type.value} value={type.value}>
                   <div className="flex items-center gap-3">
@@ -226,11 +190,11 @@ export const SignUpForm = () => {
                     </div>
                   </div>
                 </SelectItem>
-              );
+              )
             })}
           </SelectContent>
         </Select>
-        
+
         {selectedAccountType && (
           <div className="p-3 bg-muted/50 rounded-md border">
             <div className="flex items-center gap-2 mb-1">
@@ -246,5 +210,5 @@ export const SignUpForm = () => {
         {loading ? "Creating Account..." : "Create Account"}
       </Button>
     </form>
-  );
-};
+  )
+}

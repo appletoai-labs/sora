@@ -12,7 +12,7 @@ export const ChatActions = ({ onClearChat, disabled }: ChatActionsProps) => {
   const navigate = useNavigate();
 
   const handleEmergencyClick = () => {
-    navigate("/immediate-support");
+    navigate("/app/immediate-support");
   };
 
   return (

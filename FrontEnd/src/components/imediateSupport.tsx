@@ -1,36 +1,38 @@
 import React from "react";
-import { 
-  Heart, 
-  AlertTriangle, 
-  Wind, 
-  Anchor, 
-  MessageCircle, 
-  Hand, 
-  Brain, 
-  Leaf, 
-  User, 
-  Play, 
-  Check, 
-  Shield, 
-  Sprout, 
-  Star, 
-  RefreshCw, 
-  Sun, 
-  Coffee, 
-  Smile, 
-  Share2, 
-  Lightbulb, 
-    Activity,
-  HandHeart 
+import { useNavigate } from "react-router-dom";
+import {
+  Heart,
+  AlertTriangle,
+  Wind,
+  Anchor,
+  MessageCircle,
+  Hand,
+  Brain,
+  Leaf,
+  User,
+  Play,
+  Check,
+  Shield,
+  Sprout,
+  Star,
+  RefreshCw,
+  Sun,
+  Coffee,
+  Smile,
+  Share2,
+  Lightbulb,
+  Activity,
+  HandHeart
 } from "lucide-react";
 
 export const ImmediateSupport = () => {
+  const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
-      
+    <div className="min-h-screen text-white relative overflow-hidden">
+
 
       {/* Hero Section */}
-      <section className="px-6 py-16 text-center relative mt-24">
+      <section className="px-6 py-16 text-center relative mt-18">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center mb-6">
             <Heart className="w-8 h-8 text-red-500 mr-4" />
@@ -138,7 +140,7 @@ export const ImmediateSupport = () => {
             <p className="text-gray-300 mb-6 text-lg">
               Release physical tension by tensing and relaxing different muscle groups.
             </p>
-            
+
             <button className="bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-black px-8 py-3 rounded-lg font-semibold flex items-center mb-8 transition-all">
               <Play className="w-5 h-5 mr-2" />
               Start Guided Relaxation
@@ -178,7 +180,7 @@ export const ImmediateSupport = () => {
           <p className="text-center text-gray-400 mb-12 text-lg">
             Sometimes we need to hear these truths, especially when we're struggling.
           </p>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-gray-800/50 rounded-lg p-6 border-l-4 border-green-500 backdrop-blur-sm">
               <Heart className="w-8 h-8 text-green-400 mb-4" />
@@ -255,7 +257,7 @@ export const ImmediateSupport = () => {
                   <li>• Change into comfortable clothes</li>
                 </ul>
               </div>
-              
+
               <div className="bg-gray-800/50 rounded-lg p-6 border-2 border-gray-600/50 backdrop-blur-sm">
                 <Smile className="w-10 h-10 text-green-400 mb-4" />
                 <h3 className="text-xl font-semibold mb-4">Gentle Reflection</h3>
@@ -266,7 +268,7 @@ export const ImmediateSupport = () => {
                   <li>• How can you be kind to yourself?</li>
                 </ul>
               </div>
-              
+
               <div className="bg-gray-800/50 rounded-lg p-6 border-2 border-gray-600/50 backdrop-blur-sm">
                 <Share2 className="w-10 h-10 text-green-400 mb-4" />
                 <h3 className="text-xl font-semibold mb-4">Moving Forward</h3>
@@ -280,19 +282,31 @@ export const ImmediateSupport = () => {
             </div>
 
             <div className="flex flex-wrap gap-4 justify-center">
-              <button className="bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-black px-8 py-3 rounded-lg font-semibold flex items-center transition-all">
+              <button
+                onClick={() => navigate("/app/chat")}
+                className="bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-black px-8 py-3 rounded-lg font-semibold flex items-center transition-all"
+              >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Talk to SORA
               </button>
-              <button className="bg-gray-800/50 hover:bg-gray-700/50 text-white px-8 py-3 rounded-lg font-semibold flex items-center border-2 border-cyan-500/30 hover:border-cyan-400/50 transition-all backdrop-blur-sm">
+
+              <button
+                onClick={() => navigate("/app/clarity")}
+                className="bg-gray-800/50 hover:bg-gray-700/50 text-white px-8 py-3 rounded-lg font-semibold flex items-center border-2 border-cyan-500/30 hover:border-cyan-400/50 transition-all backdrop-blur-sm"
+              >
                 <Lightbulb className="w-5 h-5 mr-2" />
                 Use Clarity Tools
               </button>
-              <button className="bg-gray-800/50 hover:bg-gray-700/50 text-white px-8 py-3 rounded-lg font-semibold flex items-center border-2 border-cyan-500/30 hover:border-cyan-400/50 transition-all backdrop-blur-sm">
+
+              <button
+                onClick={() => navigate("/app/sensory")}
+                className="bg-gray-800/50 hover:bg-gray-700/50 text-white px-8 py-3 rounded-lg font-semibold flex items-center border-2 border-cyan-500/30 hover:border-cyan-400/50 transition-all backdrop-blur-sm"
+              >
                 <HandHeart className="w-5 h-5 mr-2" />
                 Sensory Support
               </button>
             </div>
+
           </div>
         </div>
       </section>
