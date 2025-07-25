@@ -763,7 +763,7 @@ const EmotionalSupport: FC = () => {
                             className="h-14 bg-red-600 text-white border-red-500 hover:bg-red-800 font-medium flex items-center gap-2 justify-center transition-colors"
                         >
                             <MessageSquare className="w-4 h-4" />
-                            Text HOME to 741741
+                            Text Home to 741741
                         </Button>
                         <Button
                             variant="outline"
