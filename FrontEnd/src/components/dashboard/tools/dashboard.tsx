@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -65,6 +66,7 @@ interface DashboardStats {
 }
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth()
   const { toast } = useToast()
   const [userProgress, setUserProgress] = useState<UserProgress>({
@@ -540,14 +542,6 @@ const Dashboard: React.FC = () => {
                   <span className="text-red-400 font-semibold">{dashboardStats.totalChatSessions}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-sora-muted rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Lightbulb className="w-5 h-5 text-yellow-400" />
-                    <span className="text-white text-sm">Clarity Tools</span>
-                  </div>
-                  <span className="text-yellow-400 font-semibold">{dashboardStats.totalClarityEntries}</span>
-                </div>
-
                 <div
                   className="flex items-center justify-between p-3 bg-sora-muted rounded-lg cursor-pointer hover:bg-sora-muted/80 transition-colors"
                   onClick={handleRecentActivityClick}
@@ -558,6 +552,16 @@ const Dashboard: React.FC = () => {
                   </div>
                   <span className="text-green-400 font-semibold">{dashboardStats.recentActivity}</span>
                 </div>
+
+                <button
+                  onClick={() => navigate("/app/clarity")}
+                  className="w-full text-left flex items-center justify-between p-3 bg-sora-muted border border-yellow-400 rounded-lg hover:bg-sora-muted/80 hover:border-yellow-500 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Lightbulb className="w-5 h-5 text-yellow-400" />
+                    <span className="text-white text-sm">Clarity Tools</span>
+                  </div>
+                </button>
               </div>
             </CardContent>
           </Card>
