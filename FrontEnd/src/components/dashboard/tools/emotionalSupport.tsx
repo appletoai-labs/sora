@@ -767,6 +767,7 @@ const EmotionalSupport: FC = () => {
                         </Button>
                         <Button
                             variant="outline"
+                            onClick={() => navigate("/app/immediate-support")}
                             className="h-14 bg-red-600 text-white border-red-500 hover:bg-red-800 font-medium flex items-center gap-2 justify-center transition-colors"
                         >
                             <LifeBuoy className="w-4 h-4" />
