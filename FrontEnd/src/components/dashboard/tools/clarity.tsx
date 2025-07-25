@@ -24,7 +24,7 @@ import {
   Zap,
   Loader2,
 } from "lucide-react"
-import type { JSX } from "react/jsx-runtime" // Import JSX to fix the undeclared variable error
+import type { JSX } from "react/jsx-runtime"
 
 // Mock UI components with TypeScript types
 interface CardProps {
@@ -163,6 +163,33 @@ const Clarity: FC = () => {
   const [taskResult, setTaskResult] = useState<TaskBreakdown | OverwhelmResult | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+  // Function to save activity to localStorage
+  const saveActivityToLocalStorage = (type: string, title: string, description: string, additionalData?: any) => {
+    try {
+      const activities = JSON.parse(localStorage.getItem("sora_recent_activities") || "[]")
+
+      const newActivity = {
+        id: `clarity_${Date.now()}`,
+        type,
+        title,
+        description,
+        timestamp: new Date().toISOString(),
+        ...additionalData,
+      }
+
+      activities.unshift(newActivity)
+
+      // Keep only the most recent 50 activities
+      if (activities.length > 50) {
+        activities.splice(50)
+      }
+
+      localStorage.setItem("sora_recent_activities", JSON.stringify(activities))
+    } catch (error) {
+      console.error("Error saving clarity activity:", error)
+    }
+  }
+
   const tipsForSuccess: { icon: JSX.Element; title: string; description: string }[] = [
     {
       icon: <Clock className="w-8 h-8 text-sora-teal" />,
@@ -208,6 +235,15 @@ const Clarity: FC = () => {
         })),
       }
       setTaskResult(result)
+
+      // Save activity to localStorage
+      saveActivityToLocalStorage("task_breakdown", "Task Breakdown Created", `Created breakdown for: ${result.title}`, {
+        difficulty: result.difficulty,
+        totalTime: result.totalTime,
+        stepCount: result.steps.length,
+        originalTask: taskInput,
+      })
+
       setActiveView("taskResult")
     } catch (error) {
       console.error("Error fetching task breakdown:", error)
@@ -225,6 +261,19 @@ const Clarity: FC = () => {
         triggers: triggersInput ? triggersInput.split(",").map((t: string) => t.trim()) : [],
       })
       setTaskResult(response.data)
+
+      // Save activity to localStorage
+      saveActivityToLocalStorage(
+        "overwhelm_support",
+        "Overwhelm Support Received",
+        `Got support for overwhelming situation`,
+        {
+          situation: overwhelmInput.substring(0, 100) + (overwhelmInput.length > 100 ? "..." : ""),
+          triggers: triggersInput ? triggersInput.split(",").map((t: string) => t.trim()) : [],
+          strategiesCount: response.data.immediate_actions?.length || 0,
+        },
+      )
+
       setActiveView("overwhelmResult")
     } catch (error) {
       console.error("Error fetching overwhelm support:", error)

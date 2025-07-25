@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle, Heart, Hand, List, Clock, Lightbulb, TrendingUp, Star } from "lucide-react"
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 
 interface CheckinData {
   mood: number | null
@@ -18,8 +18,8 @@ interface CheckinData {
 }
 
 const DailyCheckin: React.FC = () => {
-  const API_BASE = "http://localhost:5000/api";
-  const navigate = useNavigate();
+  const API_BASE = "http://localhost:5000/api"
+  const navigate = useNavigate()
   const [checkinData, setCheckinData] = useState<CheckinData>({
     mood: null,
     anxiety: null,
@@ -30,6 +30,46 @@ const DailyCheckin: React.FC = () => {
   })
 
   const [showRecommendations, setShowRecommendations] = useState(false)
+
+  // Function to save activity to localStorage
+  const saveActivityToLocalStorage = (checkinData: CheckinData) => {
+    try {
+      const activities = JSON.parse(localStorage.getItem("sora_recent_activities") || "[]")
+
+      const newActivity = {
+        id: `checkin_${Date.now()}`,
+        type: "checkin_completed",
+        title: "Daily Check-in Completed",
+        description: `Completed daily wellness check-in with mood: ${checkinData.mood}/10, anxiety: ${checkinData.anxiety}/10, energy: ${checkinData.energy}/10`,
+        timestamp: new Date().toISOString(),
+        mood: checkinData.mood,
+        anxiety: checkinData.anxiety,
+        sensory: checkinData.sensory,
+        executive: checkinData.executive,
+        energy: checkinData.energy,
+        notes: checkinData.notes,
+        averageScore: Math.round(
+          ((checkinData.mood || 0) +
+            (10 - (checkinData.anxiety || 0)) +
+            (checkinData.sensory || 0) +
+            (checkinData.executive || 0) +
+            (checkinData.energy || 0)) /
+            5,
+        ),
+      }
+
+      activities.unshift(newActivity)
+
+      // Keep only the most recent 50 activities
+      if (activities.length > 50) {
+        activities.splice(50)
+      }
+
+      localStorage.setItem("sora_recent_activities", JSON.stringify(activities))
+    } catch (error) {
+      console.error("Error saving check-in activity:", error)
+    }
+  }
 
   const RatingScale = ({
     value,
@@ -46,10 +86,11 @@ const DailyCheckin: React.FC = () => {
           <button
             key={num}
             onClick={() => onChange(num)}
-            className={`w-12 h-12 rounded-full border-2 transition-all duration-200 ${value === num
-              ? "bg-gradient-to-r from-cyan-400 to-cyan-500 border-cyan-400 text-white shadow-lg"
-              : "border-gray-600 text-gray-300 hover:border-cyan-400 hover:text-cyan-400"
-              }`}
+            className={`w-12 h-12 rounded-full border-2 transition-all duration-200 ${
+              value === num
+                ? "bg-gradient-to-r from-cyan-400 to-cyan-500 border-cyan-400 text-white shadow-lg"
+                : "border-gray-600 text-gray-300 hover:border-cyan-400 hover:text-cyan-400"
+            }`}
           >
             {num}
           </button>
@@ -60,10 +101,11 @@ const DailyCheckin: React.FC = () => {
           <button
             key={num}
             onClick={() => onChange(num)}
-            className={`w-12 h-12 rounded-full border-2 transition-all duration-200 ${value === num
-              ? "bg-gradient-to-r from-cyan-400 to-cyan-500 border-cyan-400 text-white shadow-lg"
-              : "border-gray-600 text-gray-300 hover:border-cyan-400 hover:text-cyan-400"
-              }`}
+            className={`w-12 h-12 rounded-full border-2 transition-all duration-200 ${
+              value === num
+                ? "bg-gradient-to-r from-cyan-400 to-cyan-500 border-cyan-400 text-white shadow-lg"
+                : "border-gray-600 text-gray-300 hover:border-cyan-400 hover:text-cyan-400"
+            }`}
           >
             {num}
           </button>
@@ -140,10 +182,10 @@ const DailyCheckin: React.FC = () => {
 
   const handleCompleteCheckin = async () => {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("authToken")
       if (!token) {
-        console.error("No auth token found in localStorage.");
-        return;
+        console.error("No auth token found in localStorage.")
+        return
       }
 
       const response = await fetch(`${API_BASE}/dailycheckin/checkins`, {
@@ -153,21 +195,27 @@ const DailyCheckin: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(checkinData),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
       if (response.ok) {
-        console.log("Saved check-in:", data.checkin);
-        setShowRecommendations(true);
+        console.log("Saved check-in:", data.checkin)
+
+        // Save activity to localStorage for dashboard
+        saveActivityToLocalStorage(checkinData)
+
+        setShowRecommendations(true)
       } else {
-        console.error("Failed to save check-in:", data.error);
+        console.error("Failed to save check-in:", data.error)
       }
     } catch (error) {
-      console.error("Error saving check-in:", error);
+      console.error("Error saving check-in:", error)
+
+      // Still save to localStorage even if API fails
+      saveActivityToLocalStorage(checkinData)
+      setShowRecommendations(true)
     }
-  };
-
-
+  }
 
   const getRecommendations = () => {
     const recommendations = []
@@ -218,7 +266,7 @@ const DailyCheckin: React.FC = () => {
                 <div className="flex items-center justify-center mb-4">
                   <div className="text-4xl mr-3">😊</div>
                   <div>
-                    <h3 className="text-xl font-semibold text-white">9/10 - Extreme</h3>
+                    <h3 className="text-xl font-semibold text-white">Mood/Positivity</h3>
                     <p className="text-gray-400">How positive or content are you feeling?</p>
                   </div>
                 </div>
@@ -385,18 +433,14 @@ const DailyCheckin: React.FC = () => {
         {/* Recommendations Based on Check-in */}
         {showRecommendations && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-cyan-400 text-center mb-6">
-              Based on Your Check-in
-            </h2>
+            <h2 className="text-2xl font-bold text-cyan-400 text-center mb-6">Based on Your Check-in</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {/* Card 1 */}
               <Card className="bg-gradient-to-br from-red-900/20 to-red-800/20 border-red-700/50 hover:border-red-600 transition-colors">
                 <CardContent className="p-6 text-center">
                   <Heart className="w-12 h-12 text-red-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-white mb-2">Feeling Low?</h3>
-                  <p className="text-gray-300 mb-4">
-                    Get support and coping strategies for difficult days
-                  </p>
+                  <p className="text-gray-300 mb-4">Get support and coping strategies for difficult days</p>
                   <Button
                     className="bg-red-500 hover:bg-red-600 text-white"
                     onClick={() => navigate("/app/immediate-support")}
@@ -411,9 +455,7 @@ const DailyCheckin: React.FC = () => {
                 <CardContent className="p-6 text-center">
                   <Hand className="w-12 h-12 text-orange-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-white mb-2">Sensory Overwhelm?</h3>
-                  <p className="text-gray-300 mb-4">
-                    Find calming strategies and sensory regulation tools
-                  </p>
+                  <p className="text-gray-300 mb-4">Find calming strategies and sensory regulation tools</p>
                   <Button
                     className="bg-orange-500 hover:bg-orange-600 text-white"
                     onClick={() => navigate("/app/sensory")}
@@ -428,9 +470,7 @@ const DailyCheckin: React.FC = () => {
                 <CardContent className="p-6 text-center">
                   <List className="w-12 h-12 text-cyan-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-white mb-2">Focus Challenges?</h3>
-                  <p className="text-gray-300 mb-4">
-                    Get help organizing tasks and building routines
-                  </p>
+                  <p className="text-gray-300 mb-4">Get help organizing tasks and building routines</p>
                   <Button
                     className="bg-cyan-500 hover:bg-cyan-600 text-white"
                     onClick={() => navigate("/app/executive")}
