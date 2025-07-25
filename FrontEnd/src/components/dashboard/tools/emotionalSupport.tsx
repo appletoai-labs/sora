@@ -624,7 +624,7 @@ const EmotionalSupport: FC = () => {
         },
         {
             title: "5-4-3-2-1 Grounding",
-            description: "Notice 5 things you see, 4 you hear, 3 you touch",
+            description: "5 things you see, 4 you hear, 3 you touch",
             steps: [
                 "Notice 5 things you can see around you",
                 "Notice 4 things you can hear",
