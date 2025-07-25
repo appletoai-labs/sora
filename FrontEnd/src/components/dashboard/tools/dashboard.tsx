@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -24,8 +23,9 @@ import {
   Lightbulb,
   BarChart3,
   Activity,
+  X,
+  Briefcase,
 } from "lucide-react"
-import SoraLogo from "@/components/SoraLogo"
 
 interface UserProgress {
   level: number
@@ -65,7 +65,6 @@ interface DashboardStats {
 }
 
 const Dashboard: React.FC = () => {
-  const navigate = useNavigate();
   const { user } = useAuth()
   const { toast } = useToast()
   const [userProgress, setUserProgress] = useState<UserProgress>({
@@ -87,76 +86,230 @@ const Dashboard: React.FC = () => {
     wellnessScore: 7.5,
   })
   const [loading, setLoading] = useState(true)
+  const [showRecentActivitiesModal, setShowRecentActivitiesModal] = useState(false)
+  const [recentActivities, setRecentActivities] = useState<any[]>([])
 
   const API_BASE = "http://localhost:5000/api"
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem("authToken")
+
+      if (!token) {
+        setLoading(false)
+        return
+      }
+
+      // Fetch user progress
+      try {
+        const progressResponse = await fetch(`${API_BASE}/goals/progress`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (progressResponse.ok) {
+          const progressData = await progressResponse.json()
+          setUserProgress(progressData.progress || userProgress)
+        }
+      } catch (error) {
+        console.log("Progress data not available")
+      }
+
+      // Fetch recent goals
+      try {
+        const goalsResponse = await fetch(`${API_BASE}/goals/usergoals`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (goalsResponse.ok) {
+          const goalsData = await goalsResponse.json()
+          setRecentGoals(goalsData.goals?.slice(0, 3) || [])
+        }
+      } catch (error) {
+        console.log("Goals data not available")
+      }
+
+      // Fetch achievements
+      try {
+        const achievementsResponse = await fetch(`${API_BASE}/goals/achievements`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (achievementsResponse.ok) {
+          const achievementsData = await achievementsResponse.json()
+          setRecentAchievements(
+            achievementsData.achievements?.filter((a: Achievement) => a.isUnlocked).slice(0, 3) || [],
+          )
+        }
+      } catch (error) {
+        console.log("Achievements data not available")
+      }
+
+      // Fetch analytics data
+      try {
+        const analyticsResponse = await fetch(`${API_BASE}/analytics/dashboard`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (analyticsResponse.ok) {
+          const analyticsData = await analyticsResponse.json()
+          if (analyticsData.insights) {
+            setDashboardStats((prev) => ({
+              ...prev,
+              totalCheckins: analyticsData.insights.totalCheckins || 0,
+              totalChatSessions: analyticsData.insights.totalChatSessions || 0,
+              totalClarityEntries: analyticsData.insights.totalClarityEntries || 0,
+              wellnessScore: analyticsData.insights.averageMood || 7.5,
+            }))
+          }
+        }
+      } catch (error) {
+        console.log("Analytics data not available")
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error)
+      toast({
+        title: "Error",
+        description: "Failed to load some dashboard data",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (user) {
       fetchDashboardData()
+      loadRecentActivities()
+    } else {
+      setLoading(false)
     }
   }, [user])
 
-const fetchDashboardData = async () => {
-  try {
-    setLoading(true)
-    const token = localStorage.getItem("authToken")
-
-    // Fetch recent goals
-    const goalsResponse = await fetch(`${API_BASE}/goals/usergoals`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const goalsData = await goalsResponse.json()
-
-    // Fetch achievements
-    const achievementsResponse = await fetch(`${API_BASE}/goals/achievements`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const achievementsData = await achievementsResponse.json()
-
-    // Fetch analytics data
-    const analyticsResponse = await fetch(`${API_BASE}/analytics/dashboard`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const analyticsData = await analyticsResponse.json()
-    console.log("Analytics Data:", analyticsData)
-
-    // Fetch user progress
-    const progressResponse = await fetch(`${API_BASE}/goals/progress`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const progressData = await progressResponse.json()
-
-    setUserProgress(progressData.progress || userProgress)
-    setRecentGoals(goalsData.goals?.slice(0, 3) || [])
-    setRecentAchievements(
-      achievementsData.achievements?.filter((a: Achievement) => a.isUnlocked).slice(0, 3) || []
-    )
-
-    const wellnessScore = goalsData.wellnessScore ?? 0
-
-
-
-    if (analyticsData.insights) {
-      setDashboardStats({
-        totalCheckins: analyticsData.insights.totalCheckins,
-        totalChatSessions: analyticsData.insights.totalChatSessions,
-        totalClarityEntries: analyticsData.insights.totalClarityEntries,
-        recentActivity: analyticsData.insights.recentActivity,
-        wellnessScore,
-      })
+  const loadRecentActivities = () => {
+    try {
+      const activities = JSON.parse(localStorage.getItem("sora_recent_activities") || "[]")
+      setRecentActivities(activities.slice(0, 10)) // Get most recent 10
+      setDashboardStats((prev) => ({ ...prev, recentActivity: activities.length }))
+    } catch (error) {
+      console.error("Error loading recent activities:", error)
+      setRecentActivities([])
     }
-  } catch (error) {
-    console.error("Error fetching dashboard data:", error)
-    toast({
-      title: "Error",
-      description: "Failed to load dashboard data",
-      variant: "destructive",
-    })
-  } finally {
-    setLoading(false)
   }
-}
 
+  const handleRecentActivityClick = () => {
+    loadRecentActivities() // Refresh data
+    setShowRecentActivitiesModal(true)
+  }
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp)
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+  }
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case "strategy_completed":
+        return <CheckCircle className="w-5 h-5 text-green-400" />
+      case "exercise_completed":
+        return <Activity className="w-5 h-5 text-blue-400" />
+      case "emotion_selected":
+        return <Heart className="w-5 h-5 text-red-400" />
+      case "strategies_generated":
+        return <Briefcase className="w-5 h-5 text-purple-400" />
+      default:
+        return <Activity className="w-5 h-5 text-gray-400" />
+    }
+  }
+
+  const renderEffectivenessStars = (effectiveness: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star key={i} className={`w-3 h-3 ${i < effectiveness ? "text-yellow-400 fill-current" : "text-gray-400"}`} />
+    ))
+  }
+
+  // Recent Activities Modal Component
+  const RecentActivitiesModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+    if (!isOpen) return null
+
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-gradient-to-br from-sora-card to-sora-muted border border-sora-teal/20 rounded-lg max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold text-sora-teal">Recent Activities</h3>
+            <Button variant="ghost" onClick={onClose} className="p-2">
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+          {recentActivities.length > 0 ? (
+            <div className="space-y-4">
+              {recentActivities.map((activity, index) => (
+                <div key={activity.id || index} className="bg-sora-muted/50 border border-sora-teal/10 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 mt-1">{getActivityIcon(activity.type)}</div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-white text-sm">{activity.title}</h4>
+                        <span className="text-xs text-gray-400">{formatTimestamp(activity.timestamp)}</span>
+                      </div>
+                      <p className="text-gray-300 text-sm mb-3">{activity.description}</p>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {activity.emotion && (
+                          <span className="px-2 py-1 bg-sora-teal/20 text-sora-teal text-xs rounded-full">
+                            {activity.emotion}
+                          </span>
+                        )}
+                        {activity.intensity && (
+                          <span className="px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded-full">
+                            Intensity: {activity.intensity}/10
+                          </span>
+                        )}
+                        {activity.difficulty && (
+                          <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full">
+                            {activity.difficulty}
+                          </span>
+                        )}
+                      </div>
+                      {activity.effectiveness && (
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs text-gray-400">Effectiveness:</span>
+                          <div className="flex gap-1">{renderEffectivenessStars(activity.effectiveness)}</div>
+                        </div>
+                      )}
+                      {activity.notes && <p className="text-gray-400 text-xs italic mt-2">"{activity.notes}"</p>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Activity className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+              <p className="text-gray-400">No recent activities</p>
+              <p className="text-gray-500 text-sm">Start using emotional support tools to see activities here!</p>
+            </div>
+          )}
+          <div className="mt-6 pt-4 border-t border-sora-teal/20">
+            <Button
+              onClick={() => {
+                onClose()
+                // Navigate to emotional support if needed
+                window.location.href = "/app/emotional-support"
+              }}
+              variant="outline"
+              className="w-full bg-transparent"
+            >
+              <Heart className="w-4 h-4" />
+              Go to Emotional Support
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -179,7 +332,7 @@ const fetchDashboardData = async () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br via-gray-900 to-sora-dark flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-sora-dark via-gray-900 to-sora-dark flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sora-teal mx-auto mb-4"></div>
           <p className="text-gray-300">Loading dashboard...</p>
@@ -194,7 +347,10 @@ const fetchDashboardData = async () => {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <SoraLogo/>
+            <Brain className="w-8 h-8 text-sora-teal" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent">
+              Dashboard
+            </h1>
           </div>
           <p className="text-gray-300 text-lg max-w-3xl mx-auto">
             Your personalized neurodivergent support hub with insights, progress tracking, and tools
@@ -392,7 +548,10 @@ const fetchDashboardData = async () => {
                   <span className="text-yellow-400 font-semibold">{dashboardStats.totalClarityEntries}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-sora-muted rounded-lg">
+                <div
+                  className="flex items-center justify-between p-3 bg-sora-muted rounded-lg cursor-pointer hover:bg-sora-muted/80 transition-colors"
+                  onClick={handleRecentActivityClick}
+                >
                   <div className="flex items-center gap-3">
                     <TrendingUp className="w-5 h-5 text-green-400" />
                     <span className="text-white text-sm">Recent Activity</span>
@@ -406,53 +565,50 @@ const fetchDashboardData = async () => {
 
         {/* Quick Actions */}
         <Card className="bg-gradient-to-br from-sora-card to-sora-muted border-sora-teal/20">
-      <CardHeader>
-        <CardTitle className="text-white">Quick Actions</CardTitle>
-        <CardDescription className="text-gray-300">
-          Jump into your most-used tools and features
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Button
-            variant="outline"
-            onClick={() => navigate('/app/checkin')}
-            className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
-          >
-            <Calendar className="w-6 h-6" />
-            <span className="text-sm">Daily Check-in</span>
-          </Button>
+          <CardHeader>
+            <CardTitle className="text-white">Quick Actions</CardTitle>
+            <CardDescription className="text-gray-300">Jump into your most-used tools and features</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button
+                variant="outline"
+                className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
+              >
+                <Calendar className="w-6 h-6" />
+                <span className="text-sm">Daily Check-in</span>
+              </Button>
 
-          <Button
-            variant="outline"
-            onClick={() => navigate('/app/goals')}
-            className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
-          >
-            <Target className="w-6 h-6" />
-            <span className="text-sm">Goals</span>
-          </Button>
+              <Button
+                variant="outline"
+                className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
+              >
+                <Target className="w-6 h-6" />
+                <span className="text-sm">Goals</span>
+              </Button>
 
-          <Button
-            variant="outline"
-            onClick={() => navigate('/app/clarity')}
-            className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
-          >
-            <Lightbulb className="w-6 h-6" />
-            <span className="text-sm">Clarity Tools</span>
-          </Button>
+              <Button
+                variant="outline"
+                className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
+              >
+                <Lightbulb className="w-6 h-6" />
+                <span className="text-sm">Clarity Tools</span>
+              </Button>
 
-          <Button
-            variant="outline"
-            onClick={() => navigate('/app/dashboard')}
-            className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
-          >
-            <BarChart3 className="w-6 h-6" />
-            <span className="text-sm">Analytics</span>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+              <Button
+                variant="outline"
+                className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
+              >
+                <BarChart3 className="w-6 h-6" />
+                <span className="text-sm">Analytics</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Recent Activities Modal */}
+      <RecentActivitiesModal isOpen={showRecentActivitiesModal} onClose={() => setShowRecentActivitiesModal(false)} />
     </div>
   )
 }

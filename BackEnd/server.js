@@ -14,6 +14,7 @@ const chatProxyRoutes = require("./routes/chatProxy")
 const dailyCheckinRoutes = require("./routes/checkin")
 const goalsRoutes = require("./routes/goals")
 const clarityRoutes = require("./routes/clarityRoutes")
+const EmotionalStrategy = require("./routes/emotional-support")
 
 const app = express()
 app.use(express.json());
@@ -58,6 +59,8 @@ app.use("/api/chatproxy", chatProxyRoutes)
 app.use("/api/dailycheckin", dailyCheckinRoutes)
 app.use("/api/goals", goalsRoutes)
 app.use("/api/clarity", clarityRoutes)
+app.use("/api/emotional-support", EmotionalStrategy)
+
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
