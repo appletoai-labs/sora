@@ -523,7 +523,7 @@ export default function Sensory() {
           </DialogHeader>
           <div className="space-y-6 text-center">
             <div className="relative">
-              <div className="w-48 h-48 mx-auto rounded-full border-4 border-cyan-400 flex items-center justify-center">
+              <div className="w-48 h-48 mx-auto rounded-full border-4 border-cyan-400 flex items-center justify-center animate-breathe">
                 <span className="text-2xl font-medium text-cyan-400">Breathe In</span>
               </div>
             </div>
@@ -538,6 +538,7 @@ export default function Sensory() {
           </div>
         </DialogContent>
       </Dialog>
+
 
       <Dialog open={activeModal === "noiseTips"} onOpenChange={() => setActiveModal(null)}>
         <DialogContent className="bg-slate-800 border-cyan-400 text-white max-w-md">
