@@ -94,6 +94,7 @@ const Dashboard: React.FC = () => {
   const API_BASE = "http://localhost:5000/api"
 
   const fetchDashboardData = async () => {
+    let wellnessScore = 0
     try {
       setLoading(true)
       const token = localStorage.getItem("authToken")
@@ -124,6 +125,7 @@ const Dashboard: React.FC = () => {
         if (goalsResponse.ok) {
           const goalsData = await goalsResponse.json()
           setRecentGoals(goalsData.goals?.slice(0, 3) || [])
+          wellnessScore = goalsData.wellnessScore ?? 0
         }
       } catch (error) {
         console.log("Goals data not available")
@@ -154,10 +156,10 @@ const Dashboard: React.FC = () => {
           if (analyticsData.insights) {
             setDashboardStats((prev) => ({
               ...prev,
-              totalCheckins: analyticsData.insights.totalCheckins || 0,
-              totalChatSessions: analyticsData.insights.totalChatSessions || 0,
-              totalClarityEntries: analyticsData.insights.totalClarityEntries || 0,
-              wellnessScore: analyticsData.insights.averageMood || 7.5,
+              totalCheckins: analyticsData.insights.totalCheckins,
+              totalChatSessions: analyticsData.insights.totalChatSessions,
+              totalClarityEntries: analyticsData.insights.totalClarityEntries,
+              wellnessScore
             }))
           }
         }
