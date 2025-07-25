@@ -35,8 +35,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <UiPreferencesProvider> {/* ✅ NEW */}
-            <AppWrapper> {/* ✅ Handles font size and contrast */}
+          <UiPreferencesProvider> 
+            <AppWrapper>
               <Routes>
                 <Route element={<Layout />}>
                   <Route path="/" element={<Index />} />

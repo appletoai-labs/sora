@@ -131,15 +131,27 @@ export const SupportCard = ({ user }: { user: any }) => {
           <div>
             <h3 className="text-lg font-semibold text-sora-teal mb-4">Quick Access</h3>
             <div className="space-y-2">
-              <Link to="/app/immediate-support" className="block text-sm text-sora-teal hover:underline">
+              <Link
+                to="/app/immediate-support"
+                className="block text-sm text-sora-teal transition-all duration-200 hover:text-sora-orange hover:scale-[1.02]"
+              >
                 🚨 Emergency Support
               </Link>
-              <Link to="/app/chat" className="block text-sm text-sora-teal hover:underline">
+
+              <Link
+                to="/app/chat"
+                className="block text-sm text-sora-teal transition-all duration-200 hover:text-sora-orange hover:scale-[1.02]"
+              >
                 🧠 Talk to SORA
               </Link>
-              <Link to="/app/sensory" className="block text-sm text-sora-teal hover:underline">
+
+              <Link
+                to="/app/sensory"
+                className="block text-sm text-sora-teal transition-all duration-200 hover:text-sora-orange hover:scale-[1.02]"
+              >
                 🎧 Sensory Tools
               </Link>
+
             </div>
           </div>
         </div>

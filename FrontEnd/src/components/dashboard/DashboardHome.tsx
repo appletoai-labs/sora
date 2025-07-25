@@ -1,6 +1,7 @@
 "use client"
 
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -100,7 +101,7 @@ const toolsData = [
     description:
       "See your patterns, celebrate achievements, and understand your journey with personalized insights and gentle analytics.",
     action: "View Dashboard",
-    href: "/app/analytics",
+    href: "/app/dashboard",
     gradient: "from-teal-500/20 to-cyan-500/20",
   },
   {
@@ -132,6 +133,7 @@ const gettingStartedSteps = [
 ]
 
 export const DashboardHome = () => {
+  const navigate = useNavigate()
   const { user } = useAuth()
 
   const getRoleLabel = (role: string) => {
@@ -153,7 +155,7 @@ export const DashboardHome = () => {
         {/* Welcome Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center">
-            <SoraLogo/>
+            <SoraLogo />
           </div>
           <h1 className="text-4xl font-bold mb-4">Welcome , {user?.firstName}</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -235,9 +237,11 @@ export const DashboardHome = () => {
                 <Button
                   variant="outline"
                   className="w-full mt-4 border-sora-teal/30 text-sora-teal hover:bg-sora-teal/10 bg-transparent"
+                  onClick={() => navigate("/app/dashboard")}
                 >
                   View Full Dashboard
                 </Button>
+
               </CardContent>
             </Card>
 
