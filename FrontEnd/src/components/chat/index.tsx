@@ -28,7 +28,7 @@ const suggestions = [
 ];
 
 export const ChatInterface = () => {
-  const API_BASE = "http://localhost:5000";
+  const API_BASE = "http://localhost:5000/api";
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -111,7 +111,7 @@ export const ChatInterface = () => {
     setShowSuggestions(false);
 
     try {
-      const response = await axios.post(`${API_BASE}/api/chatproxy/chat`, {
+      const response = await axios.post(`${API_BASE}/chatproxy/chat`, {
         message: text,
         user_id: "demo_user",
         account_type: "individual",

@@ -19,6 +19,7 @@ import DailyCheckin from './components/dashboard/tools/dailycheckin';
 import Sensory from './components/dashboard/tools/sensory';
 import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import Goals from './components/dashboard/tools/goals';
 
 const queryClient = new QueryClient();
 
@@ -59,7 +60,7 @@ const App = () => (
                                 <Route path="logs" element={<div>Clarity Logs Coming Soon</div>} />
                                 <Route path="checkin" element={<DailyCheckin />} />
                                 <Route path="sensory" element={<Sensory />} />
-                                <Route path="goals" element={<div>Goals & Progress Coming Soon</div>} />
+                                <Route path="goals" element={<Goals/>} />
                                 <Route path="executive" element={<div>Executive Function Coming Soon</div>} />
                                 <Route path="community" element={<div>Community Coming Soon</div>} />
                                 <Route path="dashboard" element={<div>dashboard Coming Soon</div>} />

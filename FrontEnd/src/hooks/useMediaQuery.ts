@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 
 export const useMediaQuery = (query: string): boolean => {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia(query).matches;
+    }
+    return false; // Default to false during SSR
+  });
 
   useEffect(() => {
-    const media = window.matchMedia(query);
-    const listener = () => setMatches(media.matches);
-    listener(); // check on mount
-    media.addEventListener("change", listener);
-    return () => media.removeEventListener("change", listener);
+    if (typeof window === "undefined") return;
+
+    const mediaQueryList = window.matchMedia(query);
+    const updateMatch = () => setMatches(mediaQueryList.matches);
+
+    updateMatch(); // initial check
+    mediaQueryList.addEventListener("change", updateMatch);
+
+    return () => mediaQueryList.removeEventListener("change", updateMatch);
   }, [query]);
 
   return matches;

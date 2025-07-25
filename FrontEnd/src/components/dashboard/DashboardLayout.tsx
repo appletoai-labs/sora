@@ -21,48 +21,69 @@ import ScrollToTop from "../ScrollToTop";
 export const DashboardLayout = () => {
   const { user, logout } = useAuth();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   const handleLogout = () => logout();
 
-  // Lock scroll when sidebar is open on mobile
+  // Prevent scroll when sidebar is open on mobile
   useEffect(() => {
-    if (mobileSidebarOpen) {
+    if (mobileSidebarOpen && (isMobile || isTablet)) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
     }
-  }, [mobileSidebarOpen]);
+  }, [mobileSidebarOpen, isMobile, isTablet]);
+
+  // Collapse sidebar by default on tablets
+  useEffect(() => {
+    if (isTablet && !isMobile) {
+      setSidebarCollapsed(true); // collapsed on tablet
+    } else {
+      setSidebarCollapsed(false); // expanded on desktop
+    }
+
+    if (!isTablet) {
+      setMobileSidebarOpen(false); // auto-close mobile drawer on desktop
+    }
+  }, [isTablet, isMobile]);
 
   return (
     <div className="flex h-screen bg-background overflow-hidden relative">
-      <ScrollToTop/>
-      {/* Sidebar */}
+      <ScrollToTop />
+
       <DashboardSidebar
         mobileOpen={mobileSidebarOpen}
         setMobileOpen={setMobileSidebarOpen}
+        isTablet={isTablet}
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
       />
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
         <header className="bg-gradient-to-r from-sora-card to-sora-muted border-b border-border px-4 py-4 relative z-30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {isMobile && (
+              {(isMobile || isTablet) && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setMobileSidebarOpen(true)}
+                  onClick={() => {
+                    if (isMobile) {
+                      setMobileSidebarOpen(true);
+                    } else {
+                      setSidebarCollapsed(!sidebarCollapsed);
+                    }
+                  }}
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
               )}
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent">
-                  Dashboard
-                </h1>
-              </div>
+
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent">
+                Dashboard
+              </h1>
             </div>
 
             <DropdownMenu>
@@ -90,7 +111,6 @@ export const DashboardLayout = () => {
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
           <Outlet />
           {user && <SupportCard user={user} />}

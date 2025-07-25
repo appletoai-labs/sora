@@ -8,7 +8,6 @@ import {
   Activity, HeartPulse, AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import SoraLogo from "../SoraLogo";
 
 const sidebarItems = [
@@ -47,11 +46,19 @@ const sidebarItems = [
   },
 ];
 
-export const DashboardSidebar = ({ mobileOpen, setMobileOpen }: {
+export const DashboardSidebar = ({
+  mobileOpen,
+  setMobileOpen,
+  isTablet,
+  collapsed,
+  setCollapsed,
+}: {
   mobileOpen: boolean;
   setMobileOpen: (val: boolean) => void;
+  isTablet: boolean;
+  collapsed: boolean;
+  setCollapsed: (val: boolean) => void;
 }) => {
-  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
   const SidebarContent = () => (
@@ -61,27 +68,22 @@ export const DashboardSidebar = ({ mobileOpen, setMobileOpen }: {
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Top Header */}
+      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
-        {!collapsed && (
-          <SoraLogo/>
-
-        )}
-        {/* Collapse toggle only on large screens */}
-        <div className="hidden lg:block">
+        {!collapsed && <SoraLogo />}
+        {!isTablet && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setCollapsed(!collapsed)}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground hidden lg:block"
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
-        </div>
-
+        )}
       </div>
 
-      {/* Sidebar Items */}
+      {/* Items */}
       <div className="flex-1 overflow-y-auto p-4 pb-10">
         {sidebarItems.map((section) => (
           <div key={section.title} className="mb-6">
@@ -94,12 +96,11 @@ export const DashboardSidebar = ({ mobileOpen, setMobileOpen }: {
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.href;
-
                 return (
                   <Link
                     key={item.name}
                     to={item.href}
-                    onClick={() => setMobileOpen(false)} // close on mobile nav
+                    onClick={() => setMobileOpen(false)}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
                       "hover:bg-sora-muted hover:text-foreground",
@@ -123,18 +124,21 @@ export const DashboardSidebar = ({ mobileOpen, setMobileOpen }: {
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <div className="hidden lg:flex">
+      {/* Sidebar for tablet and up */}
+      <div className={cn("hidden", isTablet ? "md:flex" : "lg:flex")}>
         <SidebarContent />
       </div>
 
-      {/* Mobile sidebar drawer */}
+      {/* Sidebar drawer for mobile */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 flex">
-          <div className="w-64 max-w-full bg-sora-dark z-50">
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <div className="w-64 max-w-full bg-sora-dark">
             <SidebarContent />
           </div>
-          <div className="flex-1 bg-black/50" onClick={() => setMobileOpen(false)} />
+          <div
+            className="flex-1 bg-black/50"
+            onClick={() => setMobileOpen(false)}
+          />
         </div>
       )}
     </>

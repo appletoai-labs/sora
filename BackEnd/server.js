@@ -12,20 +12,21 @@ const toolsRoutes = require("./routes/tools")
 const analyticsRoutes = require("./routes/analytics")
 const chatProxyRoutes = require("./routes/chatProxy")
 const dailyCheckinRoutes = require("./routes/checkin")
+const goalsRoutes = require("./routes/goals")
 
 const app = express()
 
 // Security middleware
 app.use(helmet())
 const corsOptions = {
-  origin: ['http://localhost:8080', 'https://sora-henna-six.vercel.app'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: ["http://localhost:8080", "https://sora-henna-six.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }
 
-app.use(cors(corsOptions))  
-app.options('*', cors(corsOptions))
+app.use(cors(corsOptions))
+app.options("*", cors(corsOptions))
 
 // Rate limiting
 const limiter = rateLimit({
@@ -53,6 +54,7 @@ app.use("/api/tools", toolsRoutes)
 app.use("/api/analytics", analyticsRoutes)
 app.use("/api/chatproxy", chatProxyRoutes)
 app.use("/api/dailycheckin", dailyCheckinRoutes)
+app.use("/api/goals", goalsRoutes)
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -77,7 +79,7 @@ app.use("*", (req, res) => {
   res.status(404).json({ message: "Route not found" })
 })
 
-const PORT = process.env.PORT 
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
