@@ -1,34 +1,54 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Lightbulb, CalendarCheck, Hand } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const SupportCards = () => {
+  const navigate = useNavigate();
+
   const items = [
     {
-      title: "Understand Your Strengths",
-      description: "Discover what makes your brain unique. Embrace neurodiversity and build strategies around your strengths."
+      icon: <Lightbulb className="w-8 h-8 text-sora-teal mx-auto" />,
+      title: "Clarity Tools",
+      description: "Break down overwhelming tasks or situations",
+      buttonText: "Try Tools",
+      navigateTo: "/app/clarity",
     },
     {
-      title: "Daily Life Guidance",
-      description: "Get support for routines, planning, and communication in school, work, or home environments."
+      icon: <CalendarCheck className="w-8 h-8 text-sora-teal mx-auto" />,
+      title: "Daily Check-in",
+      description: "Track how you're feeling today",
+      buttonText: "Check In",
+      navigateTo: "/app/checkin",
     },
     {
-      title: "Personalized Coping Tools",
-      description: "Receive tools and strategies to manage sensory overload, executive functioning challenges, and more."
-    }
+      icon: <Hand className="w-8 h-8 text-sora-teal mx-auto" />,
+      title: "Sensory Support",
+      description: "Find calming strategies and tools",
+      buttonText: "Get Support",
+      navigateTo: "/app/sensory",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 pb-6">
       {items.map((item, idx) => (
-        <Card key={idx} className="bg-white shadow-sm border border-gray-200 rounded-xl">
+        <Card key={idx} className="bg-[#17171c] rounded-xl p-6 text-center border border-sora-teal/20">
           <CardHeader>
-            <CardTitle className="text-base font-semibold text-gray-800">
-              {item.title}
-            </CardTitle>
+            <div className="flex flex-col items-center gap-2">
+              {item.icon}
+              <CardTitle className="text-lg font-semibold text-white">{item.title}</CardTitle>
+              <CardDescription className="text-sm text-gray-300">{item.description}</CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
-            <CardDescription className="text-sm text-gray-600">
-              {item.description}
-            </CardDescription>
+            <Button
+              variant="outline"
+              onClick={() => navigate(item.navigateTo)}
+              className="mt-4 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark"
+            >
+              {item.buttonText}
+            </Button>
           </CardContent>
         </Card>
       ))}

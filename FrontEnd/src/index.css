@@ -125,3 +125,60 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* index.css or global.css */
+
+.high-contrast {
+  background-color: #121212 !important;
+  color: #f1f1f1 !important;
+}
+
+.high-contrast * {
+  background-color: transparent !important;
+  color: #f1f1f1 !important;
+  border-color: #aaaaaa !important;
+}
+
+.high-contrast a {
+  color: #00c2ff !important;
+}
+
+.high-contrast button {
+  background-color: #1e1e1e !important;
+  color: #f1f1f1 !important;
+  border: 1px solid #00c2ff !important;
+  transition: background 0.3s ease;
+}
+
+.high-contrast button:hover {
+  background-color: #00c2ff !important;
+  color: #121212 !important;
+}
+
+.high-contrast .bg-muted,
+.high-contrast .bg-sora-muted,
+.high-contrast .bg-card {
+  background-color: #1e1e1e !important;
+  color: #f1f1f1 !important;
+}
+
+.high-contrast .text-muted-foreground,
+.high-contrast .text-muted {
+  color: #d0d0d0 !important;
+}
+
+.high-contrast .border {
+  border-color: #00c2ff !important;
+}
+
+.high-contrast .accent {
+  color: #00c2ff !important;
+}
+
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  background-color: #1e1e1e !important;
+  color: #f1f1f1 !important;
+  border: 1px solid #00c2ff !important;
+}

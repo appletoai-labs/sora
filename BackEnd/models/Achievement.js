@@ -1,46 +1,45 @@
 const mongoose = require("mongoose")
 
-const achievementSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    requirement: {
-      type: Number,
-      required: true,
-    },
-    icon: {
-      type: String,
-      default: "🏆",
-    },
-    isUnlocked: {
-      type: Boolean,
-      default: false,
-    },
-    unlockedAt: {
-      type: Date,
-    },
-    category: {
-      type: String,
-      default: "general",
-    },
+const achievementSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
-  {
-    timestamps: true,
+  title: {
+    type: String,
+    required: true,
+    trim: true,
   },
-)
-
-// Index for efficient queries
-achievementSchema.index({ userId: 1, isUnlocked: 1 })
+  description: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  requirement: {
+    type: Number,
+    required: true,
+  },
+  icon: {
+    type: String,
+    default: "🏆",
+  },
+  category: {
+    type: String,
+    enum: ["milestone", "streak", "level", "self-care", "productivity", "social"],
+    default: "milestone",
+  },
+  isUnlocked: {
+    type: Boolean,
+    default: false,
+  },
+  unlockedAt: {
+    type: Date,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+})
 
 module.exports = mongoose.model("Achievement", achievementSchema)
