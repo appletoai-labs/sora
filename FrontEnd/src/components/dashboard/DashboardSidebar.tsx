@@ -84,7 +84,12 @@ export const DashboardSidebar = ({
       </div>
 
       {/* Items */}
-      <div className="flex-1 overflow-y-auto p-4 pb-10">
+      <div
+        className={cn(
+          "flex-1 overflow-y-auto p-4 pb-10 custom-scroll"
+        )}
+      >
+
         {sidebarItems.map((section) => (
           <div key={section.title} className="mb-6">
             {!collapsed && (
