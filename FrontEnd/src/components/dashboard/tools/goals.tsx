@@ -75,7 +75,56 @@ const Goals: React.FC = () => {
     difficulty: "EASY" as "EASY" | "MEDIUM" | "HARD",
     priority: "MEDIUM" as "HIGH" | "MEDIUM" | "LOW",
     category: "personal",
+    type: "Daily Check-in" as string,
   })
+
+  const predefinedGoalTypes = {
+    "Daily Check-in": {
+      title: "Complete Daily Check-in",
+      description: "Track your daily mood, energy, and wellness through SORA's check-in system",
+      difficulty: "EASY" as const,
+      priority: "HIGH" as const,
+      category: "wellness",
+      xpReward: 10,
+      coinReward: 5,
+    },
+    "Chat with SORA": {
+      title: "Have a Chat Session",
+      description: "Engage with SORA's AI support for guidance and conversation",
+      difficulty: "EASY" as const,
+      priority: "MEDIUM" as const,
+      category: "support",
+      xpReward: 15,
+      coinReward: 8,
+    },
+    "Sensory Break": {
+      title: "Take a Sensory Break",
+      description: "Use SORA's sensory tools to regulate and recharge for 10 minutes",
+      difficulty: "EASY" as const,
+      priority: "HIGH" as const,
+      category: "self-care",
+      xpReward: 12,
+      coinReward: 6,
+    },
+    "Task Breakdown": {
+      title: "Break Down a Task",
+      description: "Use SORA's clarity tools to break down an overwhelming task into manageable steps",
+      difficulty: "MEDIUM" as const,
+      priority: "MEDIUM" as const,
+      category: "productivity",
+      xpReward: 20,
+      coinReward: 12,
+    },
+    "Community Engagement": {
+      title: "Engage with Community",
+      description: "Participate in SORA's community features or connect with others",
+      difficulty: "MEDIUM" as const,
+      priority: "LOW" as const,
+      category: "social",
+      xpReward: 18,
+      coinReward: 10,
+    },
+  }
 
   const API_BASE = "http://localhost:5000/api"
 
@@ -124,13 +173,48 @@ const Goals: React.FC = () => {
   }
 
   const createGoal = async () => {
-    if (!newGoal.title.trim() || !newGoal.description.trim()) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      })
-      return
+    let goalData
+
+    if (newGoal.type === "Custom Goal") {
+      if (!newGoal.title.trim() || !newGoal.description.trim()) {
+        toast({
+          title: "Error",
+          description: "Please fill in all required fields",
+          variant: "destructive",
+        })
+        return
+      }
+
+      const rewards = getRewardsByDifficulty(newGoal.difficulty)
+      goalData = {
+        title: newGoal.title,
+        description: newGoal.description,
+        difficulty: newGoal.difficulty,
+        priority: newGoal.priority,
+        category: newGoal.category,
+        xpReward: rewards.xp,
+        coinReward: rewards.coins,
+      }
+    } else {
+      const template = predefinedGoalTypes[newGoal.type as keyof typeof predefinedGoalTypes]
+      if (!template) {
+        toast({
+          title: "Error",
+          description: "Invalid goal type selected",
+          variant: "destructive",
+        })
+        return
+      }
+
+      goalData = {
+        title: template.title,
+        description: template.description,
+        difficulty: template.difficulty,
+        priority: template.priority,
+        category: template.category,
+        xpReward: template.xpReward,
+        coinReward: template.coinReward,
+      }
     }
 
     try {
@@ -141,7 +225,7 @@ const Goals: React.FC = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newGoal),
+        body: JSON.stringify(goalData),
       })
 
       if (response.ok) {
@@ -154,6 +238,7 @@ const Goals: React.FC = () => {
           difficulty: "EASY",
           priority: "MEDIUM",
           category: "personal",
+          type: "Daily Check-in",
         })
         toast({
           title: "Success",
@@ -215,7 +300,7 @@ const Goals: React.FC = () => {
   const addSuggestedGoal = async (goalData: Partial<Goal>) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`${API_BASE}/goals/creategoal`, {
+      const response = await fetch(`${API_BASE}/goals/addgoal`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -578,60 +663,114 @@ const Goals: React.FC = () => {
 
           <div className="space-y-6">
             <div>
-              <label className="block text-white font-medium mb-2">Goal Title</label>
-              <Input
-                value={newGoal.title}
-                onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
-                placeholder="Enter goal title..."
-                className="bg-sora-muted border-sora-teal/30 text-white"
-              />
+              <label className="block text-white font-medium mb-2">Goal Type</label>
+              <Select value={newGoal.type} onValueChange={(value) => setNewGoal({ ...newGoal, type: value })}>
+                <SelectTrigger className="bg-sora-muted border-sora-teal/30 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-sora-card border-sora-teal/20">
+                  {Object.keys(predefinedGoalTypes).map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="Custom Goal">Custom Goal</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <label className="block text-white font-medium mb-2">Description</label>
-              <Textarea
-                value={newGoal.description}
-                onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
-                placeholder="Describe your goal..."
-                className="bg-sora-muted border-sora-teal/30 text-white min-h-[100px]"
-              />
-            </div>
+            {newGoal.type === "Custom Goal" && (
+              <>
+                <div>
+                  <label className="block text-white font-medium mb-2">Goal Title</label>
+                  <Input
+                    value={newGoal.title}
+                    onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
+                    placeholder="Enter goal title..."
+                    className="bg-sora-muted border-sora-teal/30 text-white"
+                  />
+                </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-white font-medium mb-2">Difficulty</label>
-                <Select
-                  value={newGoal.difficulty}
-                  onValueChange={(value: "EASY" | "MEDIUM" | "HARD") => setNewGoal({ ...newGoal, difficulty: value })}
-                >
-                  <SelectTrigger className="bg-sora-muted border-sora-teal/30 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-sora-card border-sora-teal/20">
-                    <SelectItem value="EASY">Easy (10 XP, 5 coins)</SelectItem>
-                    <SelectItem value="MEDIUM">Medium (25 XP, 15 coins)</SelectItem>
-                    <SelectItem value="HARD">Hard (50 XP, 30 coins)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                <div>
+                  <label className="block text-white font-medium mb-2">Description</label>
+                  <Textarea
+                    value={newGoal.description}
+                    onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
+                    placeholder="Describe your goal..."
+                    className="bg-sora-muted border-sora-teal/30 text-white min-h-[100px]"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-white font-medium mb-2">Priority</label>
-                <Select
-                  value={newGoal.priority}
-                  onValueChange={(value: "HIGH" | "MEDIUM" | "LOW") => setNewGoal({ ...newGoal, priority: value })}
-                >
-                  <SelectTrigger className="bg-sora-muted border-sora-teal/30 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-sora-card border-sora-teal/20">
-                    <SelectItem value="HIGH">High Priority</SelectItem>
-                    <SelectItem value="MEDIUM">Medium Priority</SelectItem>
-                    <SelectItem value="LOW">Low Priority</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-white font-medium mb-2">Difficulty</label>
+                    <Select
+                      value={newGoal.difficulty}
+                      onValueChange={(value: "EASY" | "MEDIUM" | "HARD") =>
+                        setNewGoal({ ...newGoal, difficulty: value })
+                      }
+                    >
+                      <SelectTrigger className="bg-sora-muted border-sora-teal/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-sora-card border-sora-teal/20">
+                        <SelectItem value="EASY">Easy (10 XP, 5 coins)</SelectItem>
+                        <SelectItem value="MEDIUM">Medium (25 XP, 15 coins)</SelectItem>
+                        <SelectItem value="HARD">Hard (50 XP, 30 coins)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-medium mb-2">Priority</label>
+                    <Select
+                      value={newGoal.priority}
+                      onValueChange={(value: "HIGH" | "MEDIUM" | "LOW") => setNewGoal({ ...newGoal, priority: value })}
+                    >
+                      <SelectTrigger className="bg-sora-muted border-sora-teal/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-sora-card border-sora-teal/20">
+                        <SelectItem value="HIGH">High Priority</SelectItem>
+                        <SelectItem value="MEDIUM">Medium Priority</SelectItem>
+                        <SelectItem value="LOW">Low Priority</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {newGoal.type !== "Custom Goal" &&
+              predefinedGoalTypes[newGoal.type as keyof typeof predefinedGoalTypes] && (
+                <div className="bg-sora-muted/30 border border-sora-teal/20 rounded-lg p-4">
+                  <h4 className="text-white font-semibold mb-2">
+                    {predefinedGoalTypes[newGoal.type as keyof typeof predefinedGoalTypes].title}
+                  </h4>
+                  <p className="text-gray-300 mb-3">
+                    {predefinedGoalTypes[newGoal.type as keyof typeof predefinedGoalTypes].description}
+                  </p>
+                  <div className="flex items-center gap-4 text-sm">
+                    <Badge
+                      className={`${getDifficultyColor(predefinedGoalTypes[newGoal.type as keyof typeof predefinedGoalTypes].difficulty)} text-white`}
+                    >
+                      {predefinedGoalTypes[newGoal.type as keyof typeof predefinedGoalTypes].difficulty}
+                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-sora-teal" />
+                      <span className="text-sora-teal">
+                        +{predefinedGoalTypes[newGoal.type as keyof typeof predefinedGoalTypes].xpReward} XP
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Coins className="w-4 h-4 text-sora-orange" />
+                      <span className="text-sora-orange">
+                        +{predefinedGoalTypes[newGoal.type as keyof typeof predefinedGoalTypes].coinReward} coins
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
             <div className="flex gap-4">
               <Button

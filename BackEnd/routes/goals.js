@@ -233,6 +233,37 @@ router.get("/usergoals", auth, async (req, res) => {
   }
 })
 
+// Create new goal
+router.post("/addgoal", auth, async (req, res) => {
+  try {
+    const { title, description, difficulty, priority, category } = req.body
+
+    if (!title || !description) {
+      return res.status(400).json({ message: "Title and description are required" })
+    }
+
+    const goal = new Goal({
+      userId: req.userId,
+      title: title.trim(),
+      description: description.trim(),
+      difficulty: difficulty || "EASY",
+      priority: priority || "MEDIUM",
+      category: category || "personal",
+    })
+
+    await goal.save()
+
+    res.status(201).json({
+      success: true,
+      goal,
+      message: "Goal created successfully",
+    })
+  } catch (error) {
+    console.error("Error creating goal:", error)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
 
 // Create new goal
 router.post("/creategoal", auth, async (req, res) => {

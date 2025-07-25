@@ -27,6 +27,7 @@ import {
   X,
   Briefcase,
 } from "lucide-react"
+import SoraLogo from "@/components/SoraLogo";
 
 interface UserProgress {
   level: number
@@ -351,10 +352,7 @@ const Dashboard: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <Brain className="w-8 h-8 text-sora-teal" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent">
-              Dashboard
-            </h1>
+            <SoraLogo/>
           </div>
           <p className="text-gray-300 text-lg max-w-3xl mx-auto">
             Your personalized neurodivergent support hub with insights, progress tracking, and tools
