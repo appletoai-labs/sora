@@ -134,10 +134,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const logout = () => {
-    localStorage.removeItem("authToken")
-    navigate("/auth")
-    setUser(null)
+    localStorage.clear();
+    setUser(null);
+    navigate("/auth");
   }
+
 
   return (
     <AuthContext.Provider
