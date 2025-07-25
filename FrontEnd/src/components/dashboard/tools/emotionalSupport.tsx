@@ -851,8 +851,7 @@ const EmotionalSupport: FC = () => {
                         </div>
                         <h3 className="text-xl font-bold text-white mb-3">Emotional Insights</h3>
                         <p className="text-gray-300 text-sm mb-4">
-                            Track your emotional patterns and gain insights into your triggers, coping patterns, and emotional growth
-                            over time.
+                            Track your emotional patterns and gain insights into your triggers, coping patterns, and emotional growth over time for better mental and emotional well-being.
                         </p>
                         <Button onClick={() => navigate("/app/dashboard")} className="w-full">
                             <TrendingUp className="w-4 h-4" />
@@ -866,8 +865,7 @@ const EmotionalSupport: FC = () => {
                         </div>
                         <h3 className="text-xl font-bold text-white mb-3">Crisis Support</h3>
                         <p className="text-gray-300 text-sm mb-4">
-                            Access immediate crisis resources, hotlines, and emergency support. Available 24/7 when you need urgent
-                            help.
+                            Access immediate crisis resources, support hotlines, and emergency help. Available 24/7 whenever you need urgent care, safety, and assistance.
                         </p>
                         <Button onClick={() => navigate("/app/immediate-support")} variant="destructive" className="w-full">
                             <Phone className="w-4 h-4" />
