@@ -34,7 +34,7 @@ router.post(
       const user = new User({ email, password, firstName, lastName, role })
       await user.save()
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || "fallback_secret", {
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: "7d",
       })
 
@@ -73,7 +73,7 @@ router.post(
         return res.status(401).json({ message: "Invalid credentials" })
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || "fallback_secret", {
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: "7d",
       })
 
