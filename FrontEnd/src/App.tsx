@@ -25,6 +25,7 @@ import Dashboard from './components/dashboard/tools/dashboard';
 import { UiPreferencesProvider } from '@/context/UiPreferencesContext'; // ✅ Import
 import { AppWrapper } from './layout/AppWrapper';
 import EmotionalSupport from './components/dashboard/tools/emotionalSupport';
+import Community from './components/dashboard/tools/community';
 
 
 const queryClient = new QueryClient();
@@ -68,7 +69,7 @@ const App = () => (
                   <Route path="sensory" element={<Sensory />} />
                   <Route path="goals" element={<Goals />} />
                   <Route path="executive" element={<div>Executive Function Coming Soon</div>} />
-                  <Route path="community" element={<div>Community Coming Soon</div>} />
+                  <Route path="community" element={<Community/>} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="reallife" element={<div>real life Coming Soon</div>} />
                   <Route path="emotional-support" element={<EmotionalSupport/>} />
