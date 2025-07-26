@@ -1,128 +1,129 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { User, Session } from "@supabase/supabase-js";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { LogOut, User as UserIcon, Heart, Stethoscope, Mic } from "lucide-react";
-import VoiceInterface from "@/components/VoiceInterface";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+"use client"
 
-type UserRole = "individual" | "therapy_client" | "therapist";
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { supabase } from "@/integrations/supabase/client"
+import type { User } from "@supabase/supabase-js"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+import { LogOut, UserIcon, Heart, Stethoscope, Mic } from "lucide-react"
+import VoiceInterface from "@/components/VoiceInterface"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
+
+type UserRole = "individual" | "therapy_client" | "therapist"
 
 interface Profile {
-  id: string;
-  user_id: string;
-  role: UserRole;
-  first_name: string | null;
-  last_name: string | null;
-  created_at: string;
-  updated_at: string;
+  id: string
+  user_id: string
+  role: UserRole
+  first_name: string | null
+  last_name: string | null
+  created_at: string
+  updated_at: string
 }
 
 const AppDashboardContent = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
+  const { toast } = useToast()
 
   const getRoleIcon = (role: UserRole) => {
     switch (role) {
       case "individual":
-        return UserIcon;
+        return UserIcon
       case "therapy_client":
-        return Heart;
+        return Heart
       case "therapist":
-        return Stethoscope;
+        return Stethoscope
       default:
-        return UserIcon;
+        return UserIcon
     }
-  };
+  }
 
   const getRoleLabel = (role: UserRole) => {
     switch (role) {
       case "individual":
-        return "Individual";
+        return "Individual"
       case "therapy_client":
-        return "Therapy Client";
+        return "Therapy Client"
       case "therapist":
-        return "Therapist";
+        return "Therapist"
       default:
-        return "User";
+        return "User"
     }
-  };
+  }
 
   const getRoleDescription = (role: UserRole) => {
     switch (role) {
       case "individual":
-        return "Personal neurodivergent support";
+        return "Personal neurodivergent support"
       case "therapy_client":
-        return "Guided experience with professional support";
+        return "Guided experience with professional support"
       case "therapist":
-        return "Professional tools for client management";
+        return "Professional tools for client management"
       default:
-        return "";
+        return ""
     }
-  };
+  }
 
   useEffect(() => {
     // Get current user and fetch profile
     const initializeUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (user) {
-        setUser(user);
-        await fetchProfile(user);
+        setUser(user)
+        await fetchProfile(user)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    initializeUser();
-  }, []);
+    initializeUser()
+  }, [])
 
   const fetchProfile = async (currentUser?: User) => {
-    const userToUse = currentUser || user;
-    if (!userToUse) return;
+    const userToUse = currentUser || user
+    if (!userToUse) return
 
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", userToUse.id)
-        .single();
+      const { data, error } = await supabase.from("profiles").select("*").eq("user_id", userToUse.id).single()
 
       if (error) {
-        console.error("Error fetching profile:", error);
-        return;
+        console.error("Error fetching profile:", error)
+        return
       }
 
-      setProfile(data);
+      setProfile(data)
     } catch (error) {
-      console.error("Error fetching profile:", error);
+      console.error("Error fetching profile:", error)
     }
-  };
+  }
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut()
       if (error) {
         toast({
           title: "Error",
           description: "Failed to sign out",
           variant: "destructive",
-        });
-        return;
+        })
+        return
       }
       toast({
         title: "Signed out",
         description: "You have been successfully signed out",
-      });
-      navigate("/auth");
+      })
+      navigate("/auth")
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Error signing out:", error)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -132,7 +133,7 @@ const AppDashboardContent = () => {
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (!user || !profile) {
@@ -143,12 +144,12 @@ const AppDashboardContent = () => {
           <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  console.log("Dashboard rendering with:", { user: !!user, profile: !!profile, loading });
+  console.log("Dashboard rendering with:", { user: !!user, profile: !!profile, loading })
 
-  const RoleIcon = profile ? getRoleIcon(profile.role) : UserIcon;
+  const RoleIcon = profile ? getRoleIcon(profile.role) : UserIcon
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -160,7 +161,7 @@ const AppDashboardContent = () => {
             </h1>
             <span className="text-muted-foreground">Dashboard</span>
           </div>
-          <Button variant="outline" onClick={handleSignOut} className="gap-2">
+          <Button variant="outline" onClick={handleSignOut} className="gap-2 bg-transparent">
             <LogOut className="h-4 w-4" />
             Sign Out
           </Button>
@@ -181,10 +182,18 @@ const AppDashboardContent = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <p><strong>Name:</strong> {profile.first_name} {profile.last_name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Account Type:</strong> {getRoleLabel(profile.role)}</p>
-                <p><strong>Member since:</strong> {new Date(profile.created_at).toLocaleDateString()}</p>
+                <p>
+                  <strong>Name:</strong> {profile.first_name} {profile.last_name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {user.email}
+                </p>
+                <p>
+                  <strong>Account Type:</strong> {getRoleLabel(profile.role)}
+                </p>
+                <p>
+                  <strong>Member since:</strong> {new Date(profile.created_at).toLocaleDateString()}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -201,9 +210,9 @@ const AppDashboardContent = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                SORA is your AI-powered mental health companion, trained to provide compassionate support, 
-                active listening, and guidance whenever you need it. Simply click "Connect to SORA" below 
-                to start a voice conversation.
+                SORA is your AI-powered mental health companion, trained to provide compassionate support, active
+                listening, and guidance whenever you need it. Simply click "Connect to SORA" below to start a voice
+                conversation.
               </p>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>• 24/7 availability for immediate support</p>
@@ -217,15 +226,15 @@ const AppDashboardContent = () => {
           <Card>
             <CardHeader>
               <CardTitle>Additional Features</CardTitle>
-              <CardDescription>
-                More tools and resources coming to enhance your mental health journey
-              </CardDescription>
+              <CardDescription>More tools and resources coming to enhance your mental health journey</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-2">Assessment Tools</h4>
-                  <p className="text-sm text-muted-foreground">Professional mental health assessments and screening tools</p>
+                  <p className="text-sm text-muted-foreground">
+                    Professional mental health assessments and screening tools
+                  </p>
                 </div>
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-2">Progress Tracking</h4>
@@ -233,7 +242,9 @@ const AppDashboardContent = () => {
                 </div>
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-2">Resource Library</h4>
-                  <p className="text-sm text-muted-foreground">Curated mental health resources and educational content</p>
+                  <p className="text-sm text-muted-foreground">
+                    Curated mental health resources and educational content
+                  </p>
                 </div>
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-2">Crisis Support</h4>
@@ -244,18 +255,18 @@ const AppDashboardContent = () => {
           </Card>
         </div>
       </main>
-      
+
       <VoiceInterface />
     </div>
-  );
-};
+  )
+}
 
 const AppDashboard = () => {
   return (
-    <ProtectedRoute requireEmailVerified={true}>
-      <AppDashboardContent />
+    <ProtectedRoute>
+      <DashboardLayout />
     </ProtectedRoute>
-  );
-};
+  )
+}
 
-export default AppDashboard;
+export default AppDashboard

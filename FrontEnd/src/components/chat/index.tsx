@@ -9,6 +9,7 @@ import { Bot } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SupportCards from "../../components/supportCards";
 import axios from "axios";
+import SoraLogo from "../SoraLogo";
 
 interface Message {
   id: string;
@@ -27,6 +28,7 @@ const suggestions = [
 ];
 
 export const ChatInterface = () => {
+  const API_BASE = "http://localhost:5000/api";
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -65,36 +67,36 @@ export const ChatInterface = () => {
   };
 
   const formatResponse = (text) => {
-        // Remove text inside [...] or 【...】
-        text = text.replace(/\[.*?\]|\u3010.*?\u3011/g, '');
+    // Remove text inside [...] or 【...】
+    text = text.replace(/\[.*?\]|\u3010.*?\u3011/g, '');
 
-        // Convert **bold** Markdown to <strong> HTML tags
-        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Convert **bold** Markdown to <strong> HTML tags
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-        // Convert ###text### to <h3>text</h3>
-        text = text.replace(/###(.*?)###/g, '<h3>$1</h3>');
+    // Convert ###text### to <h3>text</h3>
+    text = text.replace(/###(.*?)###/g, '<h3>$1</h3>');
 
-        // Convert ##text## to <h2>text</h2>
-        text = text.replace(/##(.*?)##/g, '<h2>$1</h2>');
+    // Convert ##text## to <h2>text</h2>
+    text = text.replace(/##(.*?)##/g, '<h2>$1</h2>');
 
-        // Convert lines starting with "- " to bullet points "• "
-        // We process line by line before converting newlines to <br>
-        text = text
-            .split('\n')
-            .map((line) => {
-                const trimmed = line.trimStart();
-                if (trimmed.startsWith('- ')) {
-                    return '• ' + trimmed.slice(2);
-                }
-                return line;
-            })
-            .join('\n');
+    // Convert lines starting with "- " to bullet points "• "
+    // We process line by line before converting newlines to <br>
+    text = text
+      .split('\n')
+      .map((line) => {
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith('- ')) {
+          return '• ' + trimmed.slice(2);
+        }
+        return line;
+      })
+      .join('\n');
 
-        // Replace all newlines with HTML line breaks
-        text = text.split('\n').join('<br>');
+    // Replace all newlines with HTML line breaks
+    text = text.split('\n').join('<br>');
 
-        return text;
-    };
+    return text;
+  };
 
   const handleSendMessage = async (text: string) => {
     const userMessage: Message = {
@@ -109,15 +111,15 @@ export const ChatInterface = () => {
     setShowSuggestions(false);
 
     try {
-      const response = await axios.post(`${import.meta.env.REACT_APP_BACKEND_URL}/api/chat`, {
-          message: text,
-          user_id: "demo_user",
-          account_type: "individual",
-          previous_response_id: previousResponseId
-      }); 
+      const response = await axios.post(`${API_BASE}/chatproxy/chat`, {
+        message: text,
+        user_id: "demo_user",
+        account_type: "individual",
+        previous_response_id: previousResponseId
+      });
       const botText = response.data.message || "Sorry, I couldn't process your request.";
       setPreviousResponseId(response.data.response_id);
-      if (response.status==200) {
+      if (response.status == 200) {
         const botMessage: Message = {
           id: response.data.response_id,
           text: formatResponse(botText),
@@ -211,18 +213,12 @@ export const ChatInterface = () => {
 
   return (
     <>
-      <div className="flex justify-center items-center h-screen bg-gradient-chat px-2 sm:px-4 md:px-6 mt-[60px]">
+      <div className="flex justify-center items-center h-screen  px-2 sm:px-4 md:px-6 mt-[18px]">
         <div className="flex flex-col w-full max-w-[95vw] sm:max-w-3xl md:max-w-4xl lg:max-w-5xl h-full max-h-[calc(100vh-60px)] bg-chat-surface border border-gray-300 rounded-lg shadow-lg">
 
           {/* Header */}
           <div className="flex items-center gap-4 p-4 sm:p-6 border-b border-gray-300 shadow-chat">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow">
-              <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-lg sm:text-xl font-bold text-foreground">Neurodiversity AI Assistant</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">Specialized support for neurodivergent minds</p>
-            </div>
+            <SoraLogo />
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-xs text-green-500 font-medium">Online</span>

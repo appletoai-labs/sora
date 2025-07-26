@@ -1,10 +1,2 @@
 .env
-# Ignore environment variable files
-
-
-venv
-# Ignore Python virtual environments
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
+node_modules
