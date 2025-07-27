@@ -41,7 +41,12 @@ export const ChatMessage = ({ message, isUser, timestamp }: ChatMessageProps) =>
             ? "bg-gradient-primary text-primary-foreground"
             : "bg-gradient-surface text-foreground border border-border"
         )}>
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">{message}</p>
+           <p
+              className="text-sm leading-relaxed whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{
+                  __html: message,
+              }}
+          />
           {timestamp && (
             <p className={cn(
               "text-xs mt-2 transition-opacity duration-300",
