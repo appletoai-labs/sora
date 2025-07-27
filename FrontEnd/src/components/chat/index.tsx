@@ -28,7 +28,7 @@ const suggestions = [
 ];
 
 export const ChatInterface = () => {
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${import.meta.env.REACT_APP_BACKEND_URL}/api`;
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
