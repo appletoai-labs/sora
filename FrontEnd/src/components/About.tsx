@@ -66,7 +66,7 @@ const About = () => {
               </div>
             </div>
 
-            <Button variant="hero" size="lg" className="text-lg px-8 py-4" onClick={() => navigate("/chat")}>
+            <Button variant="hero" size="lg" className="text-lg px-8 py-4" onClick={() => navigate("/auth")}>
               Experience SORA
             </Button>
           </div>
