@@ -42,7 +42,6 @@ const App = () => (
               <Routes>
                 <Route element={<Layout />}>
                   <Route path="/" element={<Index />} />
-                  <Route path="/chat" element={<ChatInterface />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/immediate-support" element={<ImmediateSupport />} />
                 </Route>
