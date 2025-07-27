@@ -100,7 +100,7 @@ const Goals: React.FC = () => {
             category: 'wellness',
             xpReward: 10,
             coinReward: 5,
-        },  
+        },
         'Chat with SORA': {
             title: 'Have a Chat Session',
             description: "Engage with SORA's AI support for guidance and conversation",
@@ -495,72 +495,71 @@ const Goals: React.FC = () => {
                 </div>
 
                 {/* Progress Section */}
-                <Card className="bg-gradient-to-br from-sora-card to-sora-muted border-sora-teal/20 mb-8">
-                    <CardContent className="p-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-3xl font-bold text-white">Your Progress</h2>
-                            <Badge className="bg-sora-teal text-sora-dark font-semibold px-4 py-2 text-lg">
+                <Card className="bg-gradient-to-br from-sora-card to-sora-muted border-sora-teal/20 mb-8 rounded-lg overflow-hidden">
+                    <CardContent className="p-6 sm:p-8">
+                        {/* Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-white">Your Progress</h2>
+                            <Badge className="bg-sora-teal text-sora-dark font-semibold text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2">
                                 Level {userProgress.level}
                             </Badge>
                         </div>
 
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                            <div className="bg-gradient-to-br from-sora-teal/20 to-sora-teal/10 border border-sora-teal/30 rounded-lg p-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
+                            <div className="bg-gradient-to-br from-sora-teal/20 to-sora-teal/10 border border-sora-teal/30 rounded-lg p-4 sm:p-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <Star className="w-6 h-6 text-sora-teal" />
-                                    <span className="text-2xl font-bold text-sora-teal">
+                                    <Star className="w-5 h-5 sm:w-6 sm:h-6 text-sora-teal" />
+                                    <span className="text-xl sm:text-2xl font-bold text-sora-teal">
                                         {userProgress.totalXP}
                                     </span>
                                 </div>
-                                <p className="text-gray-300">Total XP</p>
+                                <p className="text-gray-300 text-sm">Total XP</p>
                             </div>
 
-                            <div className="bg-gradient-to-br from-sora-orange/20 to-sora-orange/10 border border-sora-orange/30 rounded-lg p-6">
+                            <div className="bg-gradient-to-br from-sora-orange/20 to-sora-orange/10 border border-sora-orange/30 rounded-lg p-4 sm:p-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <Coins className="w-6 h-6 text-sora-orange" />
-                                    <span className="text-2xl font-bold text-sora-orange">
+                                    <Coins className="w-5 h-5 sm:w-6 sm:h-6 text-sora-orange" />
+                                    <span className="text-xl sm:text-2xl font-bold text-sora-orange">
                                         {userProgress.coins}
                                     </span>
                                 </div>
-                                <p className="text-gray-300">Coins</p>
+                                <p className="text-gray-300 text-sm">Coins</p>
                             </div>
 
-                            <div className="bg-gradient-to-br from-red-500/20 to-red-500/10 border border-red-500/30 rounded-lg p-6">
+                            <div className="bg-gradient-to-br from-red-500/20 to-red-500/10 border border-red-500/30 rounded-lg p-4 sm:p-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <Flame className="w-6 h-6 text-red-500" />
-                                    <span className="text-2xl font-bold text-red-500">
+                                    <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
+                                    <span className="text-xl sm:text-2xl font-bold text-red-500">
                                         {userProgress.dayStreak}
                                     </span>
                                 </div>
-                                <p className="text-gray-300">Day Streak</p>
+                                <p className="text-gray-300 text-sm">Day Streak</p>
                             </div>
 
-                            <div className="bg-gradient-to-br from-green-500/20 to-green-500/10 border border-green-500/30 rounded-lg p-6">
+                            <div className="bg-gradient-to-br from-green-500/20 to-green-500/10 border border-green-500/30 rounded-lg p-4 sm:p-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <CheckCircle className="w-6 h-6 text-green-500" />
-                                    <span className="text-2xl font-bold text-green-500">
+                                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
+                                    <span className="text-xl sm:text-2xl font-bold text-green-500">
                                         {userProgress.goalsCompleted}
                                     </span>
                                 </div>
-                                <p className="text-gray-300">Goals Completed</p>
+                                <p className="text-gray-300 text-sm">Goals Completed</p>
                             </div>
                         </div>
 
                         {/* Progress Bar */}
                         <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-300">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0">
+                                <span className="text-gray-300 text-sm sm:text-base">
                                     Progress to Level {userProgress.level + 1}
                                 </span>
-                                <span className="text-sora-teal font-semibold">
+                                <span className="text-sora-teal font-semibold text-sm sm:text-base">
                                     {userProgress.currentLevelXP}/{userProgress.xpToNextLevel} XP
                                 </span>
                             </div>
                             <Progress
-                                value={
-                                    (userProgress.currentLevelXP / userProgress.xpToNextLevel) * 100
-                                }
+                                value={(userProgress.currentLevelXP / userProgress.xpToNextLevel) * 100}
                                 className="h-3 bg-sora-muted"
                             />
                         </div>
@@ -824,7 +823,7 @@ const Goals: React.FC = () => {
 
                         {newGoal.type !== 'Custom Goal' &&
                             predefinedGoalTypes[
-                                newGoal.type as keyof typeof predefinedGoalTypes
+                            newGoal.type as keyof typeof predefinedGoalTypes
                             ] && (
                                 <div className="bg-sora-muted/30 border border-sora-teal/20 rounded-lg p-4">
                                     <h4 className="text-white font-semibold mb-2">
@@ -939,9 +938,8 @@ const Goals: React.FC = () => {
                         return (
                             <Card
                                 key={index}
-                                className={`bg-gradient-to-br from-sora-card to-sora-muted ${
-                                    isUnlocked ? 'border-sora-teal/40' : 'border-gray-600/20'
-                                }`}
+                                className={`bg-gradient-to-br from-sora-card to-sora-muted ${isUnlocked ? 'border-sora-teal/40' : 'border-gray-600/20'
+                                    }`}
                             >
                                 <CardContent className="p-6">
                                     <div className="flex items-start justify-between mb-4">
@@ -960,25 +958,22 @@ const Goals: React.FC = () => {
                                     </div>
 
                                     <h3
-                                        className={`text-xl font-bold mb-3 ${
-                                            isUnlocked ? 'text-white' : 'text-gray-500'
-                                        }`}
+                                        className={`text-xl font-bold mb-3 ${isUnlocked ? 'text-white' : 'text-gray-500'
+                                            }`}
                                     >
                                         {achievement.title}
                                     </h3>
 
                                     <p
-                                        className={`mb-4 ${
-                                            isUnlocked ? 'text-gray-300' : 'text-gray-500'
-                                        }`}
+                                        className={`mb-4 ${isUnlocked ? 'text-gray-300' : 'text-gray-500'
+                                            }`}
                                     >
                                         {achievement.description}
                                     </p>
 
                                     <p
-                                        className={`text-sm ${
-                                            isUnlocked ? 'text-gray-400' : 'text-gray-600'
-                                        }`}
+                                        className={`text-sm ${isUnlocked ? 'text-gray-400' : 'text-gray-600'
+                                            }`}
                                     >
                                         Requirement: {achievement.requirement}
                                     </p>
