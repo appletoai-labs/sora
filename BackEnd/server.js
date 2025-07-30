@@ -16,6 +16,7 @@ const goalsRoutes = require("./routes/goals")
 const clarityRoutes = require("./routes/clarityRoutes")
 const EmotionalStrategy = require("./routes/emotional-support")
 const Community = require("./routes/Community")
+const Routine = require("./routes/executive")
 
 const app = express()
 app.use(express.json());
@@ -62,6 +63,7 @@ app.use("/api/goals", goalsRoutes)
 app.use("/api/clarity", clarityRoutes)
 app.use("/api/emotional-support", EmotionalStrategy)
 app.use("/api/community", Community)
+app.use("/api/executive", Routine)
 
 
 // Health check endpoint

@@ -26,6 +26,7 @@ import { UiPreferencesProvider } from '@/context/UiPreferencesContext'; // ✅ I
 import { AppWrapper } from './layout/AppWrapper';
 import EmotionalSupport from './components/dashboard/tools/emotionalSupport';
 import Community from './components/dashboard/tools/community';
+import Executive from './components/dashboard/tools/executive';
 
 
 const queryClient = new QueryClient();
@@ -63,16 +64,15 @@ const App = () => (
                   <Route path="chat" element={<ChatInterface />} />
                   <Route path="immediate-support" element={<ImmediateSupport />} />
                   <Route path="clarity" element={<Clarity />} />
-                  <Route path="logs" element={<div>Clarity Logs Coming Soon</div>} />
                   <Route path="checkin" element={<DailyCheckin />} />
                   <Route path="sensory" element={<Sensory />} />
                   <Route path="goals" element={<Goals />} />
-                  <Route path="executive" element={<div>Executive Function Coming Soon</div>} />
+                  <Route path="executive" element={<Executive/>} />
                   <Route path="community" element={<Community/>} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="reallife" element={<div>real life Coming Soon</div>} />
                   <Route path="emotional-support" element={<EmotionalSupport/>} />
-                  <Route path="crisis-support" element={<div>crisis support Coming Soon</div>} />
+                  <Route path="crisis-support" element={<ImmediateSupport/>} />
                 </Route>
 
                 <Route path="/404" element={<NotFound />} />
