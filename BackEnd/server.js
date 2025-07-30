@@ -17,6 +17,7 @@ const clarityRoutes = require("./routes/clarityRoutes")
 const EmotionalStrategy = require("./routes/emotional-support")
 const Community = require("./routes/Community")
 const Routine = require("./routes/executive")
+const CalendarTask = require("./routes/calendar")
 
 const app = express()
 app.use(express.json());
@@ -25,7 +26,7 @@ app.use(express.json());
 app.use(helmet())
 const corsOptions = {
   origin: ["http://localhost:8080", "https://sora-henna-six.vercel.app"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS" , "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }
@@ -64,6 +65,7 @@ app.use("/api/clarity", clarityRoutes)
 app.use("/api/emotional-support", EmotionalStrategy)
 app.use("/api/community", Community)
 app.use("/api/executive", Routine)
+app.use("/api/calendar", CalendarTask)
 
 
 // Health check endpoint

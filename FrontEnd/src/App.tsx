@@ -27,6 +27,7 @@ import { AppWrapper } from './layout/AppWrapper';
 import EmotionalSupport from './components/dashboard/tools/emotionalSupport';
 import Community from './components/dashboard/tools/community';
 import Executive from './components/dashboard/tools/executive';
+import RealLifeMode from './components/dashboard/tools/reallife';
 
 
 const queryClient = new QueryClient();
@@ -70,7 +71,7 @@ const App = () => (
                   <Route path="executive" element={<Executive/>} />
                   <Route path="community" element={<Community/>} />
                   <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="reallife" element={<div>real life Coming Soon</div>} />
+                  <Route path="reallife" element={<RealLifeMode/>} />
                   <Route path="emotional-support" element={<EmotionalSupport/>} />
                   <Route path="crisis-support" element={<ImmediateSupport/>} />
                 </Route>
