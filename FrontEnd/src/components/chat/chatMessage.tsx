@@ -47,7 +47,7 @@ export const ChatMessage = ({ message, isUser, timestamp }: ChatMessageProps) =>
                   __html: message,
               }}
           />
-          {timestamp && (
+          {timestamp && (  
             <p className={cn(
               "text-xs mt-2 transition-opacity duration-300",
               isUser
