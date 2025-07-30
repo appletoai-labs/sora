@@ -1,5 +1,7 @@
 "use client"
 
+import { Label } from "@/components/ui/label"
+import { useToast } from "@/components/ui/use-toast"
 import { useState, useEffect } from "react"
 import axios from "axios"
 import {
@@ -37,6 +39,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+
 
 interface RoutineStep {
     time: string
@@ -66,7 +70,15 @@ interface SavedRoutine {
     createdAt: string
 }
 
+interface PriorityMatrixData {
+    urgentImportant: string
+    notUrgentImportant: string
+    urgentNotImportant: string
+    notUrgentNotImportant: string
+}
+
 const Executive = () => {
+    const { toast } = useToast()
     const API_BASE = `${import.meta.env.REACT_APP_BACKEND_URL}/api`
     const [activeView, setActiveView] = useState<"main" | "routineBuilder" | "routineResult">("main")
     const [selectedRoutineType, setSelectedRoutineType] = useState<string>("")
@@ -80,6 +92,21 @@ const Executive = () => {
     const [selectedSavedRoutine, setSelectedSavedRoutine] = useState<SavedRoutine | null>(null)
     const [pomodoroTime, setPomodoroTime] = useState<number>(25 * 60)
     const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false)
+
+    // New states for Priority Matrix
+    const [showPriorityMatrixModal, setShowPriorityMatrixModal] = useState<boolean>(false)
+    const [priorityMatrixData, setPriorityMatrixData] = useState<PriorityMatrixData>({
+        urgentImportant: "",
+        notUrgentImportant: "",
+        urgentNotImportant: "",
+        notUrgentNotImportant: "",
+    })
+    const [newTaskInput, setNewTaskInput] = useState<string>("")
+    const [newTaskQuadrant, setNewTaskQuadrant] = useState<keyof PriorityMatrixData>("urgentImportant")
+
+    // New states for Task Randomizer
+    const [showRandomTaskModal, setShowRandomTaskModal] = useState<boolean>(false)
+    const [randomTask, setRandomTask] = useState<string>("")
 
     const routineTypes = [
         { value: "morning", label: "Morning Routine", icon: Coffee },
@@ -197,7 +224,32 @@ const Executive = () => {
             description: "Write down everything on your mind",
             icon: Brain,
             action: "brainDump",
-        }
+        },
+        {
+            title: "Task Randomizer",
+            description: "Can't decide what to do? Let randomness help!",
+            icon: Shuffle,
+            action: "randomize",
+        },
+        {
+            title: "Priority Matrix",
+            description: "Sort tasks by urgency and importance",
+            icon: Grid3X3,
+            action: "prioritize",
+        },
+    ]
+
+    const randomTasksList = [
+        "Organize your desk for 10 minutes",
+        "Take a 5-minute walk",
+        "Do one small cleaning task",
+        "Write down 3 things you're grateful for",
+        "Stretch for 5 minutes",
+        "Clear 10 items from your email inbox",
+        "Put away 5 things that are out of place",
+        "Take 3 deep breaths",
+        "Drink a glass of water",
+        "Set tomorrow's priorities",
     ]
 
     useEffect(() => {
@@ -212,7 +264,10 @@ const Executive = () => {
             }, 1000)
         } else if (pomodoroTime === 0) {
             setIsTimerRunning(false)
-            alert("Pomodoro session complete! Take a 5-minute break.")
+            toast({
+                title: "Pomodoro Complete",
+                description: "Time for a break! Take 5 minutes to recharge."
+            })
             setPomodoroTime(25 * 60)
         }
         return () => clearInterval(interval)
@@ -228,6 +283,61 @@ const Executive = () => {
         } catch (error) {
             console.error("Error fetching saved routines:", error)
         }
+    }
+
+    const fetchPriorityMatrix = async () => {
+        try {
+            const token = localStorage.getItem("authToken")
+            const response = await axios.get(`${API_BASE}/executive/priority-matrix`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            if (response.data) {
+                setPriorityMatrixData(response.data)
+            }
+        } catch (error) {
+            console.error("Error fetching priority matrix:", error)
+            // If no matrix exists, keep default empty state
+        }
+    }
+
+    const savePriorityMatrix = async () => {
+        setIsLoading(true)
+        try {
+            const token = localStorage.getItem("authToken")
+            await axios.post(`${API_BASE}/executive/priority-matrix`, priorityMatrixData, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+
+            toast({
+                title: "Priority Matrix Saved",
+                description: "Tasks in the Priority Matrix were updated successfully."
+            })
+
+            setShowPriorityMatrixModal(false)
+            saveActivityToLocalStorage("priority_matrix_saved", "Priority Matrix Saved", "Updated tasks in Priority Matrix")
+        } catch (error) {
+            console.error("Error saving priority matrix:", error)
+
+            toast({
+                title: "Failed to Save",
+                description: "Could not save the Priority Matrix. Please try again.",
+                variant: "destructive",
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const addPriorityTask = () => {
+        if (newTaskInput.trim() === "") return
+
+        setPriorityMatrixData((prevData) => ({
+            ...prevData,
+            [newTaskQuadrant]: prevData[newTaskQuadrant]
+                ? `${prevData[newTaskQuadrant]}\n- ${newTaskInput}`
+                : `- ${newTaskInput}`,
+        }))
+        setNewTaskInput("")
     }
 
     const generateRoutine = async () => {
@@ -261,7 +371,10 @@ const Executive = () => {
             )
         } catch (error) {
             console.error("Error generating routine:", error)
-            alert("Failed to generate routine. Please try again.")
+            toast({
+                title: "Failed to generate routine",
+                description: "The routine could not be generated. Please try again.",
+            })
         } finally {
             setIsLoading(false)
         }
@@ -299,7 +412,10 @@ const Executive = () => {
             )
         } catch (error) {
             console.error("Error generating routine from brain dump:", error)
-            alert("Failed to generate routine from brain dump. Please try again.")
+            toast({
+                title: "Failed to generate routine",
+                description: "Please try again later.",
+            })
         } finally {
             setIsLoading(false)
         }
@@ -323,7 +439,10 @@ const Executive = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 },
             )
-            alert("Routine saved successfully!")
+            toast({
+                title: "Routine Saved",
+                description: "Your routine has been saved successfully.",
+            })
             fetchSavedRoutines()
 
             // Save activity to localStorage
@@ -331,8 +450,10 @@ const Executive = () => {
                 routineType: generatedRoutine.routine_type,
             })
         } catch (error) {
-            console.error("Error saving routine:", error)
-            alert("Failed to save routine. Please try again.")
+            toast({
+                title: "Failed to save routine",
+                description: "Please try again later."
+            })
         }
     }
 
@@ -370,10 +491,13 @@ const Executive = () => {
                 setShowBrainDump(true)
                 break
             case "randomize":
-                alert("Task Randomizer coming soon!")
+                const randomIndex = Math.floor(Math.random() * randomTasksList.length)
+                setRandomTask(randomTasksList[randomIndex])
+                setShowRandomTaskModal(true)
                 break
             case "prioritize":
-                alert("Priority Matrix coming soon!")
+                fetchPriorityMatrix() // Fetch existing data when opening
+                setShowPriorityMatrixModal(true)
                 break
         }
     }
@@ -389,7 +513,10 @@ const Executive = () => {
 
         const printWindow = window.open("", "_blank")
         if (!printWindow) {
-            alert("Please allow popups to print")
+            toast({
+                title: "Print Error",
+                description: "Could not open print window. Please check your browser settings."
+            })
             return
         }
 
@@ -596,9 +723,39 @@ const Executive = () => {
                                 </div>
                             </div>
                         )}
-
                     </CardContent>
                 </Card>
+
+                {/* Executive Function Strategies */}
+                <div className="mb-12">
+                    <div className="flex items-center gap-3 mb-8">
+                        <Lightbulb className="w-8 h-8 text-sora-teal" />
+                        <h2 className="text-3xl font-bold text-sora-teal">Executive Function Strategies</h2>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {executiveStrategies.map((strategy, index) => (
+                            <Card key={index} className="bg-gradient-to-br from-sora-card to-sora-muted border-sora-teal/20">
+                                <CardHeader>
+                                    <div className="flex items-center gap-3">
+                                        <strategy.icon className="w-8 h-8 text-sora-teal" />
+                                        <CardTitle className="text-xl text-white">{strategy.title}</CardTitle>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <ul className="space-y-2">
+                                        {strategy.strategies.slice(0, 5).map((item, i) => (
+                                            <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
+                                                <div className="w-1.5 h-1.5 bg-sora-teal rounded-full mt-2 flex-shrink-0" />
+                                                {item}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
 
                 {/* Quick Executive Function Tools */}
                 <div className="mb-12">
@@ -630,37 +787,6 @@ const Executive = () => {
                                             </Button>
                                         </div>
                                     )}
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Executive Function Strategies */}
-                <div className="mb-12">
-                    <div className="flex items-center gap-3 mb-8">
-                        <Lightbulb className="w-8 h-8 text-sora-teal" />
-                        <h2 className="text-3xl font-bold text-sora-teal">Executive Function Strategies</h2>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {executiveStrategies.map((strategy, index) => (
-                            <Card key={index} className="bg-gradient-to-br from-sora-card to-sora-muted border-sora-teal/20">
-                                <CardHeader>
-                                    <div className="flex items-center gap-3">
-                                        <strategy.icon className="w-8 h-8 text-sora-teal" />
-                                        <CardTitle className="text-xl text-white">{strategy.title}</CardTitle>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <ul className="space-y-2">
-                                        {strategy.strategies.slice(0, 5).map((item, i) => (
-                                            <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
-                                                <div className="w-1.5 h-1.5 bg-sora-teal rounded-full mt-2 flex-shrink-0" />
-                                                {item}
-                                            </li>
-                                        ))}
-                                    </ul>
                                 </CardContent>
                             </Card>
                         ))}
@@ -762,6 +888,203 @@ const Executive = () => {
                     )}
                 </DialogContent>
             </Dialog>
+
+            {/* Priority Matrix Modal */}
+            <Dialog open={showPriorityMatrixModal} onOpenChange={setShowPriorityMatrixModal}>
+                <DialogContent className="custom-scroll bg-sora-card border-sora-teal/30 w-full max-w-md sm:max-w-lg md:max-w-4xl px-2 sm:px-4 lg:px-6 py-4 max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl text-sora-teal flex items-center gap-3">
+                            <Grid3X3 className="w-7 h-7" />
+                            Priority Matrix
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 sm:space-y-6">
+                        <p className="text-gray-300 text-sm">
+                            Drag or type your tasks into the appropriate quadrant:
+                        </p>
+
+                        {/* Matrix Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5">
+                            {[
+                                {
+                                    title: "Urgent + Important",
+                                    description: "Do first",
+                                    borderColor: "border-red-500",
+                                    textColor: "text-red-400",
+                                    value: priorityMatrixData.urgentImportant,
+                                    onChange: (val: string) =>
+                                        setPriorityMatrixData({ ...priorityMatrixData, urgentImportant: val }),
+                                },
+                                {
+                                    title: "Not Urgent + Important",
+                                    description: "Schedule",
+                                    borderColor: "border-orange-500",
+                                    textColor: "text-orange-400",
+                                    value: priorityMatrixData.notUrgentImportant,
+                                    onChange: (val: string) =>
+                                        setPriorityMatrixData({ ...priorityMatrixData, notUrgentImportant: val }),
+                                },
+                                {
+                                    title: "Urgent + Not Important",
+                                    description: "Delegate",
+                                    borderColor: "border-cyan-500",
+                                    textColor: "text-cyan-400",
+                                    value: priorityMatrixData.urgentNotImportant,
+                                    onChange: (val: string) =>
+                                        setPriorityMatrixData({ ...priorityMatrixData, urgentNotImportant: val }),
+                                },
+                                {
+                                    title: "Not Urgent + Not Important",
+                                    description: "Eliminate",
+                                    borderColor: "border-gray-500",
+                                    textColor: "text-gray-400",
+                                    value: priorityMatrixData.notUrgentNotImportant,
+                                    onChange: (val: string) =>
+                                        setPriorityMatrixData({ ...priorityMatrixData, notUrgentNotImportant: val }),
+                                },
+                            ].map((item, index) => (
+                                <Card key={index} className={`bg-sora-muted border-2 ${item.borderColor}`}>
+                                    <CardHeader>
+                                        <CardTitle className={`text-base sm:text-lg ${item.textColor}`}>
+                                            {item.title}
+                                        </CardTitle>
+                                        <p className="text-gray-400 text-sm">{item.description}</p>
+                                    </CardHeader>
+                                    <CardContent className="p-3 sm:p-4">
+                                        <Textarea
+                                            value={item.value}
+                                            onChange={(e) => item.onChange(e.target.value)}
+                                            placeholder="Tasks here..."
+                                            className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 min-h-[100px] text-sm"
+                                        />
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+
+                        {/* Add Task Section */}
+                        <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+                            <div className="flex-grow">
+                                <Label htmlFor="newTask" className="text-white mb-1 block text-sm">
+                                    Add a new task:
+                                </Label>
+                                <Input
+                                    id="newTask"
+                                    value={newTaskInput}
+                                    onChange={(e) => setNewTaskInput(e.target.value)}
+                                    placeholder="e.g., Call the bank"
+                                    className="bg-sora-muted border-sora-teal/30 text-white placeholder-gray-400 w-full text-sm"
+                                />
+                            </div>
+
+                            <div className="w-full sm:w-[180px]">
+                                <Label htmlFor="taskQuadrant" className="text-white mb-1 block text-sm">
+                                    To quadrant:
+                                </Label>
+                                <Select
+                                    value={newTaskQuadrant}
+                                    onValueChange={(value) => setNewTaskQuadrant(value as keyof PriorityMatrixData)}
+                                >
+                                    <SelectTrigger id="taskQuadrant" className="bg-sora-muted border-sora-teal/30 text-white w-full text-sm">
+                                        <SelectValue placeholder="Select quadrant" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-sora-muted border-sora-teal/30">
+                                        <SelectItem value="urgentImportant" className="text-white hover:bg-sora-teal/20">
+                                            Urgent + Important
+                                        </SelectItem>
+                                        <SelectItem value="notUrgentImportant" className="text-white hover:bg-sora-teal/20">
+                                            Not Urgent + Important
+                                        </SelectItem>
+                                        <SelectItem value="urgentNotImportant" className="text-white hover:bg-sora-teal/20">
+                                            Urgent + Not Important
+                                        </SelectItem>
+                                        <SelectItem value="notUrgentNotImportant" className="text-white hover:bg-sora-teal/20">
+                                            Not Urgent + Not Important
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <Button
+                                onClick={addPriorityTask}
+                                disabled={!newTaskInput.trim()}
+                                className="bg-sora-teal hover:bg-sora-teal/80 text-sora-dark w-full sm:w-auto text-sm"
+                            >
+                                <Plus className="w-4 h-4 mr-2" /> Add
+                            </Button>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row flex-wrap justify-end gap-3 pt-4">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowPriorityMatrixModal(false)}
+                                className="border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark w-full sm:w-auto text-sm"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={savePriorityMatrix}
+                                disabled={isLoading}
+                                className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto text-sm"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="w-4 h-4 mr-2" />
+                                        Done
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+
+
+            {/* Task Randomizer Modal */}
+            <Dialog open={showRandomTaskModal} onOpenChange={setShowRandomTaskModal}>
+                <DialogContent className="bg-sora-card border-sora-teal/30 w-full max-w-sm sm:max-w-md px-4 py-6 text-center">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl sm:text-2xl text-sora-teal flex items-center justify-center gap-2">
+                            <Shuffle className="w-6 h-6 sm:w-8 sm:h-8" />
+                            Your Random Task!
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 pt-4">
+                        <p className="text-gray-300 text-base sm:text-lg font-medium break-words">{randomTask}</p>
+
+                        <div className="flex flex-col sm:flex-row justify-center gap-3">
+                            <Button
+                                onClick={() => {
+                                    const randomIndex = Math.floor(Math.random() * randomTasksList.length)
+                                    setRandomTask(randomTasksList[randomIndex])
+                                }}
+                                className="bg-sora-teal hover:bg-sora-teal/80 text-sora-dark w-full sm:w-auto text-sm"
+                            >
+                                <Shuffle className="w-4 h-4 mr-2" />
+                                Give me another!
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowRandomTaskModal(false)}
+                                className="border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark w-full sm:w-auto text-sm"
+                            >
+                                Got it!
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
         </div>
     )
 
@@ -850,7 +1173,6 @@ const Executive = () => {
                                 Brain Dump Instead
                             </Button>
                         </div>
-
                     </CardContent>
                 </Card>
             </div>

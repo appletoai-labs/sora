@@ -1,6 +1,7 @@
 const express = require("express")
 const Routine = require("../models/Routine")
 const auth = require("../middleware/auth")
+const PriorityMatrix = require("../models/PriorityMatrix") 
 const { generateRoutine, generateRoutineFromBrainDump } = require("../services/executiveService")
 
 const router = express.Router()
@@ -155,6 +156,51 @@ router.delete("/routines/:id", auth, async (req, res) => {
   } catch (error) {
     console.error("Delete routine error:", error)
     res.status(500).json({ message: "Failed to delete routine" })
+  }
+})
+
+// Save or update a user's priority matrix
+router.post("/priority-matrix", auth, async (req, res) => {
+  try {
+    const { urgentImportant, notUrgentImportant, urgentNotImportant, notUrgentNotImportant } = req.body
+
+    const priorityMatrix = await PriorityMatrix.findOneAndUpdate(
+      { userId: req.userId },
+      {
+        urgentImportant: urgentImportant || "",
+        notUrgentImportant: notUrgentImportant || "",
+        urgentNotImportant: urgentNotImportant || "",
+        notUrgentNotImportant: notUrgentNotImportant || "",
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }, // Create if not exists, return new doc
+    )
+
+    res.status(200).json(priorityMatrix)
+  } catch (error) {
+    console.error("Save priority matrix error:", error)
+    res.status(500).json({ message: "Failed to save priority matrix" })
+  }
+})
+
+// Get a user's priority matrix
+router.get("/priority-matrix", auth, async (req, res) => {
+  try {
+    const priorityMatrix = await PriorityMatrix.findOne({ userId: req.userId })
+
+    if (!priorityMatrix) {
+      // If no matrix exists, return an empty one
+      return res.status(200).json({
+        urgentImportant: "",
+        notUrgentImportant: "",
+        urgentNotImportant: "",
+        notUrgentNotImportant: "",
+      })
+    }
+
+    res.json(priorityMatrix)
+  } catch (error) {
+    console.error("Get priority matrix error:", error)
+    res.status(500).json({ message: "Failed to fetch priority matrix" })
   }
 })
 

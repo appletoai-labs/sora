@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
+import { useToast } from "@/components/ui/use-toast"
 import type { FC } from "react"
 import axios from "axios"
 import {
@@ -153,6 +154,7 @@ interface OverwhelmResult {
 }
 
 const Clarity: FC = () => {
+  const { toast } = useToast()
   const API_BASE = `${import.meta.env.REACT_APP_BACKEND_URL}/api`
   const [activeView, setActiveView] = useState<
     "main" | "taskForm" | "overwhelmForm" | "taskResult" | "overwhelmResult"
@@ -247,7 +249,10 @@ const Clarity: FC = () => {
       setActiveView("taskResult")
     } catch (error) {
       console.error("Error fetching task breakdown:", error)
-      alert("Failed to fetch task breakdown. Please try again.")
+      toast({
+        title: "Error",
+        description: "Failed to fetch task breakdown. Please try again later."
+      })
     } finally {
       setIsLoading(false)
     }
@@ -277,7 +282,10 @@ const Clarity: FC = () => {
       setActiveView("overwhelmResult")
     } catch (error) {
       console.error("Error fetching overwhelm support:", error)
-      alert("Failed to fetch overwhelm support. Please try again.")
+      toast({
+        title: "Error",
+        description: "Failed to fetch overwhelm support. Please try again later."
+      })
     } finally {
       setIsLoading(false)
     }
@@ -313,10 +321,16 @@ const Clarity: FC = () => {
 
     try {
       await navigator.clipboard.writeText(textToCopy)
-      alert("Content copied to clipboard!")
+      toast({ 
+        title: "Copied to Clipboard",
+        description: "Your task breakdown or overwhelm support details have been copied!",
+      })
     } catch (err) {
       console.error("Failed to copy to clipboard:", err)
-      alert("Failed to copy to clipboard. Please try again.")
+      toast({
+        title: "Copy Failed",
+        description: "There was an error copying the details. Please try again.",
+      })
     }
   }
 
@@ -328,7 +342,10 @@ const Clarity: FC = () => {
     const printWindow = window.open("", "_blank")
 
     if (!printWindow) {
-      alert("Please allow popups to print")
+      toast({
+        title: "Print Error",
+        description: "Failed to open print window. Please check your browser settings.",
+      })
       return
     }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useToast } from "@/components/ui/use-toast"
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -658,6 +659,7 @@ const StrategyCard: FC<StrategyCardProps> = ({
 
 // Main Component
 const EmotionalSupport: FC = () => {
+    const { toast } = useToast()
     const navigate = useNavigate();
     const API_BASE = `${import.meta.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -823,7 +825,10 @@ const EmotionalSupport: FC = () => {
             saveToRecentActivities(activity);
         } catch (error) {
             console.error('Error fetching strategies:', error);
-            alert('Failed to fetch personalized strategies. Please try again.');
+            toast({
+                title: 'Error',
+                description: 'Failed to fetch personalized strategies. Please try again later.'
+            });
         } finally {
             setIsLoading(false);
         }
