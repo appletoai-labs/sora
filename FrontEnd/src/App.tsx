@@ -1,3 +1,4 @@
+// App.tsx
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -10,7 +11,10 @@ import Auth from './pages/Auth';
 import AppDashboard from './pages/AppDashboard';
 import VerifyEmail from './pages/VerifyEmail';
 import Privacy from './pages/Privacy';
+import Subscription from './pages/subscription';
+
 import { ChatInterface } from '@/components/chat';
+import { Trialchat } from '@/components/chat/trial';
 import { ImmediateSupport } from './components/imediateSupport';
 import Layout from '@/components/layout';
 import { DashboardHome } from '@/components/dashboard/DashboardHome';
@@ -21,14 +25,13 @@ import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Goals from './components/dashboard/tools/goals';
 import Dashboard from './components/dashboard/tools/dashboard';
-
-import { UiPreferencesProvider } from '@/context/UiPreferencesContext'; // ✅ Import
-import { AppWrapper } from './layout/AppWrapper';
 import EmotionalSupport from './components/dashboard/tools/emotionalSupport';
 import Community from './components/dashboard/tools/community';
 import Executive from './components/dashboard/tools/executive';
 import RealLifeMode from './components/dashboard/tools/reallife';
 
+import { UiPreferencesProvider } from '@/context/UiPreferencesContext';
+import { AppWrapper } from './layout/AppWrapper';
 
 const queryClient = new QueryClient();
 
@@ -39,13 +42,22 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <UiPreferencesProvider> 
+          <UiPreferencesProvider>
             <AppWrapper>
               <Routes>
                 <Route element={<Layout />}>
                   <Route path="/" element={<Index />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/immediate-support" element={<ImmediateSupport />} />
+                  <Route path="/subscription" element={<Subscription />} />
+                  <Route
+                    path="/chattrials"
+                    element={
+                      <ProtectedRoute>
+                        <Trialchat />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Route>
 
                 <Route element={<Layout />}>
@@ -56,7 +68,7 @@ const App = () => (
                 <Route
                   path="/app"
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute requirePremium>
                       <DashboardLayout />
                     </ProtectedRoute>
                   }
@@ -68,12 +80,12 @@ const App = () => (
                   <Route path="checkin" element={<DailyCheckin />} />
                   <Route path="sensory" element={<Sensory />} />
                   <Route path="goals" element={<Goals />} />
-                  <Route path="executive" element={<Executive/>} />
-                  <Route path="community" element={<Community/>} />
+                  <Route path="executive" element={<Executive />} />
+                  <Route path="community" element={<Community />} />
                   <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="reallife" element={<RealLifeMode/>} />
-                  <Route path="emotional-support" element={<EmotionalSupport/>} />
-                  <Route path="crisis-support" element={<ImmediateSupport/>} />
+                  <Route path="reallife" element={<RealLifeMode />} />
+                  <Route path="emotional-support" element={<EmotionalSupport />} />
+                  <Route path="crisis-support" element={<ImmediateSupport />} />
                 </Route>
 
                 <Route path="/404" element={<NotFound />} />

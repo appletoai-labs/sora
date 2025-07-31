@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Heart, Shield } from "lucide-react";
 import heroImage from "@/assets/hero-brain.jpg";
 import SoraLogo from "@/components/SoraLogo";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="relative overflow-hidden bg-sora-dark py-20 md:py-32">
       <div className="container mx-auto px-4">
@@ -13,15 +15,15 @@ const Hero = () => {
               <div className="flex items-center justify-center mb-6">
                 <SoraLogo size="large" className="text-sora-teal" />
               </div>
-              
+
               <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
                 <span className="bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent">
                   Thrive in Your Own Rhythm
                 </span>
               </h1>
-              
+
               <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
-                Your 24/7 AI companion designed for ADHD + Autism. 
+                Your 24/7 AI companion designed for ADHD + Autism.
                 Not here to "fix" you, but to help you work <em>with</em> your brain, not against it.
               </p>
             </div>
@@ -38,7 +40,12 @@ const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" className="text-lg px-8 py-4">
+              <Button
+                variant="hero"
+                size="lg"
+                className="text-lg px-8 py-4"
+                onClick={() => navigate("/auth")}
+              >
                 Start Your Journey
               </Button>
               <Button variant="outline" size="lg" className="text-lg px-8 py-4">
@@ -49,14 +56,14 @@ const Hero = () => {
 
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-float">
-              <img 
-                src={heroImage} 
+              <img
+                src={heroImage}
                 alt="Abstract brain illustration representing neurodivergent support"
                 className="w-full h-auto object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-sora-teal/20 to-transparent" />
             </div>
-            
+
             {/* Floating elements */}
             <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-sora-teal to-sora-orange rounded-full opacity-80 animate-pulse" />
             <div className="absolute -bottom-6 -left-6 w-12 h-12 bg-gradient-to-br from-sora-orange to-sora-teal rounded-full opacity-60 animate-pulse delay-1000" />

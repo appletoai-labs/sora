@@ -40,6 +40,15 @@ const userSchema = new mongoose.Schema(
     passwordResetToken: {
       type: String,
     },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    chatCount: {
+      type: Number,
+      default: 0,
+    },
+
     passwordResetExpires: {
       type: Date,
     },
@@ -75,6 +84,7 @@ const userSchema = new mongoose.Schema(
   {
     timestamps: true,
   },
+
 )
 
 // Hash password before saving

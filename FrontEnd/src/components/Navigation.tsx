@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import SoraLogo from "@/components/SoraLogo";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { label: "How It Works", href: "#functions" },
     { label: "About SORA", href: "#about" },
     { label: "For Professionals", href: "#integration" },
-    { label: "Privacy", href: "#privacy" }
+    { label: "Privacy", href: "#privacy" },
   ];
 
   return (
@@ -19,7 +23,9 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <SoraLogo className="text-foreground" />
+          <div className="cursor-pointer" onClick={() => navigate("/")}>
+            <SoraLogo className="text-foreground" />
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
@@ -34,14 +40,39 @@ const Navigation = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
-            <Button variant="hero" size="sm" asChild>
-              <Link to="/auth">Get Started</Link>
-            </Button>
+          {/* Auth Button / User Dropdown */}
+          <div className="hidden md:block relative">
+            {!user ? (
+              <Button variant="hero" size="sm" asChild>
+                <Link to="/auth">Get Started</Link>
+              </Button>
+            ) : (
+              <div className="relative">
+                <button
+                  onClick={() => setShowDropdown((prev) => !prev)}
+                  className="flex items-center space-x-2 text-sm font-medium text-foreground hover:text-sora-teal"
+                >
+                  <span>{user.firstName || user.email}</span>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                {showDropdown && (
+                  <div className="absolute right-0 mt-2 w-36 bg-background border border-muted rounded-md shadow-lg z-50">
+                    <button
+                      onClick={() => {
+                        logout();
+                        setShowDropdown(false);
+                      }}
+                      className="w-full px-4 py-2 text-sm text-left text-foreground hover:bg-muted"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
@@ -50,7 +81,7 @@ const Navigation = () => {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden border-t border-sora-teal/20 py-4">
             <div className="flex flex-col space-y-4">
@@ -64,9 +95,29 @@ const Navigation = () => {
                   {item.label}
                 </a>
               ))}
-              <Button variant="hero" size="sm" className="self-start" asChild>
-                <Link to="/auth">Get Started</Link>
-              </Button>
+
+              {!user ? (
+                <Button variant="hero" size="sm" className="self-start" asChild>
+                  <Link to="/auth">Get Started</Link>
+                </Button>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Signed in as: <br />
+                    <span className="font-medium">{user.firstName || user.email}</span>
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      logout();
+                      setIsOpen(false);
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
