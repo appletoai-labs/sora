@@ -31,6 +31,7 @@ import Executive from './components/dashboard/tools/executive';
 import RealLifeMode from './components/dashboard/tools/reallife';
 import Research from './components/dashboard/tools/research';
 import LearnMore from './components/learn-more';
+import BrainInsight from './components/dashboard/tools/BrainInsight';
 
 import { UiPreferencesProvider } from '@/context/UiPreferencesContext';
 import { AppWrapper } from './layout/AppWrapper';
@@ -83,6 +84,7 @@ const App = () => (
                   <Route path="research" element={<Research/>} />
                   <Route path="clarity" element={<Clarity />} />
                   <Route path="checkin" element={<DailyCheckin />} />
+                  <Route path="brain-dashboard" element={<BrainInsight/>} />
                   <Route path="sensory" element={<Sensory />} />
                   <Route path="goals" element={<Goals />} />
                   <Route path="executive" element={<Executive />} />

@@ -1,17 +1,18 @@
 const ChatSession = require("../models/ChatSession")
 const Insight = require("../models/insights")
 const Pattern = require("../models/patterns")
-const DailyCheckin = require("../models/DailyCheckin")
 const { generateText } = require("ai")
 const { openai } = require("@ai-sdk/openai")
+
 const PDFDocument = require("pdfkit")
+const Checkin = require("../models/Checkin")
 
 async function generateCodexReport(userId) {
   // Fetch user data
   const chatSessions = await ChatSession.find({ userId }).sort({ createdAt: -1 }).limit(50) // Limit to recent 50 sessions
   const insights = await Insight.find({ userId }).sort({ createdAt: -1 }).limit(20) // Limit to recent 20 insights
   const patterns = await Pattern.find({ userId }).sort({ createdAt: -1 }).limit(10) // Limit to recent 10 patterns
-  const dailyCheckins = await DailyCheckin.find({ userId }).sort({ createdAt: -1 }).limit(30) // Limit to recent 30 checkins
+  const dailyCheckins = await Checkin.find({ userId }).sort({ createdAt: -1 }).limit(30) // Limit to recent 30 checkins
 
   // Prepare data for OpenAI
   const chatSummaries = chatSessions.map((session) => ({
@@ -176,6 +177,119 @@ async function generateCodexReport(userId) {
   })
 }
 
+
+async function generateBrainInsights(userId) {
+  const chatSessions = await ChatSession.find({ userId }).sort({ createdAt: -1 }).limit(10)
+  const insights = await Insight.find({ userId }).sort({ createdAt: -1 }).limit(5)
+  const patterns = await Pattern.find({ userId }).sort({ createdAt: -1 }).limit(3)
+  const dailyCheckins = await Checkin.find({ userId }).sort({ createdAt: -1 }).limit(7)
+
+  const chatData = chatSessions.map(session => ({
+    title: session.title,
+    summary: session.summary,
+    messages: session.messages.map(msg => `${msg.role}: ${msg.content}`).join("\n"),
+    createdAt: session.createdAt,
+  }))
+
+  const insightData = insights.map(insight => ({
+    summary: insight.summary,
+    mainConcern: insight.mainConcern,
+    moodInsight: insight.moodInsight,
+    tags: insight.tags,
+    createdAt: insight.createdAt,
+  }))
+
+  const patternData = patterns.map(pattern => ({
+    text: pattern.patternsText,
+    createdAt: pattern.createdAt,
+  }))
+
+  const checkinData = dailyCheckins.map(checkin => ({
+    mood: checkin.mood,
+    energyLevel: checkin.energyLevel,
+    focusLevel: checkin.focusLevel,
+    sensoryInput: checkin.sensoryInput,
+    notes: checkin.notes,
+    createdAt: checkin.createdAt,
+  }))
+
+  const prompt = `Based on the following user data, generate a concise "Brain Insights Dashboard" summary.
+  Provide insights for "Optimal Times", "Sensory Profile", and "Communication Patterns".
+  Format the output as a JSON object with three arrays: "optimalTimes", "sensoryProfile", and "communicationPatterns".
+  Each array should contain bullet points as strings. If data is insufficient, state "No clear patterns yet." or similar.
+
+  User's Recent Chat Sessions:
+  ${JSON.stringify(chatData, null, 2)}
+
+  User's Recent Insights:
+  ${JSON.stringify(insightData, null, 2)}
+
+  User's Recent Patterns:
+  ${JSON.stringify(patternData, null, 2)}
+
+  User's Recent Daily Check-ins:
+  ${JSON.stringify(checkinData, null, 2)}
+
+  Example Output Structure:
+  {
+    "optimalTimes": [
+      "Creative work: Tuesday/Thursday 2-4pm",
+      "Social interactions: Monday mornings",
+      "Recharge periods: Friday afternoons"
+    ],
+    "sensoryProfile": [
+      "Seeking: Deep pressure, white noise",
+      "Avoiding: Fluorescent lights, sudden sounds",
+      "Neutral: Various textures, background music"
+    ],
+    "communicationPatterns": [
+      "Direct, pattern-based conversations",
+      "Prefers academic explanations",
+      "Responds well to visual information"
+    ]
+  }
+  `
+
+  try {
+  const { text } = await generateText({
+    model: openai("gpt-4o"),
+    prompt: prompt,
+    temperature: 0.7,
+    response_format: { type: "json_object" },
+  });
+
+  // Remove ```json ... ``` fences if present
+  const cleanedText = text
+    .replace(/```json\s*/, '')  // remove ```json at start
+    .replace(/\s*```$/, '');    // remove trailing ```
+
+  return JSON.parse(cleanedText);
+} catch (error) {
+  console.error("Error generating brain insights with OpenAI:", error);
+  // Return default empty data if AI generation fails
+  return {
+    optimalTimes: ["No clear patterns yet."],
+    sensoryProfile: ["No clear patterns yet."],
+    communicationPatterns: ["No clear patterns yet."],
+  };
+}
+
+}
+
+function cleanOpenAIJsonResponse(text) {
+  // Remove ```json ... ``` fences
+  let cleaned = text.trim();
+
+  // Remove code fences and language hints
+  cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+
+  // Sometimes OpenAI wraps with ``` (no json), remove those too
+  cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
+
+  return cleaned;
+}
+
 module.exports = {
   generateCodexReport,
+  generateBrainInsights,
 }

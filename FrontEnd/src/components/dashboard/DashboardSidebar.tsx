@@ -17,7 +17,7 @@ const sidebarItems = [
       { name: "Home", href: "/app", icon: Home },
       { name: "Chat with SORA ALLY", href: "/app/chat", icon: MessageCircle },
       { name: "Clarity Tools", href: "/app/clarity", icon: Lightbulb },
-      { name: "Research Tools", href: "/app/research", icon: FileText },
+      { name: "Research", href: "/app/research", icon: FileText },
       { name: "Daily Check-in", href: "/app/checkin", icon: Calendar },
     ],
   },
