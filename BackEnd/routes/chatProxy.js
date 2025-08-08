@@ -1,6 +1,5 @@
 const express = require("express");
 const axios = require("axios");
-const auth = require("../middleware/auth")
 const router = express.Router();
 const ChatSession = require("../models/ChatSession"); // Adjust the path if needed
 const auth = require("../middleware/auth");
