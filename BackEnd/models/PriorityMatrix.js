@@ -30,7 +30,4 @@ const priorityMatrixSchema = new mongoose.Schema(
   },
 )
 
-// Index for faster queries
-priorityMatrixSchema.index({ userId: 1 })
-
 module.exports = mongoose.model("PriorityMatrix", priorityMatrixSchema)

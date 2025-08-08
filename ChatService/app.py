@@ -24,6 +24,7 @@ def api_chat():
         previous_response_id = data.get('previous_response_id')
         account_type = data.get('account_type', 'individual')
         speak = data.get('speak', False)
+        context_summary = data.get('context_summary', '')  # ✅ NEW
 
         if not message:
             return jsonify({'error': 'Message is required'}), 400
@@ -35,9 +36,10 @@ def api_chat():
             message=message,
             previous_response_id=previous_response_id,
             user_id=user_id,
-            sora_mode=sora_mode
+            sora_mode=sora_mode,
+            context_summary=context_summary  
         )
-        # Save SORA's reply only (not the dict)
+
         save_user_message_to_session(user_id, result['message'], 'sora')
         add_xp(user_id, 8, "Chat interaction with SORA")
 
@@ -46,7 +48,6 @@ def api_chat():
             'message': result['message']
         }
 
-        # Add TTS audio if requested
         if speak:
             tts = gTTS(text=result['message'], lang='en')
             audio_buffer = io.BytesIO()
@@ -56,6 +57,7 @@ def api_chat():
             response_payload['audio'] = f"data:audio/mp3;base64,{b64_audio}"
 
         return jsonify(response_payload)
+
     except Exception as e:
         print("Chat API error:", str(e))
         return jsonify({'error': 'Failed to process message', 'details': str(e)}), 500

@@ -125,11 +125,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(data.user);
     };
 
-    const logout = () => {
+    const logout = async () => {
+        const token = localStorage.getItem('authToken');
+        const sessionId = localStorage.getItem('sessionId');
+        const isViewingPastSession = localStorage.getItem('isViewingPastSession') === 'true';
+        console.log('Logging out user:', user?.email, 'Session ID:', sessionId , 'Is Viewing Past Session:', isViewingPastSession);
+
+        // Try saving last session on the server before clearing local data
+        if (token && sessionId) {
+            try {
+                await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ sessionId , isViewingPastSession }),
+                });
+                // We don't need to parse response here - best-effort only
+            } catch (err) {
+                console.error('Failed to save last session on logout:', err);
+                // proceed anyway - don't block logout if saving fails
+            }
+        }
         localStorage.clear();
         setUser(null);
         navigate('/auth');
     };
+
 
     return (
         <AuthContext.Provider
