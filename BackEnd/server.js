@@ -18,6 +18,7 @@ const EmotionalStrategy = require("./routes/emotional-support")
 const Community = require("./routes/Community")
 const Routine = require("./routes/executive")
 const CalendarTask = require("./routes/calendar")
+const researchroutes = require("./routes/research")
 
 const app = express()
 app.use(express.json());
@@ -66,6 +67,7 @@ app.use("/api/emotional-support", EmotionalStrategy)
 app.use("/api/community", Community)
 app.use("/api/executive", Routine)
 app.use("/api/calendar", CalendarTask)
+app.use("/api/research", researchroutes)
 
 
 // Health check endpoint

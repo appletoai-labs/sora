@@ -1012,7 +1012,7 @@ const EmotionalSupport: FC = () => {
                         </h2>
                     </div>
                     <p className="text-gray-300 mb-6">
-                        SORA uses evidence-based therapeutic approaches adapted for neurodivergent
+                        SORA ALLY uses evidence-based therapeutic approaches adapted for neurodivergent
                         individuals:
                     </p>
                     <div className="grid md:grid-cols-2 gap-6">
@@ -1331,7 +1331,7 @@ const EmotionalSupport: FC = () => {
                                 <div className="w-12 h-12 bg-sora-teal rounded-full flex items-center justify-center mx-auto mb-4">
                                     <MessageCircle className="w-6 h-6 text-sora-dark" />
                                 </div>
-                                <h3 className="text-white font-semibold mb-2">Talk to SORA</h3>
+                                <h3 className="text-white font-semibold mb-2">Talk to SORA ALLY</h3>
                                 <p className="text-gray-300 text-sm mb-4">
                                     Personalized emotional support and guidance
                                 </p>

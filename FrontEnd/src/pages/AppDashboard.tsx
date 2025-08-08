@@ -157,7 +157,7 @@ const AppDashboardContent = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-              SORA
+              SORA ALLY
             </h1>
             <span className="text-muted-foreground">Dashboard</span>
           </div>
@@ -205,13 +205,13 @@ const AppDashboardContent = () => {
                 Voice Assistant
               </CardTitle>
               <CardDescription>
-                Connect with SORA for immediate 24/7 mental health support through voice conversations
+                Connect with SORA ALLY for immediate 24/7 mental health support through voice conversations
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                SORA is your AI-powered mental health companion, trained to provide compassionate support, active
-                listening, and guidance whenever you need it. Simply click "Connect to SORA" below to start a voice
+                SORA ALLY is your AI-powered mental health companion, trained to provide compassionate support, active
+                listening, and guidance whenever you need it. Simply click "Connect to SORA ALLY" below to start a voice
                 conversation.
               </p>
               <div className="space-y-2 text-sm text-muted-foreground">

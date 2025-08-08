@@ -42,13 +42,13 @@ const About = () => {
                 </span>
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                SORA is your dedicated neurodivergent companion—designed to understand the unique 
+                SORA ALLY is your dedicated neurodivergent companion—designed to understand the unique 
                 rhythms, patterns, and needs of ADHD and autistic minds.
               </p>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-foreground">What makes SORA different:</h3>
+              <h3 className="text-xl font-semibold text-foreground">What makes SORA ALLY different:</h3>
               <div className="space-y-3">
                 {[
                   "Direct & Clear communication—no flowery language",
@@ -67,7 +67,7 @@ const About = () => {
             </div>
 
             <Button variant="hero" size="lg" className="text-lg px-8 py-4" onClick={() => navigate("/auth")}>
-              Experience SORA
+              Build Your Codex
             </Button>
           </div>
 

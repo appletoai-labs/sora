@@ -99,7 +99,7 @@ const toolsData = [
     icon: BarChart3,
     title: "Progress Insights",
     description:
-      "See your patterns, celebrate achievements, and understand your journey with personalized insights and gentle analytics.",
+    "Transform your daily data into personal research. See the patterns that make you unique, celebrate your neurodivergent strengths, and build insights that become part of your lifelong brain blueprint.", 
     action: "View Dashboard",
     href: "/app/dashboard",
     gradient: "from-teal-500/20 to-cyan-500/20",
@@ -108,7 +108,7 @@ const toolsData = [
     icon: Shield,
     title: "Safe Space",
     description:
-      "SORA is designed to be judgment-free, patient, and understanding. Your privacy and comfort are our highest priorities.",
+      "SORA ALLY is designed to be judgment-free, patient, and understanding. Your privacy and comfort are our highest priorities.",
     features: ["No judgment", "Patient responses", "Privacy focused", "Always available"],
     gradient: "from-emerald-500/20 to-green-500/20",
   },
@@ -118,7 +118,7 @@ const gettingStartedSteps = [
   {
     number: 1,
     title: "Start a conversation",
-    description: "Share what's on your mind with SORA",
+    description: "Share what's on your mind with SORA ALLY",
   },
   {
     number: 2,
@@ -154,15 +154,22 @@ export const DashboardHome = () => {
       <div className="container mx-auto px-6 py-8 max-w-7xl">
         {/* Welcome Section */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center">
+          {/* Logo */}
+          <div className="flex justify-center mb-4">
             <SoraLogo />
           </div>
-          <h1 className="text-4xl font-bold mb-4">Welcome , {user?.firstName}</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Your AI-powered companion designed specifically for neurodivergent minds. Get personalized support, clarity
-            tools, and gentle guidance whenever you need it.
+
+          {/* Name */}
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-orange-400 bg-clip-text text-transparent inline-block">
+            Welcome, {user?.firstName}
+          </h1>
+
+          {/* Subtitle */}
+          <p className="mt-4 text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Your AI-powered research partner designed specifically for neurodivergent minds. Get personalized support, build your brain's blueprint, and discover what makes you uniquely brilliant—one conversation at a time
           </p>
         </div>
+
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 gap-6 mb-12">
@@ -170,7 +177,7 @@ export const DashboardHome = () => {
             <CardHeader>
               <div className="flex items-center gap-3">
                 <MessageSquare className="h-6 w-6 text-sora-teal" />
-                <CardTitle className="text-xl">Talk to SORA</CardTitle>
+                <CardTitle className="text-xl">Talk to SORA ALLY</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -278,7 +285,7 @@ export const DashboardHome = () => {
               </h2>
             </div>
             <p className="text-lg text-muted-foreground max-w-4xl mx-auto">
-              Every feature in SORA is created with neurodivergent experiences in mind. We understand executive function
+              Every feature in SORA ALLY is created with neurodivergent experiences in mind. We understand executive function
               challenges, sensory sensitivities, and the need for clear, patient communication.
             </p>
           </div>

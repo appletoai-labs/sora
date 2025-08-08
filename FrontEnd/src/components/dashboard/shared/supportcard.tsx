@@ -142,7 +142,7 @@ export const SupportCard = ({ user }: { user: any }) => {
                 to="/app/chat"
                 className="block text-sm text-sora-teal transition-all duration-200 hover:text-sora-orange hover:scale-[1.02]"
               >
-                🧠 Talk to SORA
+                🧠 Talk to SORA ALLY
               </Link>
 
               <Link

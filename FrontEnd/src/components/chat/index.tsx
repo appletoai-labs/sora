@@ -122,6 +122,30 @@ export const ChatInterface = () => {
     }
   };
 
+  useEffect(() => {
+    const storedSessionId = localStorage.getItem("sessionId");
+    if (!storedSessionId) return;
+
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+
+    axios.post(
+      `${API_BASE}/chatproxy/lastsession`,
+      {
+        sessionId: storedSessionId,
+        isViewingPastSession: localStorage.getItem("isViewingPastSession") === "true",
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    ).then(() => {
+      console.log("Last session synced to DB");
+    }).catch(err => {
+      console.error("Failed to sync last session", err);
+    });
+  }, [localStorage.getItem("sessionId")]);
+
+
   const fetchLastSession = async () => {
     const token = localStorage.getItem("authToken");
     console.log("Fetching last session for token:", token);

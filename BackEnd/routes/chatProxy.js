@@ -26,6 +26,28 @@ if (!process.env.PYTHONSERVER_URL) {
 
 const FLASK_API_BASE = process.env.PYTHONSERVER_URL;
 
+// Update last session for the logged-in user
+router.post("/lastsession", auth, async (req, res) => {
+  try {
+    const { sessionId, isViewingPastSession } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: "sessionId is required" });
+    }
+
+    await LastSession.findOneAndUpdate(
+      { userId: req.user.id },
+      { sessionId, isViewingPastSession: !!isViewingPastSession },
+      { upsert: true, new: true }
+    );
+
+    res.json({ message: "Last session updated successfully" });
+  } catch (err) {
+    console.error("Error updating last session:", err);
+    res.status(500).json({ error: "Server error while updating last session" });
+  }
+});
+
 
 router.post('/summary/:sessionId', async (req, res) => {
   const { sessionId } = req.params;

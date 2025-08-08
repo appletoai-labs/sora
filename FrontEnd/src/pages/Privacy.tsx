@@ -17,7 +17,7 @@ const Privacy = () => {
                 Privacy & Trust
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Your neurodivergent journey is deeply personal. We've built SORA with privacy-first principles 
+                Your neurodivergent journey is deeply personal. We've built SORA ALLY with privacy-first principles 
                 to ensure your data is protected and your trust is earned.
               </p>
             </div>
@@ -94,7 +94,7 @@ const Privacy = () => {
                     <h3 className="text-xl font-semibold mb-2">Zero Knowledge Architecture</h3>
                     <p className="text-muted-foreground">
                       Your personal vault data is encrypted with keys only you control. 
-                      Even SORA staff cannot access your most sensitive information.
+                      Even SORA ALLY staff cannot access your most sensitive information.
                     </p>
                   </div>
                 </div>

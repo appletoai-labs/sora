@@ -101,7 +101,7 @@ const Goals: React.FC = () => {
             xpReward: 10,
             coinReward: 5,
         },
-        'Chat with SORA': {
+        'Chat with SORA ALLY': {
             title: 'Have a Chat Session',
             description: "Engage with SORA's AI support for guidance and conversation",
             difficulty: 'EASY' as const,

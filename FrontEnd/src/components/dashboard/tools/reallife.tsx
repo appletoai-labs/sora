@@ -193,12 +193,18 @@ export default function RealLifeMode() {
     <div className="from-slate-900 via-slate-800 to-slate-900 p-3 sm:p-4 md:p-6 flex flex-col">
       <div className="max-w-6xl mx-auto w-full flex-grow">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-3">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col items-center justify-center mb-4 sm:mb-6 gap-3 text-center">
+          {/* Title */}
+          <h1 className="mb-6 text-4xl font-bold bg-gradient-to-r from-cyan-400 to-orange-400 bg-clip-text text-transparent">
+            Real Life Mode
+          </h1>
+
+          {/* Controls */}
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <Button
               variant="outline"
               onClick={goToToday}
-              className="bg-gradient-to-r from-teal-600 to-teal-700 border-teal-500 text-white hover:from-teal-700 hover:to-teal-800 text-sm px-4 py-2 shadow-lg"
+              className="bg-gradient-to-r from-teal-600 to-teal-700 border-teal-500 text-white hover:from-teal-700 hover:to-teal-800 text-sm sm:text-base px-3 sm:px-4 py-2 shadow-lg"
             >
               Today
             </Button>
@@ -213,7 +219,7 @@ export default function RealLifeMode() {
                 <ChevronLeft className="h-5 w-5" />
               </Button>
 
-              <h1 className="text-xl sm:text-2xl font-bold text-white min-w-[180px] sm:min-w-[200px] text-center bg-gradient-to-r from-teal-400 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="text-lg sm:text-2xl font-bold text-white min-w-[140px] sm:min-w-[200px] text-center bg-gradient-to-r from-teal-400 to-blue-400 bg-clip-text text-transparent">
                 {monthYear}
               </h1>
 
@@ -228,6 +234,8 @@ export default function RealLifeMode() {
             </div>
           </div>
         </div>
+
+
 
         {/* Calendar Grid */}
         <Card className="bg-slate-800/80 backdrop-blur-sm border-slate-600/50 overflow-hidden shadow-2xl flex-grow">
@@ -263,7 +271,7 @@ export default function RealLifeMode() {
                       className={cn(
                         "text-sm sm:text-base font-semibold transition-all",
                         day.isToday &&
-                          "bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-sm shadow-lg",
+                        "bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-sm shadow-lg",
                         !day.isCurrentMonth && "text-slate-500",
                         day.isCurrentMonth && !day.isToday && "text-slate-200 group-hover:text-white",
                       )}

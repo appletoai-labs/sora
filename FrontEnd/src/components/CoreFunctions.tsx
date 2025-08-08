@@ -51,7 +51,7 @@ const CoreFunctions = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Six powerful ways SORA supports your neurodivergent journey
+            Six powerful ways SORA ALLY supports your neurodivergent journey
           </p>
         </div>
 
