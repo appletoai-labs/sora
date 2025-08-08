@@ -636,7 +636,7 @@ const Executive = () => {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>SORA - ${generatedRoutine.routine_title}</title>
+          <title>SORA ALLY- ${generatedRoutine.routine_title}</title>
           ${printStyles}
         </head>
         <body>
@@ -676,7 +676,7 @@ const Executive = () => {
                     <CardHeader>
                         <div className="flex items-center gap-3 mb-4">
                             <Calendar className="w-8 h-8 text-sora-teal" />
-                            <CardTitle className="text-2xl text-sora-teal">SORA Routine Builder</CardTitle>
+                            <CardTitle className="text-2xl text-sora-teal">SORA ALLY Routine Builder</CardTitle>
                         </div>
                         <p className="text-gray-300">
                             Create personalized routines that work with your brain, not against it. Tell me what kind of routine you

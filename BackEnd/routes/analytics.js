@@ -2,6 +2,7 @@ const express = require("express");
 const DailyCheckin = require("../models/DailyCheckin");
 const ChatSession = require("../models/ChatSession");
 const auth = require("../middleware/auth");
+const Checkin = require("../models/Checkin");
 
 const router = express.Router();
 
@@ -32,16 +33,13 @@ router.get("/dashboard", auth, async (req, res) => {
     startDate.setDate(startDate.getDate() - days);
 
     // ✅ Get check-in data (correct field: `user`)
-    const checkins = await DailyCheckin.find({
+    const checkins = await Checkin.find({
       user: req.userId,
       createdAt: { $gte: startDate },
     }).sort({ createdAt: 1 });
 
-    // ✅ Get chat session data (correct field: `user`)
-    const chatSessions = await ChatSession.find({
-      user: req.userId,
-      createdAt: { $gte: startDate },
-    });
+    const totalChatSessions = await ChatSession.countDocuments({ userId: req.userId })
+
 
     // Calculate average mood and energy from check-ins
     const totalCheckins = checkins.length;
@@ -61,7 +59,7 @@ router.get("/dashboard", auth, async (req, res) => {
       totalCheckins,
       averageMood,
       averageEnergy,
-      totalChatSessions: chatSessions.length,
+      totalChatSessions,
       commonSymptoms: getCommonSymptoms(checkins),
       moodTrend: getMoodTrend(checkins),
       streakDays: calculateStreak(checkins),

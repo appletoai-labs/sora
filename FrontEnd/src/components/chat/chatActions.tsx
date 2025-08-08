@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { RotateCcw, AlertTriangle } from "lucide-react";
+import { PlusCircle, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
 interface ChatActionsProps {
-  onClearChat: () => void;
+  onNewChat: () => void;
   disabled?: boolean;
 }
 
-export const ChatActions = ({ onClearChat, disabled }: ChatActionsProps) => {
+export const ChatActions = ({ onNewChat, disabled }: ChatActionsProps) => {
   const navigate = useNavigate();
 
   const handleEmergencyClick = () => {
@@ -17,9 +17,9 @@ export const ChatActions = ({ onClearChat, disabled }: ChatActionsProps) => {
 
   return (
     <div className="w-full flex flex-wrap gap-3 sm:gap-4 px-3 sm:px-6 pb-4 sm:pb-6">
-      {/* Clear Chat Button */}
+      {/* Start New Chat Button */}
       <Button
-        onClick={onClearChat}
+        onClick={onNewChat}
         disabled={disabled}
         className={cn(
           "flex-1 min-w-[140px] h-12 rounded-xl border-2 transition-all duration-300",
@@ -29,8 +29,8 @@ export const ChatActions = ({ onClearChat, disabled }: ChatActionsProps) => {
           "disabled:opacity-50 disabled:cursor-not-allowed"
         )}
       >
-        <RotateCcw className="h-4 w-4 mr-2" />
-        Clear Chat
+        <PlusCircle className="h-4 w-4 mr-2" />
+        New Chat
       </Button>
 
       {/* Emergency Support Button */}

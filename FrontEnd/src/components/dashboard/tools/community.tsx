@@ -403,7 +403,7 @@ const Community: React.FC = () => {
               <h2 className="text-3xl font-bold text-sora-teal">What Are Safe Spaces?</h2>
             </div>
             <p className="text-gray-300 text-lg mb-6">
-              Safe Spaces are specialized communities within SORA designed for specific neurodivergent experiences. Each
+              Safe Spaces are specialized communities within SORA ALLY designed for specific neurodivergent experiences. Each
               space has:
             </p>
             <div className="grid md:grid-cols-2 gap-4">

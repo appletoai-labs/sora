@@ -86,7 +86,7 @@ const Footer = () => {
         <div className="border-t border-sora-teal/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-muted-foreground">
-              © 2024 SORA. Built for neurodivergent minds, by understanding hearts.
+              © 2024 SORA ALLY. Built for neurodivergent minds, by understanding hearts.
             </div>
             
             <div className="flex items-center gap-4">

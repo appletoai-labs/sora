@@ -27,7 +27,7 @@ const SoraLogo = ({ className = "", size = "default" }) => {
       
       {/* SORA Text */}
       <span className={`font-bold tracking-wide ${sizeClasses[size]}`}>
-        SORA
+        SORA ALLY
       </span>
     </div>
   );

@@ -273,7 +273,7 @@ export const ImmediateSupport = () => {
                 <Share2 className="w-10 h-10 text-green-400 mb-4" />
                 <h3 className="text-xl font-semibold mb-4">Moving Forward</h3>
                 <ul className="space-y-2 text-gray-300">
-                  <li>• Talk to SORA about what happened</li>
+                  <li>• Talk to SORA ALLY about what happened</li>
                   <li>• Use clarity tools to break down challenges</li>
                   <li>• Plan some gentle self-care</li>
                   <li>• Remember: you handled this, you're strong</li>
@@ -287,7 +287,7 @@ export const ImmediateSupport = () => {
                 className="bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-black px-8 py-3 rounded-lg font-semibold flex items-center transition-all"
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
-                Talk to SORA
+                Talk to SORA ALLY
               </button>
 
               <button

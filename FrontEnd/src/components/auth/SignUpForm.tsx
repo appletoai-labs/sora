@@ -90,7 +90,7 @@ export const SignUpForm = () => {
 
       toast({
         title: "Account created successfully!",
-        description: "Welcome to SORA!",
+        description: "Welcome to SORA ALLY !",
       })
       navigate("/app")
     } catch (err: any) {

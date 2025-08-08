@@ -48,7 +48,7 @@ const VerifyEmail = () => {
 
       toast({
         title: "Email verified successfully!",
-        description: "Welcome to SORA. You can now access your dashboard.",
+        description: "Welcome to SORA ALLY. You can now access your dashboard.",
       });
 
       navigate('/app', { replace: true });

@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken")
 const { body, validationResult } = require("express-validator")
 const User = require("../models/User")
 const auth = require("../middleware/auth")
+const LastSession = require("../models/lastsession") // Adjust the path if needed
 
 const router = express.Router()
 
@@ -49,6 +50,29 @@ router.post(
     }
   }
 )
+
+router.post("/logout", auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { sessionId, isViewingPastSession } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: "Session ID is required" });
+    }
+
+    await LastSession.findOneAndUpdate(
+      { userId },
+      { sessionId, isViewingPastSession },
+      { upsert: true, new: true }
+    );
+
+    res.json({ message: "Logged out and last session saved" });
+  } catch (err) {
+    console.error("Logout error:", err.message || err);
+    res.status(500).json({ error: "Failed to save last session on logout" });
+  }
+});
+
 
 // 🔑 Login existing user
 router.post(

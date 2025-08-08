@@ -2,8 +2,8 @@ const express = require("express")
 const Goal = require("../models/Goal")
 const Achievement = require("../models/Achievement")
 const UserProgress = require("../models/UserProgress")
-const DailyCheckin = require("../models/DailyCheckin")
 const auth = require("../middleware/auth")
+const Checkin = require("../models/Checkin")
 
 const router = express.Router()
 
@@ -178,7 +178,7 @@ router.get("/usergoals", auth, async (req, res) => {
     const goalScore = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 
     // Daily Check-ins - Last 7 Entries
-    const checkins = await DailyCheckin.find({ userId: req.userId })
+    const checkins = await Checkin.find({ userId: req.userId })
       .sort({ date: -1 })
       .limit(7)
 

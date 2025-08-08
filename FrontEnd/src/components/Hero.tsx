@@ -12,7 +12,7 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
-              <div className="flex items-center justify-center mb-6">
+              <div className="flex items-center mb-6">
                 <SoraLogo size="large" className="text-sora-teal" />
               </div>
 
@@ -25,6 +25,9 @@ const Hero = () => {
               <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
                 Your 24/7 AI companion designed for ADHD + Autism.
                 Not here to "fix" you, but to help you work <em>with</em> your brain, not against it.
+              </p>
+              <p className="bg-gradient-to-r from-cyan-400 to-orange-400 bg-clip-text text-transparent text-xl font-semibold  mb-2 text-base italic text-muted-foreground leading-relaxed max-w-lg">
+                Every interaction builds your personal research. Six months of conversations = A lifetime of self-understanding.
               </p>
             </div>
 
@@ -40,15 +43,15 @@ const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
+              <Button variant="hero" size="lg" className="text-lg px-8 py-4">
+                Start Your Research
+              </Button>
               <Button
-                variant="hero"
+                variant="outline"
                 size="lg"
                 className="text-lg px-8 py-4"
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate("/learn-more")}
               >
-                Start Your Journey
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
                 Learn More
               </Button>
             </div>

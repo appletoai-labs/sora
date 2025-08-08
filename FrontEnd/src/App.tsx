@@ -29,6 +29,8 @@ import EmotionalSupport from './components/dashboard/tools/emotionalSupport';
 import Community from './components/dashboard/tools/community';
 import Executive from './components/dashboard/tools/executive';
 import RealLifeMode from './components/dashboard/tools/reallife';
+import Research from './components/dashboard/tools/research';
+import LearnMore from './components/learn-more';
 
 import { UiPreferencesProvider } from '@/context/UiPreferencesContext';
 import { AppWrapper } from './layout/AppWrapper';
@@ -49,6 +51,8 @@ const App = () => (
                   <Route path="/" element={<Index />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/immediate-support" element={<ImmediateSupport />} />
+
+                  <Route path="/learn-more" element={<LearnMore/>} />
                   <Route path="/subscription" element={<Subscription />} />
                   <Route
                     path="/chattrials"
@@ -76,6 +80,7 @@ const App = () => (
                   <Route index element={<DashboardHome />} />
                   <Route path="chat" element={<ChatInterface />} />
                   <Route path="immediate-support" element={<ImmediateSupport />} />
+                  <Route path="research" element={<Research/>} />
                   <Route path="clarity" element={<Clarity />} />
                   <Route path="checkin" element={<DailyCheckin />} />
                   <Route path="sensory" element={<Sensory />} />

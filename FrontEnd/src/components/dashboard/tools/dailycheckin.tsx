@@ -244,7 +244,7 @@ const DailyCheckin: React.FC = () => {
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center mb-4">
                         <CheckCircle className="w-8 h-8 text-cyan-400 mr-3" />
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-cyan-500 bg-clip-text text-transparent">
+                        <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-orange-400 bg-clip-text text-transparent">
                             Daily Check-in
                         </h1>
                     </div>

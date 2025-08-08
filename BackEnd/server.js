@@ -4,6 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 require("dotenv").config();
 
+const researchroutes = require("./routes/research")
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const chatRoutes = require("./routes/chat");
@@ -19,6 +20,7 @@ const Routine = require("./routes/executive");
 const CalendarTask = require("./routes/calendar");
 const stripeRoutes = require("./routes/stripe");
 const stripeWebhookRoutes = require("./routes/stripeWebhook");
+
 
 const app = express();
 
@@ -45,7 +47,7 @@ app.options("*", cors(corsOptions));
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .catch((err) => console.error("MongoDB connection error:", err))
 
 // All other routes
 app.use("/api/auth", authRoutes);
@@ -61,6 +63,7 @@ app.use("/api/emotional-support", EmotionalStrategy);
 app.use("/api/community", Community);
 app.use("/api/executive", Routine);
 app.use("/api/calendar", CalendarTask);
+app.use("/api/research", researchroutes)
 app.use("/api/stripe", stripeRoutes);
 
 // Health check

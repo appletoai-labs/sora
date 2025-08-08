@@ -19,7 +19,7 @@ const Index = () => {
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold text-foreground mb-4">For Professionals</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Integrate SORA into your practice to enhance patient care and streamline therapy sessions.
+                  Integrate SORA ALLY into your practice to enhance patient care and streamline therapy sessions.
                 </p>
               </div>
               <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">

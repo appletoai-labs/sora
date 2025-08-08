@@ -19,6 +19,13 @@ const messageSchema = new mongoose.Schema({
     tags: [String],
     sentiment: String,
   },
+  ResponseId: {
+    type: String,
+    required: function () {
+      return this.role === "assistant";
+    },
+  }
+
 })
 
 const chatSessionSchema = new mongoose.Schema(
@@ -30,7 +37,6 @@ const chatSessionSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      default: "New Conversation",
     },
     messages: [messageSchema],
     sessionType: {
@@ -50,6 +56,15 @@ const chatSessionSchema = new mongoose.Schema(
       type: String,
       enum: ["very_low", "low", "neutral", "good", "very_good"],
     },
+    insights: {
+      type: Boolean,
+      default: false,
+    },
+    patternsGeneratedAt: {
+      type: [Number], 
+      default: []
+    }
+
   },
   {
     timestamps: true,

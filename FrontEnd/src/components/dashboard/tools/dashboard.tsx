@@ -236,9 +236,8 @@ const Dashboard: React.FC = () => {
         return Array.from({ length: 5 }, (_, i) => (
             <Star
                 key={i}
-                className={`w-3 h-3 ${
-                    i < effectiveness ? 'text-yellow-400 fill-current' : 'text-gray-400'
-                }`}
+                className={`w-3 h-3 ${i < effectiveness ? 'text-yellow-400 fill-current' : 'text-gray-400'
+                    }`}
             />
         ));
     };
@@ -668,6 +667,7 @@ const Dashboard: React.FC = () => {
                             <Button
                                 variant="outline"
                                 className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
+                                onClick={() => navigate("/app/checkin")}
                             >
                                 <Calendar className="w-6 h-6" />
                                 <span className="text-sm">Daily Check-in</span>
@@ -676,6 +676,7 @@ const Dashboard: React.FC = () => {
                             <Button
                                 variant="outline"
                                 className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
+                                onClick={() => navigate("/app/goals")}
                             >
                                 <Target className="w-6 h-6" />
                                 <span className="text-sm">Goals</span>
@@ -684,6 +685,7 @@ const Dashboard: React.FC = () => {
                             <Button
                                 variant="outline"
                                 className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
+                                onClick={() => navigate("/app/clarity")}
                             >
                                 <Lightbulb className="w-6 h-6" />
                                 <span className="text-sm">Clarity Tools</span>
@@ -692,6 +694,7 @@ const Dashboard: React.FC = () => {
                             <Button
                                 variant="outline"
                                 className="h-20 flex-col gap-2 border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark bg-transparent"
+                                onClick={() => navigate("/app/dashboard")}
                             >
                                 <BarChart3 className="w-6 h-6" />
                                 <span className="text-sm">Analytics</span>

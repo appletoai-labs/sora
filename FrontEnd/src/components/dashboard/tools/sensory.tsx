@@ -137,7 +137,7 @@ const sensoryCategories: SensoryCategory[] = [
 
 const emergencyTools = [
   { id: "breathing", title: "Deep Breathing", icon: <Heart className="w-5 h-5" /> },
-  { id: "grounding", title: "5-4-3-2-1 Grounding", icon: <Hand className="w-5 h-5" /> },
+  { id: "grounding", title: "Grounding", icon: <Hand className="w-5 h-5" /> },
   { id: "noise", title: "Reduce Noise", icon: <Volume2 className="w-5 h-5" /> },
   { id: "lighting", title: "Adjust Lighting", icon: <Lightbulb className="w-5 h-5" /> },
 ]

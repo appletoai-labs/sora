@@ -13,7 +13,7 @@ const Navigation = () => {
 
   const navItems = [
     { label: "How It Works", href: "#functions" },
-    { label: "About SORA", href: "#about" },
+    { label: "About SORA ALLY", href: "#about" },
     { label: "For Professionals", href: "#integration" },
     { label: "Privacy", href: "#privacy" },
   ];
