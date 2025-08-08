@@ -11,8 +11,6 @@ const generateSessionTitle = require("../utils/generateSessionTitle");
 const { generatePatternsForSession } = require("../services/patternService");
 const LastSession = require("../models/lastsession"); // Adjust the path if needed
 
-
-
 // At the top of chatProxy.js
 const { openai } = require('@ai-sdk/openai');
 const { generateText } = require('ai');
@@ -111,6 +109,92 @@ router.get("/latest/responseid", auth, async (req, res) => {
   }
 });
 
+router.post("/chattrials", auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const {
+      message,
+      account_type,
+      previous_response_id,
+      session_id,
+      session_type,
+    } = req.body;
+
+    let chatSession;
+    if (session_id) {
+      chatSession = await ChatSession.findById(session_id);
+    } else {
+      chatSession = await ChatSession.findOne({ userId, isActive: true }).sort({ createdAt: -1 });
+    }
+
+    // Check if chat session exists and message length > 5
+    if (chatSession && chatSession.messages.length >= 5) {
+      // Update user freeExperience flag to false
+      await User.findByIdAndUpdate(userId, { isfreeTrial: false });
+      
+      return res.status(403).json({
+        error: "Free trial message limit reached. Please upgrade to continue chatting.",
+        status: 300, // Custom status code for free trial limit
+      });
+    }
+
+    // If session does not exist or is under limit, proceed
+
+    // ✨ Get summary of past context
+    const contextSummary = await summarizeRecentChats(userId);
+
+    // ✨ Include context summary in payload
+    const flaskRes = await axios.post(`${FLASK_API_BASE}/api/chat`, {
+      message,
+      account_type,
+      previous_response_id,
+      session_id,
+      session_type,
+      context_summary: contextSummary, // New field
+    });
+
+    const botReply = flaskRes.data.message;
+    const responseId = flaskRes.data.response_id;
+
+    if (chatSession) {
+      chatSession.messages.push(
+        { role: "user", content: message },
+        { role: "assistant", content: botReply, ResponseId: responseId }
+      );
+    } else {
+      const generatedTitle = await generateSessionTitle(botReply);
+      console.log("Generated session title:", generatedTitle);
+      chatSession = new ChatSession({
+        userId,
+        title: generatedTitle,
+        sessionType: session_type || "general",
+        messages: [
+          { role: "user", content: message },
+          { role: "assistant", content: botReply, ResponseId: responseId },
+        ],
+      });
+    }
+
+    await chatSession.save();
+
+    // Increment chat count for user (optional)
+    await User.findByIdAndUpdate(userId, { $inc: { chatcount: 1 } });
+
+    res.json({
+      message: botReply,
+      messageCount: chatSession.messages.length,
+      chattitle: chatSession.title,
+      response_id: responseId,
+      session_id: chatSession._id,
+    });
+  } catch (error) {
+    console.error("Proxy /chattrial error:", error?.response?.data || error.message);
+    res.status(500).json({ error: "Failed to forward to SORA microservice or save chat" });
+  }
+});
+
+
+
 router.post("/chat", auth, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -154,23 +238,32 @@ router.post("/chat", auth, async (req, res) => {
     }
 
     if (chatSession) {
-      chatSession.messages.push(
-        { role: "user", content: message },
-        { role: "assistant", content: botReply, ResponseId: responseId }
-      );
-    } else {
-      const generatedTitle = await generateSessionTitle(botReply);
-      console.log("Generated session title:", generatedTitle);
-      chatSession = new ChatSession({
-        userId,
-        title: generatedTitle,
-        sessionType: session_type || "general",
-        messages: [
-          { role: "user", content: message },
-          { role: "assistant", content: botReply, ResponseId: responseId },
-        ],
-      });
-    }
+  // Push new messages
+  chatSession.messages.push(
+    { role: "user", content: message },
+    { role: "assistant", content: botReply, ResponseId: responseId }
+  );
+
+  // ✨ Update title dynamically (only if you want to allow changes later)
+  chatSession.title =
+    message?.slice(0, 50) ||
+    botReply?.slice(0, 50) ||
+    chatSession.title ||
+    "New Chat";
+} else {
+  console.log("Creating new chat session with message:", message);
+  chatSession = new ChatSession({
+    userId,
+    // ✨ Title when creating new session
+    title: message?.slice(0, 50) || botReply?.slice(0, 50) || "New Chat",
+    sessionType: session_type || "general",
+    messages: [
+      { role: "user", content: message },
+      { role: "assistant", content: botReply, ResponseId: responseId },
+    ],
+  });
+}
+
 
 
     await chatSession.save();

@@ -29,6 +29,8 @@ const suggestions = [
 
 export const Trialchat = () => {
   const API_BASE = `${import.meta.env.REACT_APP_BACKEND_URL}/api`;
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -37,11 +39,22 @@ export const Trialchat = () => {
       timestamp: new Date(),
     },
   ]);
-  const [previousResponseId, setPreviousResponseId] = useState<String>(null);
+  const [previousResponseId, setPreviousResponseId] = useState<string | null>(() => {
+    return localStorage.getItem("previousResponseId");
+  });
+
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [recentSessions, setRecentSessions] = useState([]);
+  const [isViewingPastSession, setIsViewingPastSession] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+
+
+
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -54,9 +67,137 @@ export const Trialchat = () => {
     }
   };
 
+  const fetchSessions = async () => {
+    const token = localStorage.getItem("authToken");
+    try {
+      const res = await axios.get(`${API_BASE}/chatproxy/sessions/recent `, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Use your auth system
+        },
+      });
+      setRecentSessions(res.data.sessions);
+    } catch (err) {
+      console.error("Failed to load recent sessions", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+
+  const loadSessionAndMessages = async (sessionIdFromFetch?: string) => {
+    const token = localStorage.getItem("authToken");
+    const sessionId = sessionIdFromFetch || localStorage.getItem("sessionId");
+
+    if (!token) return;
+    if (!sessionId) {
+      console.warn("No session ID found in localStorage");
+      return;
+    }
+
+    try {
+      console.log("Current session ID:", sessionId);
+      setCurrentSessionId(sessionId);
+
+      const msgRes = await axios.get(
+        `${API_BASE}/chatproxy/session/${sessionId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const messagesFromDB: Message[] = msgRes.data.messages.map((msg: any, index: number) => ({
+        id: `${index}-${msg.role}`,
+        text: msg.content,
+        isUser: msg.role === "user",
+        timestamp: new Date(),
+      }));
+
+      setMessages(messagesFromDB);
+    } catch (err) {
+      console.error("Failed to load session or messages", err);
+    }
+  };
+
+  useEffect(() => {
+    const storedSessionId = localStorage.getItem("sessionId");
+    if (!storedSessionId) return;
+
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+
+    axios.post(
+      `${API_BASE}/chatproxy/lastsession`,
+      {
+        sessionId: storedSessionId,
+        isViewingPastSession: localStorage.getItem("isViewingPastSession") === "true",
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    ).then(() => {
+      console.log("Last session synced to DB");
+    }).catch(err => {
+      console.error("Failed to sync last session", err);
+    });
+  }, [localStorage.getItem("sessionId")]);
+
+
+  const fetchLastSession = async () => {
+    const token = localStorage.getItem("authToken");
+    console.log("Fetching last session for token:", token);
+    if (!token) return;
+
+    try {
+      const res = await axios.get(`${API_BASE}/chatproxy/lastsession`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data?.sessionId) {
+        console.log("Last session found:", res.data);
+
+        // Save to localStorage
+        localStorage.setItem("sessionId", res.data.sessionId);
+        localStorage.setItem("isViewingPastSession", res.data.isViewingPastSession);
+
+        // Update state immediately
+        setCurrentSessionId(res.data.sessionId);
+        setIsViewingPastSession(res.data.isViewingPastSession === true);
+
+        // Load messages AFTER saving values
+        await loadSessionAndMessages(res.data.sessionId);
+      } else {
+        console.warn("No last session found on backend");
+      }
+    } catch (err) {
+      console.error("Failed to fetch last session", err);
+    }
+  };
+
+  // ✅ Single effect
+  useEffect(() => {
+    fetchLastSession();
+  }, []);
+
+
+
+
+  const handleSessionSelect = (sessionId: any) => {
+    if (!sessionId) return;
+
+    setIsViewingPastSession(true);
+    localStorage.setItem("isViewingPastSession", "true");
+
+    // Store session ID in localStorage
+    localStorage.removeItem("sessionId");
+    localStorage.setItem("sessionId", sessionId);
+    setCurrentSessionId(sessionId);
+    loadSessionAndMessages();
+  };
+
 
   const speak = (text: string) => {
     if (!isSpeechEnabled || !("speechSynthesis" in window)) return;
@@ -98,6 +239,126 @@ export const Trialchat = () => {
     return text;
   };
 
+  const handleInsight = async () => {
+    const token = localStorage.getItem("authToken");
+    const sessionId = localStorage.getItem("sessionId");
+
+    if (!sessionId) return;
+
+    try {
+      const res = await axios.post(
+        `${API_BASE}/chatproxy/insight/${sessionId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const insightText = res.data.insight;
+      toast({
+        title: "Insight Generated"
+      });
+    } catch (err) {
+      toast({
+        title: "Insight Error",
+        description: "Could not generate insight.",
+      });
+    }
+  };
+
+  const handleNewChat = async () => {
+    setIsViewingPastSession(false);
+    localStorage.setItem("isViewingPastSession", "false");
+
+    const token = localStorage.getItem("authToken");
+    const currentSessionId = localStorage.getItem("sessionId");
+
+    try {
+      // ✅ End current active session before starting a new one
+      if (currentSessionId) {
+        try {
+          await axios.post(
+            `${API_BASE}/chatproxy/session/end/${currentSessionId}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log(`Session ${currentSessionId} ended.`);
+        } catch (endErr) {
+          // If backend says "Active chat session not found"
+          if (endErr.response?.data?.error === "Active chat session not found") {
+            toast({
+              title: "Info",
+              description: "You're already in a new chat session.",
+              variant: "default", // or "info" depending on your toast system
+            });
+          } else {
+            console.error("Error ending session:", endErr);
+          }
+          // Continue creating a new chat regardless
+        }
+      }
+
+      // ✅ Create a new session
+      const res = await axios.post(
+        `${API_BASE}/chatproxy/chat/session`,
+        { sessionType: "general" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const newSessionId = res.data.session_id;
+
+      // Save and update states
+      localStorage.setItem("sessionId", newSessionId);
+      setCurrentSessionId(newSessionId);
+
+      setPreviousResponseId(previousResponseId);
+
+      // Reset chat UI
+      setMessages([
+        {
+          id: "welcome-new",
+          text: "New Chat! I'm still here to help. How can I support you today?",
+          isUser: false,
+          timestamp: new Date(),
+        },
+      ]);
+    } catch (err) {
+      toast({
+        title: "New Session Error",
+        description: "Could not start a new chat session.",
+        variant: "destructive",
+      });
+    }
+  };
+
+
+  const fetchLatestPreviousResponseId = async (): Promise<string | null> => {
+    try {
+      const res = await axios.get(`${API_BASE}/chatproxy/latest/responseid`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      });
+
+      console.log("Fetched previousResponseId:", res.data);
+      return res.data.previousResponseId || null;
+    } catch (error) {
+      console.error("Error fetching previousResponseId:", error);
+      return null;
+    }
+  };
+
+
   const handleSendMessage = async (text: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -111,17 +372,70 @@ export const Trialchat = () => {
     setShowSuggestions(false);
 
     try {
-      const response = await axios.post(`${API_BASE}/chatproxy/chat`, {
-        message: text,
-        user_id: "demo_user",
-        account_type: "individual",
-        previous_response_id: previousResponseId
-      });
+      const token = localStorage.getItem("authToken");
+
+      let sessionId = localStorage.getItem("sessionId");
+
+      if (!sessionId || sessionId === "null") {
+        const res = await axios.post(
+          `${API_BASE}/chatproxy/chat/session`,
+          { sessionType: "general" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        sessionId = res.data.session_id;
+        localStorage.setItem("sessionId", sessionId);
+        setCurrentSessionId(sessionId);
+      }
+
+      let previousId = localStorage.getItem("previousResponseId");
+      if (!previousId || previousId === "null") {
+        const fetchedId = await fetchLatestPreviousResponseId();
+        if (fetchedId) {
+          previousId = fetchedId;
+          localStorage.setItem("previousResponseId", previousId);
+        } else {
+          console.warn("No previousResponseId available.");
+        }
+      }
+
+      const response = await axios.post(
+        `${API_BASE}/chatproxy/chattrials`,
+        {
+          message: text,
+          account_type: "individual",
+          previous_response_id: previousId,
+          session_id: sessionId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 300) {
+        toast({
+          title: "Free Trial Limit",
+          description: response.data.error,
+          duration: 5000,
+        });
+        setIsTyping(false);
+        return; // Stop further processing since limit reached
+      }
+
       const botText = response.data.message || "Sorry, I couldn't process your request.";
-      setPreviousResponseId(response.data.response_id);
-      if (response.status == 200) {
+      const newResponseId = response.data.response_id;
+
+      setPreviousResponseId(newResponseId);
+      localStorage.setItem("previousResponseId", newResponseId);
+
+      if (response.status === 200) {
         const botMessage: Message = {
-          id: response.data.response_id,
+          id: newResponseId,
           text: formatResponse(botText),
           isUser: false,
           timestamp: new Date(),
@@ -132,17 +446,22 @@ export const Trialchat = () => {
         toast({
           title: "Chat Error",
           description: "Something went wrong",
+          duration: 4000,
         });
       }
     } catch (err) {
+      console.error("Error sending message", err);
       toast({
         title: "Network Error",
         description: "Could not reach the AI server. Try again later.",
+        duration: 4000,
       });
     } finally {
       setIsTyping(false);
     }
   };
+
+
 
   const handleToggleVoice = () => {
     setIsListening(!isListening);
@@ -172,23 +491,6 @@ export const Trialchat = () => {
     });
   };
 
-  const handleClearChat = () => {
-    setMessages([
-      {
-        id: "welcome-new",
-        text: "Chat cleared! I'm still here to help. How can I support you today?",
-        isUser: false,
-        timestamp: new Date(),
-      }
-    ]);
-    speechSynthesis.cancel();
-    setShowSuggestions(true);
-    setPreviousResponseId(null);
-    toast({
-      title: "Chat cleared",
-      description: "Your conversation has been reset.",
-    });
-  };
 
   const handleEmergencySupport = () => {
     toast({
@@ -211,20 +513,44 @@ export const Trialchat = () => {
     handleSendMessage(suggestion);
   };
 
+  const handleViewSummary = async () => {
+    setLoadingSummary(true);
+    let sessiontobesummarized = localStorage.getItem("sessionId")
+    try {
+      const res = await axios.post(`${API_BASE}/chatproxy/summary/${sessiontobesummarized}`);
+      setSummary(res.data.summary);
+      setLoadingSummary(false);
+      setShowSummaryModal(true);
+    } catch (err) {
+      console.error('Failed to fetch summary', err);
+      toast({
+        title: 'Error',
+        description: 'Could not fetch session summary.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+
   return (
     <>
-      <div className="flex justify-center items-start min-h-screen px-2 sm:px-4 md:px-6 pt-12 sm:pt-20">
-
+      <div className="flex justify-center items-center h-screen  px-2 sm:px-4 md:px-6 mt-[100px]">
         <div className="flex flex-col w-full max-w-[95vw] sm:max-w-3xl md:max-w-4xl lg:max-w-5xl h-full max-h-[calc(100vh-60px)] bg-chat-surface border border-gray-300 rounded-lg shadow-lg">
 
           {/* Header */}
-          <div className="flex items-center gap-4 p-4 sm:p-6 border-b border-gray-300 shadow-chat">
-            <SoraLogo />
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs text-green-500 font-medium">Online</span>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-300 shadow-chat">
+            <div className="flex items-center gap-4">
+              <SoraLogo />
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-500 font-medium">Online</span>
+              </div>
             </div>
+
+
           </div>
+
+
 
           {/* Messages ScrollArea */}
           <ScrollArea ref={scrollAreaRef} className="flex-1 px-3 py-4 sm:p-6 overflow-auto">
@@ -255,12 +581,12 @@ export const Trialchat = () => {
           {/* Actions + Input (wrapped safely) */}
           <div className="w-full px-3 sm:px-6 space-y-2 sm:space-y-3 pb-4 sm:pb-6">
             <div className="w-full flex flex-wrap gap-2">
-              <ChatActions
-                onClearChat={handleClearChat}
-                onEmergencySupport={handleEmergencySupport}
-                disabled={isTyping}
-              />
+              <ChatActions onNewChat={handleNewChat} disabled={isTyping} />
             </div>
+
+
+            {/* Show input only when not viewing past session */}
+
             <EnhancedChatInput
               onSendMessage={handleSendMessage}
               disabled={isTyping}
@@ -269,7 +595,9 @@ export const Trialchat = () => {
               isListening={isListening}
               isSpeechEnabled={isSpeechEnabled}
             />
+
           </div>
+
 
 
         </div>

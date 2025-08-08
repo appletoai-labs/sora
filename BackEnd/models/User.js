@@ -80,6 +80,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    isfreeTrial: {
+      type: Boolean,
+      default: true,
+    },
     chatcount: {
       type: Number,
       default: 0,

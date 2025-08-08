@@ -81,15 +81,6 @@ export const ChatInterface = () => {
     }
   };
 
-  useEffect(() => {
-    fetchSessions();
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
-
-
   const loadSessionAndMessages = async (sessionIdFromFetch?: string) => {
     const token = localStorage.getItem("authToken");
     const sessionId = sessionIdFromFetch || localStorage.getItem("sessionId");
@@ -122,8 +113,8 @@ export const ChatInterface = () => {
     }
   };
 
-  useEffect(() => {
-    const storedSessionId = localStorage.getItem("sessionId");
+  const syncLastSessionToDB = () => {
+     const storedSessionId = localStorage.getItem("sessionId");
     if (!storedSessionId) return;
 
     const token = localStorage.getItem("authToken");
@@ -143,8 +134,7 @@ export const ChatInterface = () => {
     }).catch(err => {
       console.error("Failed to sync last session", err);
     });
-  }, [localStorage.getItem("sessionId")]);
-
+  };
 
   const fetchLastSession = async () => {
     const token = localStorage.getItem("authToken");
@@ -177,14 +167,6 @@ export const ChatInterface = () => {
     }
   };
 
-  // ✅ Single effect
-  useEffect(() => {
-    fetchLastSession();
-  }, []);
-
-
-
-
   const handleSessionSelect = (sessionId: any) => {
     if (!sessionId) return;
 
@@ -197,7 +179,6 @@ export const ChatInterface = () => {
     setCurrentSessionId(sessionId);
     loadSessionAndMessages();
   };
-
 
   const speak = (text: string) => {
     if (!isSpeechEnabled || !("speechSynthesis" in window)) return;
@@ -268,62 +249,62 @@ export const ChatInterface = () => {
     }
   };
 
-  const handleNewChat = async () => {
-    setIsViewingPastSession(false);
-    localStorage.setItem("isViewingPastSession", "false");
+  useEffect(() => {
+  const initChat = async () => {
+    // Step 1: Always fetch sessions from DB
+    await fetchSessions();
+    await fetchLastSession();
 
-    const token = localStorage.getItem("authToken");
-    const currentSessionId = localStorage.getItem("sessionId");
+    // Step 2: Check if they were in past session before logout/navigation
+    const wasViewingPast = localStorage.getItem("isViewingPastSession") === "true";
 
+    if (wasViewingPast) {
+      // Force new chat if they were in past session mode
+      localStorage.setItem("isViewingPastSession", "false");
+      setIsViewingPastSession(false);
+      handleNewChat();
+    } else {
+      // Otherwise try to resume last recent session
+      await fetchLastSession();
+    }
+  };
+
+  initChat();
+}, []);
+
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+  
+  useEffect(() => {
+   syncLastSessionToDB();
+  }, [localStorage.getItem("sessionId")]);
+
+
+const handleNewChat = async () => {
+  setIsViewingPastSession(false);
+  localStorage.setItem("isViewingPastSession", "false");
+
+  const token = localStorage.getItem("authToken");
+  const currentSessionId = localStorage.getItem("sessionId");
+
+  const createNewSession = async () => {
     try {
-      // ✅ End current active session before starting a new one
-      if (currentSessionId) {
-        try {
-          await axios.post(
-            `${API_BASE}/chatproxy/session/end/${currentSessionId}`,
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          console.log(`Session ${currentSessionId} ended.`);
-        } catch (endErr) {
-          // If backend says "Active chat session not found"
-          if (endErr.response?.data?.error === "Active chat session not found") {
-            toast({
-              title: "Info",
-              description: "You're already in a new chat session.",
-              variant: "default", // or "info" depending on your toast system
-            });
-          } else {
-            console.error("Error ending session:", endErr);
-          }
-          // Continue creating a new chat regardless
-        }
-      }
-
-      // ✅ Create a new session
       const res = await axios.post(
         `${API_BASE}/chatproxy/chat/session`,
         { sessionType: "general" },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       const newSessionId = res.data.session_id;
-
-      // Save and update states
       localStorage.setItem("sessionId", newSessionId);
       setCurrentSessionId(newSessionId);
-
       setPreviousResponseId(previousResponseId);
+      syncLastSessionToDB();
 
-      // Reset chat UI
       setMessages([
         {
           id: "welcome-new",
@@ -341,6 +322,35 @@ export const ChatInterface = () => {
     }
   };
 
+  try {
+    if (currentSessionId) {
+      try {
+        await axios.post(
+          `${API_BASE}/chatproxy/session/end/${currentSessionId}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log(`Session ${currentSessionId} ended.`);
+      } catch (endErr) {
+        if (endErr.response?.data?.error === "Active chat session not found") {
+          console.warn("No active session, creating a new one now...");
+          return createNewSession(); // ⬅ directly make a new one
+        } else {
+          console.error("Error ending session:", endErr);
+        }
+      }
+    }
+    // If session ended normally or there was no session, create new one
+    await createNewSession();
+  } catch (err) {
+    toast({
+      title: "New Chat Error",
+      description: "Unexpected error creating a new chat.",
+      variant: "destructive",
+    });
+  }
+};
+
 
   const fetchLatestPreviousResponseId = async (): Promise<string | null> => {
     try {
@@ -357,7 +367,6 @@ export const ChatInterface = () => {
       return null;
     }
   };
-
 
   const handleSendMessage = async (text: string) => {
     const userMessage: Message = {
@@ -452,7 +461,6 @@ export const ChatInterface = () => {
       setIsTyping(false);
     }
   };
-
 
   const handleToggleVoice = () => {
     setIsListening(!isListening);
@@ -549,10 +557,6 @@ export const ChatInterface = () => {
           <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-300 shadow-chat">
             <div className="flex items-center gap-4">
               <SoraLogo />
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-500 font-medium">Online</span>
-              </div>
             </div>
 
             <div className="flex items-center gap-4">
