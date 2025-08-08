@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const auth = require("../middleware/auth")
 const router = express.Router();
 const ChatSession = require("../models/ChatSession"); // Adjust the path if needed
 const auth = require("../middleware/auth");
@@ -202,7 +203,6 @@ router.post("/chat", auth, async (req, res) => {
       response_id: responseId,
       session_id: chatSession._id,
     });
-
   } catch (error) {
     console.error("Proxy /chat error:", error?.response?.data || error.message);
     res.status(500).json({ error: "Failed to forward to SORA microservice or save chat" });
@@ -224,7 +224,6 @@ router.get("/lastsession", auth, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch last session" });
   }
 });
-
 
 router.post("/chat/session", auth, async (req, res) => {
   try {
@@ -264,7 +263,6 @@ router.get('/session/:id', auth, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 
 // Proxy to Flask: /api/chat-history
 router.get("/chat-history", async (req, res) => {

@@ -6,7 +6,7 @@ const priorityMatrixSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true, // Each user has only one priority matrix
+      unique: true, // Automatically adds unique index
     },
     urgentImportant: {
       type: String,

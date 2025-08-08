@@ -22,13 +22,13 @@ const Footer = () => {
 
           {/* Features */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Core Functions</h3>
+            {/* <h3 className="font-semibold text-foreground">Core Functions</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>Know Your Brain</li>
               <li>Decode Stress & Shutdowns</li>
               <li>Work Fit & Strengths</li>
               <li>Communicate & Connect</li>
-            </ul>
+            </ul> */}
           </div>
 
           {/* Support */}

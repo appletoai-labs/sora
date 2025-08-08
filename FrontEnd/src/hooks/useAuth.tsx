@@ -1,131 +1,134 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface User {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    role: 'individual' | 'therapy_client' | 'therapist';
-    isEmailVerified: boolean;
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'individual' | 'therapy_client' | 'therapist';
+  isEmailVerified: boolean;
+  isPremium: boolean;
 }
 
 interface RegisterData {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    role: 'individual' | 'therapy_client' | 'therapist';
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: 'individual' | 'therapy_client' | 'therapist';
 }
 
 interface AuthContextType {
-    user: User | null;
-    login: (email: string, password: string) => Promise<void>;
-    register: (userData: RegisterData) => Promise<void>;
-    logout: () => void;
-    loading: boolean;
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (userData: RegisterData) => Promise<void>;
+  logout: () => void;
+  loading: boolean;
+  isPremium: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const API_BASE = `${import.meta.env.REACT_APP_BACKEND_URL}/api`;
 
-    const navigate = useNavigate();
+  const API_BASE = `${import.meta.env.REACT_APP_BACKEND_URL}/api`;
+  const navigate = useNavigate();
 
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            verifyToken(token);
-        } else {
-            setLoading(false);
-        }
-    }, []);
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      verifyToken(token);
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
-    const safeJson = async (res: Response) => {
-        try {
-            return await res.json();
-        } catch (e) {
-            return null;
-        }
-    };
+  const safeJson = async (res: Response) => {
+    try {
+      return await res.json();
+    } catch {
+      return null;
+    }
+  };
 
-    const verifyToken = async (token: string) => {
-        try {
-            const response = await fetch(`${API_BASE}/auth/verify`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+  const verifyToken = async (token: string) => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/verify`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const userData = await safeJson(response);
+      if (response.ok && userData) {
+        setUser(userData);
+      } else {
+        localStorage.removeItem('authToken');
+      }
+    } catch (err) {
+      console.error('Token verification failed:', err);
+      localStorage.removeItem('authToken');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            const userData = await safeJson(response);
+  const login = async (email: string, password: string) => {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-            if (response.ok && userData) {
-                setUser(userData);
-            } else {
-                localStorage.removeItem('authToken');
-            }
-        } catch (error) {
-            console.error('Token verification failed:', error);
-            localStorage.removeItem('authToken');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const data = await safeJson(response);
+    if (!response.ok || !data) {
+      throw new Error(data?.message || 'Login failed');
+    }
 
-    const login = async (email: string, password: string) => {
-        const response = await fetch(`${API_BASE}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
+    localStorage.setItem('authToken', data.token);
+    setUser(data.user);
+  };
 
-        const data = await safeJson(response);
+  const register = async (userData: RegisterData) => {
+    const response = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
 
-        if (!response.ok || !data) {
-            throw new Error(data?.message || 'Login failed');
-        }
+    const data = await safeJson(response);
+    if (!response.ok || !data) {
+      throw new Error(data?.message || 'Registration failed');
+    }
 
-        localStorage.setItem('authToken', data.token);
-        setUser(data.user);
-    };
+    localStorage.setItem('authToken', data.token);
+    setUser(data.user);
+  };
 
-    const register = async (userData: RegisterData) => {
-        const response = await fetch(`${API_BASE}/auth/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-        });
-
-        const data = await safeJson(response);
-
-        if (!response.ok || !data) {
-            throw new Error(data?.message || 'Registration failed');
-        }
-
-        localStorage.setItem('authToken', data.token);
-        setUser(data.user);
-    };
-
-    const logout = async () => {
+  const logout = async () => {
         const token = localStorage.getItem('authToken');
         const sessionId = localStorage.getItem('sessionId');
         const isViewingPastSession = localStorage.getItem('isViewingPastSession') === 'true';
@@ -153,18 +156,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         navigate('/auth');
     };
 
-
-    return (
-        <AuthContext.Provider
-            value={{
-                user,
-                login,
-                register,
-                logout,
-                loading,
-            }}
-        >
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        register,
+        logout,
+        loading,
+        isPremium: user?.isPremium ?? false,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
