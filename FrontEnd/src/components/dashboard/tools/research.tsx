@@ -609,7 +609,8 @@ const Research: React.FC = () => {
           {patterns.map((pattern) => (
             <Card key={pattern._id} className="bg-sora-card border border-sora-teal/20">
               <CardContent className="p-6">
-                <p className="text-gray-300 font-medium mb-3 line-clamp-3 whitespace-pre-wrap">{pattern.patternsText}</p>
+                <p className="text-gray-300 font-medium mb-3 line-clamp-3 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: pattern.patternsText }}></p>
+
                 <p className="text-gray-500 text-xs mt-3">
                   Generated on: {new Date(pattern.createdAt).toLocaleDateString()}
                 </p>

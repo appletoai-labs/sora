@@ -131,7 +131,7 @@ router.post("/chattrials", auth, async (req, res) => {
     if (chatSession && chatSession.messages.length >= 5) {
       // Update user freeExperience flag to false
       await User.findByIdAndUpdate(userId, { isfreeTrial: false });
-      
+
       return res.status(403).json({
         error: "Free trial message limit reached. Please upgrade to continue chatting.",
         status: 300, // Custom status code for free trial limit
@@ -238,39 +238,37 @@ router.post("/chat", auth, async (req, res) => {
     }
 
     if (chatSession) {
-  // Push new messages
-  chatSession.messages.push(
-    { role: "user", content: message },
-    { role: "assistant", content: botReply, ResponseId: responseId }
-  );
+      // Push new messages
+      chatSession.messages.push(
+        { role: "user", content: message },
+        { role: "assistant", content: botReply, ResponseId: responseId }
+      );
 
-  // ✨ Update title dynamically (only if you want to allow changes later)
-  chatSession.title =
-    message?.slice(0, 50) ||
-    botReply?.slice(0, 50) ||
-    chatSession.title ||
-    "New Chat";
-} else {
-  console.log("Creating new chat session with message:", message);
-  chatSession = new ChatSession({
-    userId,
-    // ✨ Title when creating new session
-    title: message?.slice(0, 50) || botReply?.slice(0, 50) || "New Chat",
-    sessionType: session_type || "general",
-    messages: [
-      { role: "user", content: message },
-      { role: "assistant", content: botReply, ResponseId: responseId },
-    ],
-  });
-}
-
-
+      // ✨ Update title dynamically (only if you want to allow changes later)
+      chatSession.title =
+        message?.slice(0, 50) ||
+        botReply?.slice(0, 50) ||
+        chatSession.title ||
+        "New Chat";
+    } else {
+      console.log("Creating new chat session with message:", message);
+      chatSession = new ChatSession({
+        userId,
+        // ✨ Title when creating new session
+        title: message?.slice(0, 50) || botReply?.slice(0, 50) || "New Chat",
+        sessionType: session_type || "general",
+        messages: [
+          { role: "user", content: message },
+          { role: "assistant", content: botReply, ResponseId: responseId },
+        ],
+      });
+    }
 
     await chatSession.save();
     const messageCount = chatSession.messages.length;
 
     if (
-      messageCount % 10 === 0 &&                       // Multiple of 20
+      messageCount % 40 === 0 &&                       // Multiple of 20
       !chatSession.patternsGeneratedAt.includes(messageCount) // Not generated at this count before
     ) {
       try {
@@ -423,40 +421,69 @@ router.post("/insight/:session_id", auth, async (req, res) => {
     }).join("\n");
 
     const prompt = `
-You are an AI assistant that analyzes user conversations.
+You are **SORA**, a dedicated neurodivergent research companion.  
+Your mission is to analyze the following chat history and produce highly personalized, research-oriented insights for the user’s **Neurodivergent Codex**.
 
-Here is a full chat session between a user and an assistant:
+---
 
+## **Context & Role**
+You are not just summarizing — you are *researching* the user’s unique mind.  
+Every insight you provide becomes part of their lifelong self-knowledge archive, helping them understand their optimal conditions, sensory/emotional profile, communication style, and growth patterns.  
+Maintain a supportive, validating, and celebratory tone. Write in a way that helps the user feel seen, understood, and proud of their progress.
+
+---
+
+## **Chat History**
 ${messagesText}
 
-You are SORA, a research partner helping a neurodivergent user discover how their mind works best.
-Review the following chat history and produce key insights that could be added to their personal research profile.
-Insights should:
+---
 
-Highlight crucial self-knowledge moments.
+## **Instructions for Insight Generation**
+Analyze the conversation as a monthly research report entry for the user’s codex.  
+Your insights should:
 
-Identify successful conditions that led to positive outcomes.
+1. **Highlight key moments of self-discovery** or important emotional reactions.
+2. **Identify conditions that led to successes** or reduced challenges.
+3. **Spot recurring patterns** and connect them to previous experiences or known neurodivergent research.
+4. **Suggest environmental or social accommodations** tailored to the user’s patterns.
+5. **Link findings to academic research** (ADHD, autism, sensory processing, executive function, etc.) where relevant.
+6. Maintain **a positive, strengths-based framing** — no pathologizing, shaming, or clinical diagnosis.
+7. **Be clear, structured, and easy to read**.
 
-Connect current experiences to previous ones for deeper understanding.
+---
 
-Include potential accommodations or environmental adjustments.
+## **Required Output Format**
+Respond with clearly labeled sections in this exact order:
 
-Relate findings to established research on ADHD, autism, or other relevant neurodivergent profiles where possible.
+### **Optimal Conditions**
+Describe the settings, routines, or contexts in which the user seems to thrive.
 
-Write your response as if delivering a summary for a monthly research report, with sections like:
+### **Sensory & Emotional Profile**
+Summarize sensory sensitivities, triggers, and emotional strengths or regulation strategies.
 
-Optimal Conditions: When and where they function best.
+### **Communication Preferences**
+Outline what communication styles help the user feel understood and which hinder clarity.
 
-Sensory & Emotional Profile: Sensitivities and strengths.
+### **Growth & Breakthroughs**
+Highlight any progress, mindset shifts, or successful coping strategies.
 
-Communication Preferences: Styles that help or hinder understanding.
+### **Areas for Further Research**
+Suggest questions or themes for the user to explore next in their codex.
 
-Growth & Breakthroughs: Key improvements or realizations.
+---
 
-Areas for Further Research: Questions or patterns to explore next.
+## **Tone & Style Guidelines**
+- **Encouraging & Celebratory:** “This is a powerful insight for your research profile…”
+- **Research-Oriented:** “Studies suggest that similar sensory profiles respond well to…”
+- **Pattern-Connecting:** “This echoes something you mentioned in a previous conversation about…”
+- **Strengths-Based:** Emphasize what works, not what’s “wrong.”
+- **Actionable:** Provide concrete suggestions that the user can try or track.
 
-Maintain a supportive, celebratory tone, reinforcing the idea that they are becoming the leading expert on their own mind.
+---
+
+Now, write the **full insight report** following the structure above.
 `.trim();
+
 
     // Call OpenAI using ai-sdk
     const result = await generateText({
@@ -468,14 +495,11 @@ Maintain a supportive, celebratory tone, reinforcing the idea that they are beco
 
     const insightText = result.text;
 
-    // Fallback summary extraction
-    let summary = insightText.split("\n").filter(line => line.trim())[0] || "";
-    if (summary.length > 300) summary = summary.slice(0, 300) + "...";
 
     const insightDoc = new Insight({
       sessionId,
       userId,
-      summary,
+      summary: insightText,
       mainConcern: "",
       moodInsight: "",
       tags: []
