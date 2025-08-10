@@ -314,7 +314,7 @@ const Research: React.FC = () => {
       <div className="text-center mb-10">
         <div className="flex items-center justify-center gap-3 mb-4">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-orange-400 bg-clip-text text-transparent">
-            My Research Profile
+            My Sora Codex Profile
           </h1>
         </div>
         <p className="text-gray-300 text-lg max-w-3xl mx-auto">
