@@ -115,7 +115,6 @@ const Dashboard: React.FC = () => {
                     setUserProgress(progressData.progress || userProgress);
                 }
             } catch (error) {
-                console.log('Progress data not available');
             }
 
             // Fetch recent goals
@@ -129,7 +128,6 @@ const Dashboard: React.FC = () => {
                     wellnessScore = goalsData.wellnessScore ?? 0;
                 }
             } catch (error) {
-                console.log('Goals data not available');
             }
 
             // Fetch achievements
@@ -146,7 +144,7 @@ const Dashboard: React.FC = () => {
                     );
                 }
             } catch (error) {
-                console.log('Achievements data not available');
+
             }
 
             // Fetch analytics data
@@ -167,7 +165,7 @@ const Dashboard: React.FC = () => {
                     }
                 }
             } catch (error) {
-                console.log('Analytics data not available');
+                
             }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);

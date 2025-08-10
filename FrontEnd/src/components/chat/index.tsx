@@ -92,7 +92,6 @@ export const ChatInterface = () => {
     }
 
     try {
-      console.log("Current session ID:", sessionId);
       setCurrentSessionId(sessionId);
 
       const msgRes = await axios.get(
@@ -130,7 +129,6 @@ export const ChatInterface = () => {
         headers: { Authorization: `Bearer ${token}` },
       }
     ).then(() => {
-      console.log("Last session synced to DB");
     }).catch(err => {
       console.error("Failed to sync last session", err);
     });
@@ -138,7 +136,6 @@ export const ChatInterface = () => {
 
   const fetchLastSession = async () => {
     const token = localStorage.getItem("authToken");
-    console.log("Fetching last session for token:", token);
     if (!token) return;
 
     try {
@@ -147,7 +144,6 @@ export const ChatInterface = () => {
       });
 
       if (res.data?.sessionId) {
-        console.log("Last session found:", res.data);
 
         // Save to localStorage
         localStorage.setItem("sessionId", res.data.sessionId);
@@ -330,7 +326,6 @@ const handleNewChat = async () => {
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`Session ${currentSessionId} ended.`);
       } catch (endErr) {
         if (endErr.response?.data?.error === "Active chat session not found") {
           console.warn("No active session, creating a new one now...");
@@ -359,8 +354,6 @@ const handleNewChat = async () => {
           Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
       });
-
-      console.log("Fetched previousResponseId:", res.data);
       return res.data.previousResponseId || null;
     } catch (error) {
       console.error("Error fetching previousResponseId:", error);

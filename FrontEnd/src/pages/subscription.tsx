@@ -10,7 +10,6 @@ const stripePromise = loadStripe(import.meta.env.REACT_APP_STRIPE_PUBLIC_KEY)
 const API_BASE = import.meta.env.REACT_APP_BACKEND_URL
 
 const SubscriptionSection = () => {
-  console.log(stripePromise)
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
   const navigate = useNavigate()

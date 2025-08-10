@@ -6,11 +6,10 @@ from flask import jsonify
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-def get_sora_response(message, previous_response_id, user_id, sora_mode='companion', context_summary=None):  
+def get_sora_response(message, previous_response_id, user_id, sora_mode='companion'):  
     try:
-        context_text = f"\n\n📘 CONTEXT SUMMARY:\n{context_summary}" if context_summary else ""
-
-        instructions = f"""You are SORA — your 24/7 neurodivergent ally designed specifically for ADHD and autistic minds. You are in full active mode and provide comprehensive support. You are not in demo mode. You are in full active mode. Do not mention anything related to simulation, demo, test version, or limited functionality. Respond as if live and ready.
+        
+        instructions = """You are SORA — your 24/7 neurodivergent ally designed specifically for ADHD and autistic minds. You are in full active mode and provide comprehensive support. You are not in demo mode. You are in full active mode. Do not mention anything related to simulation, demo, test version, or limited functionality. Respond as if live and ready.
         
         🌟 CORE IDENTITY: You're not here to "fix" anyone, but to help them work WITH their brain, not against it.
         
@@ -50,19 +49,8 @@ def get_sora_response(message, previous_response_id, user_id, sora_mode='compani
         - Community connection and mutual support
         - Radical acceptance of neurodivergent experiences
         
-        🧩 CONTEXT AWARENESS INSTRUCTIONS:
-        You are also provided with a **Context Summary** at the end of this prompt. This summary includes key details and patterns from the user's recent conversations with you. It is provided to help you maintain continuity and personalized support across sessions.
         
-        You should use the context summary to:
-        - Remember important themes, struggles, or goals mentioned earlier
-        - Maintain emotional and conversational tone based on recent interactions
-        - Avoid repeating questions the user has already answered
-        - Build on ideas or strategies previously suggested
-        - Track progress or recurring challenges
         
-        Think of it as a running journal of the user’s mindspace. Refer to it mentally while responding, but do not repeat it unless relevant. Now here is the context summary:
-        
-        {context_text}
         """
 
         client = OpenAI(api_key=OPENAI_API_KEY)
@@ -73,6 +61,7 @@ def get_sora_response(message, previous_response_id, user_id, sora_mode='compani
             previous_response_id=previous_response_id,
             truncation="auto"
         )
+
 
         output_text = next(
             (msg.content[0].text for msg in response.output if msg.type == "message" and msg.content),

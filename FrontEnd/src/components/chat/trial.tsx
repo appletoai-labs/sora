@@ -101,7 +101,6 @@ export const Trialchat = () => {
     }
 
     try {
-      console.log("Current session ID:", sessionId);
       setCurrentSessionId(sessionId);
 
       const msgRes = await axios.get(
@@ -139,7 +138,6 @@ export const Trialchat = () => {
         headers: { Authorization: `Bearer ${token}` },
       }
     ).then(() => {
-      console.log("Last session synced to DB");
     }).catch(err => {
       console.error("Failed to sync last session", err);
     });
@@ -148,7 +146,6 @@ export const Trialchat = () => {
 
   const fetchLastSession = async () => {
     const token = localStorage.getItem("authToken");
-    console.log("Fetching last session for token:", token);
     if (!token) return;
 
     try {
@@ -157,7 +154,6 @@ export const Trialchat = () => {
       });
 
       if (res.data?.sessionId) {
-        console.log("Last session found:", res.data);
 
         // Save to localStorage
         localStorage.setItem("sessionId", res.data.sessionId);
@@ -288,7 +284,6 @@ export const Trialchat = () => {
               },
             }
           );
-          console.log(`Session ${currentSessionId} ended.`);
         } catch (endErr) {
           // If backend says "Active chat session not found"
           if (endErr.response?.data?.error === "Active chat session not found") {
@@ -350,7 +345,6 @@ export const Trialchat = () => {
         },
       });
 
-      console.log("Fetched previousResponseId:", res.data);
       return res.data.previousResponseId || null;
     } catch (error) {
       console.error("Error fetching previousResponseId:", error);

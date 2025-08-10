@@ -132,7 +132,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const token = localStorage.getItem('authToken');
         const sessionId = localStorage.getItem('sessionId');
         const isViewingPastSession = localStorage.getItem('isViewingPastSession') === 'true';
-        console.log('Logging out user:', user?.email, 'Session ID:', sessionId , 'Is Viewing Past Session:', isViewingPastSession);
 
         // Try saving last session on the server before clearing local data
         if (token && sessionId) {

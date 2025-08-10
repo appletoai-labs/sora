@@ -176,7 +176,6 @@ const saveToRecentActivities = (activity: any) => {
         };
         const updatedActivities = [newActivity, ...existingActivities.slice(0, 9)]; // Keep only 10 most recent
         localStorage.setItem('sora_recent_activities', JSON.stringify(updatedActivities));
-        console.log('Activity saved to localStorage:', newActivity);
     } catch (error) {
         console.error('Error saving to recent activities:', error);
     }
@@ -272,7 +271,6 @@ const StrategyExecutionModal: FC<StrategyExecutionModalProps> = ({ isOpen, onClo
         };
 
         saveToRecentActivities(activity);
-        console.log('Strategy completion saved:', activity);
 
         onClose();
         resetStrategy();
@@ -477,7 +475,6 @@ const ExerciseModal: FC<ExerciseModalProps> = ({ isOpen, onClose, exercise }) =>
         };
 
         saveToRecentActivities(activity);
-        console.log('Exercise completion saved:', activity);
         onClose();
         resetExercise();
     };

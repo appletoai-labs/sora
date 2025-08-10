@@ -64,7 +64,6 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('Connected to SORA');
         setIsConnected(true);
         setSessionDuration(0);
         
@@ -97,16 +96,13 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
       wsRef.current.onmessage = async (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('Received message:', data.type);
 
           switch (data.type) {
             case 'session.created':
-              console.log('Session created, ready to chat');
               setSessionReady(true);
               break;
               
             case 'session.updated':
-              console.log('Session updated');
               setSessionReady(true);
               break;
               
@@ -136,15 +132,12 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
               break;
               
             case 'response.audio_transcript.done':
-              console.log('Full transcript:', transcript);
               break;
               
             case 'input_audio_buffer.speech_started':
-              console.log('User started speaking');
               break;
               
             case 'input_audio_buffer.speech_stopped':
-              console.log('User stopped speaking');
               break;
               
             case 'error':
@@ -171,7 +164,6 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
       };
 
       wsRef.current.onclose = () => {
-        console.log('Disconnected from SORA');
         setIsConnected(false);
         setSessionReady(false);
         setIsRecording(false);

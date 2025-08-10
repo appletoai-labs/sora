@@ -203,7 +203,6 @@ const DailyCheckin: React.FC = () => {
 
             const data = await response.json();
             if (response.ok) {
-                console.log('Saved check-in:', data.checkin);
 
                 // Save activity to localStorage for dashboard
                 saveActivityToLocalStorage(checkinData);
@@ -494,6 +493,7 @@ const DailyCheckin: React.FC = () => {
                             <Button
                                 variant="outline"
                                 className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-gray-900 px-8 py-3 text-lg bg-transparent"
+                                onClick={() => navigate('/app/dashboard')}
                             >
                                 <TrendingUp className="w-5 h-5 mr-2" />
                                 View My Progress

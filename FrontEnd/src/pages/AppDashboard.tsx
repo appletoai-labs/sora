@@ -147,7 +147,6 @@ const AppDashboardContent = () => {
     )
   }
 
-  console.log("Dashboard rendering with:", { user: !!user, profile: !!profile, loading })
 
   const RoleIcon = profile ? getRoleIcon(profile.role) : UserIcon
 

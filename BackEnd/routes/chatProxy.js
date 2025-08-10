@@ -4,8 +4,7 @@ const router = express.Router();
 const ChatSession = require("../models/ChatSession"); // Adjust the path if needed
 const auth = require("../middleware/auth");
 const Insight = require("../models/insights");
-const ResponseDB = require("../models/previousResponse"); // Adjust the path if needed
-const summarizeRecentChats = require("../utils/summarizeSessions");
+const ResponseDB = require("../models/previousResponse"); 
 const User = require("../models/User"); // Adjust the path if needed
 const generateSessionTitle = require("../utils/generateSessionTitle");
 const { generatePatternsForSession } = require("../services/patternService");
@@ -207,17 +206,12 @@ router.post("/chat", auth, async (req, res) => {
       session_type,
     } = req.body;
 
-    // ✨ Get summary of past context
-    const contextSummary = await summarizeRecentChats(userId);
-
-    // ✨ Include context summary in payload
     const flaskRes = await axios.post(`${FLASK_API_BASE}/api/chat`, {
       message,
       account_type,
       previous_response_id,
       session_id,
-      session_type,
-      context_summary: contextSummary, // New field
+      session_type,// New field
     });
 
     const botReply = flaskRes.data.message;

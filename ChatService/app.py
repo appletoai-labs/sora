@@ -24,7 +24,6 @@ def api_chat():
         previous_response_id = data.get('previous_response_id')
         account_type = data.get('account_type', 'individual')
         speak = data.get('speak', False)
-        context_summary = data.get('context_summary', '')  # ✅ NEW
 
         if not message:
             return jsonify({'error': 'Message is required'}), 400
@@ -36,8 +35,7 @@ def api_chat():
             message=message,
             previous_response_id=previous_response_id,
             user_id=user_id,
-            sora_mode=sora_mode,
-            context_summary=context_summary  
+            sora_mode=sora_mode
         )
 
         save_user_message_to_session(user_id, result['message'], 'sora')
