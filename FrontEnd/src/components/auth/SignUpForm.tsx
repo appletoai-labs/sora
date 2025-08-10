@@ -20,19 +20,7 @@ const accountTypes = [
     label: "Individual",
     description: "Personal neurodivergent support",
     icon: UserCheck,
-  },
-  {
-    value: "therapy_client",
-    label: "Therapy Client",
-    description: "Guided experience with professional support",
-    icon: Heart,
-  },
-  {
-    value: "therapist",
-    label: "Therapist",
-    description: "Professional tools for client management",
-    icon: Stethoscope,
-  },
+  }
 ]
 
 export const SignUpForm = () => {
