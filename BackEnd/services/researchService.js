@@ -81,7 +81,7 @@ async function generateCodexReport(userId) {
   `
 
   const { text: reportContent } = await generateText({
-    model: openai("gpt-4o"),
+    model: openai("gpt-4.1-mini"),
     prompt: prompt,
     temperature: 0.7,
   })
@@ -252,7 +252,7 @@ async function generateBrainInsights(userId) {
 
   try {
   const { text } = await generateText({
-    model: openai("gpt-4o"),
+    model: openai("gpt-4.1-mini"),
     prompt: prompt,
     temperature: 0.7,
     response_format: { type: "json_object" },

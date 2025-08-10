@@ -26,7 +26,7 @@ async function summarizeRecentChats(userId) {
   const summaryPrompt = `Summarize the following conversation history in a detailed paragraph focusing on user concerns, themes, and assistant responses:\n\n${limitedChatText}`;
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4.1-mini",
     messages: [{ role: "user", content: summaryPrompt }],
     temperature: 0.7,
   });

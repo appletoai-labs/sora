@@ -20,7 +20,7 @@ Respond only with the title, no quotation marks or punctuation.`;
     console.log("Generated Prompt:\n", prompt);
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4.1-mini", // Use the latest model
       messages: [{ role: "user", content: prompt }],
       temperature: 0.5,
       max_tokens: 10,

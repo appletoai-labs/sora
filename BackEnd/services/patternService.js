@@ -124,7 +124,7 @@ No new patterns were detected in this session.
 
   // Generate patterns
   const result = await generateText({
-    model: openai("gpt-4"),
+    model: openai("gpt-4.1-mini"),
     prompt,
     temperature: 0.7,
   });

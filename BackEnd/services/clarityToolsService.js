@@ -35,7 +35,7 @@ Respond in JSON format like this:
 `;
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4.1-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
   });
@@ -61,7 +61,7 @@ Respond in JSON format:
 `;
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4.1-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
   });

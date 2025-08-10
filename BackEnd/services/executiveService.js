@@ -74,7 +74,7 @@ Make sure the routine is:
 `
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4.1-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
   })
@@ -126,7 +126,7 @@ Make the routine specifically tailored to address what the user shared in their 
 `
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4.1-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
   })

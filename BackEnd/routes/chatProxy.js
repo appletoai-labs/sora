@@ -71,7 +71,7 @@ router.post('/summary/:sessionId', async (req, res) => {
     `;
 
     const result = await generateText({
-      model: openai('gpt-4'), // or gpt-3.5-turbo
+      model: openai('gpt-4.1-mini'), // or gpt-3.5-turbo
       prompt,
       maxTokens: 300,
     });
@@ -487,7 +487,7 @@ Now, write the **full insight report** following the structure above.
 
     // Call OpenAI using ai-sdk
     const result = await generateText({
-      model: openai("gpt-4"),
+      model: openai("gpt-4.1-mini"),
       prompt,
       temperature: 0.7,
     });
