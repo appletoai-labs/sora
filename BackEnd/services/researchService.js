@@ -140,27 +140,22 @@ async function generateCodexReport(userId) {
   const sections = reportContent.split(/\n(?=\d+\.\s\*\*)/).filter(Boolean) // Split by numbered bold headings
 
   sections.forEach((section) => {
-    const lines = section.split("\n").filter(Boolean)
-    if (lines.length === 0) return
+  const lines = section.split("\n").filter(Boolean)
+  if (lines.length === 0) return
 
-    let heading = lines[0].replace(/^\d+\.\s\*\*(.*?)\*\*$/, "$1").trim()
-    let content = lines.slice(1).join("\n").trim()
+  let heading = lines[0].replace(/^\d+\.\s\*\*(.*?)\*\*$/, "$1").trim()
+  let content = lines.slice(1).join("\n").trim()
 
-    // Special handling for the "Introduction" section to ensure it's always present and styled
-    if (heading.includes("Introduction")) {
-      doc.moveDown(1)
-      doc.fillColor(soraTeal).fontSize(18).font("Helvetica-Bold").text(heading)
-      doc.moveDown(0.5)
-      doc.fillColor("#C9D1D9").fontSize(11).font("Helvetica").text(content)
-      doc.moveDown(1)
-    } else {
-      doc.moveDown(1)
-      doc.fillColor(soraTeal).fontSize(18).font("Helvetica-Bold").text(heading)
-      doc.moveDown(0.5)
-      doc.fillColor("#C9D1D9").fontSize(11).font("Helvetica").text(content)
-      doc.moveDown(1)
-    }
-  })
+  // Headings — can be in different color
+  doc.moveDown(1)
+  doc.fillColor(soraTeal).fontSize(18).font("Helvetica-Bold").text(heading)
+
+  // Content — always black
+  doc.moveDown(0.5)
+  doc.fillColor("#000000").fontSize(11).font("Helvetica").text(content)
+  doc.moveDown(1)
+})
+
 
   // Footer
   doc.moveDown(2)
