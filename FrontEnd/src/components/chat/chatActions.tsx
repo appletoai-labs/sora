@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 interface ChatActionsProps {
   onNewChat: () => void;
   disabled?: boolean;
+  isGlobalLoading?: boolean
 }
 
 export const ChatActions = ({ onNewChat, disabled }: ChatActionsProps) => {
