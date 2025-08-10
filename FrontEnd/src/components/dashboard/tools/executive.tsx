@@ -1095,7 +1095,7 @@ const Executive = () => {
                     <Button
                         variant="ghost"
                         onClick={() => setActiveView("main")}
-                        className="text-sora-teal hover:text-sora-teal/80"
+                        className="text-sora-teal hover:text-white"
                     >
                         ← Back to Executive Function Tools
                     </Button>
@@ -1189,7 +1189,7 @@ const Executive = () => {
                         <Button
                             variant="ghost"
                             onClick={() => setActiveView("routineBuilder")}
-                            className="text-sora-teal hover:text-sora-teal/80"
+                            className="text-sora-teal hover:text-white"
                         >
                             ← Back to Routine Builder
                         </Button>

@@ -911,7 +911,7 @@ const Goals: React.FC = () => {
                     <Button
                         variant="ghost"
                         onClick={() => setActiveView('main')}
-                        className="text-sora-teal hover:text-sora-teal/80"
+                        className="text-sora-teal hover:text-white"
                     >
                         ← Back to Goals
                     </Button>
