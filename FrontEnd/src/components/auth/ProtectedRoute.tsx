@@ -8,11 +8,13 @@ import { useAuth } from '@/hooks/useAuth';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requirePremium?: boolean;
+  requireNonPremium?: boolean; // ✅ Added this
 }
 
 export const ProtectedRoute = ({
   children,
   requirePremium = false,
+  requireNonPremium = false, // ✅ Default to false
 }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
 
@@ -31,8 +33,14 @@ export const ProtectedRoute = ({
     return <Navigate to="/auth" replace />;
   }
 
+  // ✅ Premium-only restriction
   if (requirePremium && !user.isPremium) {
     return <Navigate to="/subscription" replace />;
+  }
+
+  // ✅ Non-premium-only restriction
+  if (requireNonPremium && user.isPremium) {
+    return <Navigate to="/app" replace />;
   }
 
   return <>{children}</>;
