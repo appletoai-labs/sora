@@ -61,64 +61,69 @@ interface AcademicReference {
 }
 
 const Research: React.FC = () => {
-  const { user } = useAuth()
-  const { toast } = useToast()
-  const navigate = useNavigate()
-  const API_BASE = import.meta.env.REACT_APP_BACKEND_URL
 
-  const [conversationCount, setConversationCount] = useState(0)
-  const [insightCount, setInsightCount] = useState(0)
-  const [checkinCount, setCheckinCount] = useState(0)
-  const [patternCount, setPatternCount] = useState(0)
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const API_BASE = import.meta.env.REACT_APP_BACKEND_URL;
 
-  const [showInsightsList, setShowInsightsList] = useState(false)
-  const [showPatternsList, setShowPatternsList] = useState(false)
-  const [showAcademicConnections, setShowAcademicConnections] = useState(false) // New state for academic connections view
+  const [conversationCount, setConversationCount] = useState(0);
+  const [insightCount, setInsightCount] = useState(0);
+  const [checkinCount, setCheckinCount] = useState(0);
+  const [patternCount, setPatternCount] = useState(0);
 
-  const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null)
-  const [selectedPattern, setSelectedPattern] = useState<Pattern | null>(null)
-  const [selectedAcademicRef, setSelectedAcademicRef] = useState<AcademicReference | null>(null)
+  const [showInsightsList, setShowInsightsList] = useState(false);
+  const [showPatternsList, setShowPatternsList] = useState(false);
+  const [showAcademicConnections, setShowAcademicConnections] = useState(false); // New state for academic connections view
 
-  const [insights, setInsights] = useState<Insight[]>([])
-  const [patterns, setPatterns] = useState<Pattern[]>([])
-  const [academicSearchResults, setAcademicSearchResults] = useState<AcademicReference[]>([])
-  const [savedAcademicConnections, setSavedAcademicConnections] = useState<AcademicReference[]>([])
+  const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null);
+  const [selectedPattern, setSelectedPattern] = useState<Pattern | null>(null);
+  const [selectedAcademicRef, setSelectedAcademicRef] = useState<AcademicReference | null>(null);
 
-  const [academicSearchQuery, setAcademicSearchQuery] = useState("")
-  const [isLoadingReport, setIsLoadingReport] = useState(false)
-  const [isLoadingInsights, setIsLoadingInsights] = useState(false)
-  const [isLoadingPatterns, setIsLoadingPatterns] = useState(false)
-  const [isLoadingAcademicSearch, setIsLoadingAcademicSearch] = useState(false)
-  const [isLoadingSavedConnections, setIsLoadingSavedConnections] = useState(false)
+  const [insights, setInsights] = useState<Insight[]>([]);
+  const [patterns, setPatterns] = useState<Pattern[]>([]);
+  const [academicSearchResults, setAcademicSearchResults] = useState<AcademicReference[]>([]);
+  const [savedAcademicConnections, setSavedAcademicConnections] = useState<AcademicReference[]>([]);
+
+  const [academicSearchQuery, setAcademicSearchQuery] = useState("");
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+  const [isLoadingPatterns, setIsLoadingPatterns] = useState(false);
+  const [isLoadingAcademicSearch, setIsLoadingAcademicSearch] = useState(false);
+  const [isLoadingSavedConnections, setIsLoadingSavedConnections] = useState(false);
+
+  // New: General loading state for initial stats
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
 
   const token = localStorage.getItem("authToken")
 
   useEffect(() => {
     if (user && token) {
-      fetchResearchStats()
+      setIsLoadingStats(true);
+      fetchResearchStats().finally(() => setIsLoadingStats(false));
     }
-  }, [user, token])
+  }, [user, token]);
 
   const fetchResearchStats = async () => {
     try {
-      const token = localStorage.getItem("authToken")
+      const token = localStorage.getItem("authToken");
       const [chatRes, insightRes, checkinRes, patternRes] = await Promise.all([
         axios.get(`${API_BASE}/api/research/stats/conversations`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API_BASE}/api/research/stats/insights`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API_BASE}/api/research/stats/checkins`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API_BASE}/api/research/stats/patterns`, { headers: { Authorization: `Bearer ${token}` } }),
-      ])
-      setConversationCount(chatRes.data.count)
-      setInsightCount(insightRes.data.count)
-      setCheckinCount(checkinRes.data.count)
-      setPatternCount(patternRes.data.count)
+      ]);
+      setConversationCount(chatRes.data.count);
+      setInsightCount(insightRes.data.count);
+      setCheckinCount(checkinRes.data.count);
+      setPatternCount(patternRes.data.count);
     } catch (error) {
-      console.error("Error fetching research stats:", error)
+      console.error("Error fetching research stats:", error);
       toast({
         title: "Error",
         description: "Failed to load research statistics.",
         variant: "destructive",
-      })
+      });
     }
   }
 
@@ -829,6 +834,16 @@ const Research: React.FC = () => {
           <div className="bg-sora-card border border-sora-teal/30 rounded-lg p-8 flex flex-col items-center gap-4">
             <Loader2 className="w-12 h-12 text-sora-teal animate-spin" />
             <p className="text-white text-lg font-medium">Generating your Personal Codex Report...</p>
+          </div>
+        </div>
+      )}
+
+      {/* General Loader for initial stats */}
+      {isLoadingStats && !showInsightsList && !showPatternsList && !showAcademicConnections && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-sora-card border border-sora-teal/30 rounded-lg p-8 flex flex-col items-center gap-4">
+            <Loader2 className="w-12 h-12 text-sora-teal animate-spin" />
+            <p className="text-white text-lg font-medium">Loading your research profile...</p>
           </div>
         </div>
       )}
