@@ -298,16 +298,22 @@ router.get("/lastsession", auth, async (req, res) => {
     const userId = req.user.id;
 
     const lastSession = await LastSession.findOne({ userId }).populate("sessionId");
+
+    // ✅ Always return 200 so frontend won't treat it as an error
     if (!lastSession) {
-      return res.status(404).json({ error: "No last session found" });
+      return res.json({ sessionId: null, isViewingPastSession: false });
     }
 
-    res.json({ sessionId: lastSession.sessionId._id, isViewingPastSession: lastSession.isViewingPastSession });
+    res.json({
+      sessionId: lastSession.sessionId._id,
+      isViewingPastSession: lastSession.isViewingPastSession
+    });
   } catch (err) {
     console.error("Get last session error:", err.message || err);
     res.status(500).json({ error: "Failed to fetch last session" });
   }
 });
+
 
 router.post("/chat/session", auth, async (req, res) => {
   try {
