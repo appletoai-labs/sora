@@ -70,7 +70,8 @@ def get_sora_response(message, previous_response_id, user_id, sora_mode='compani
             model="gpt-4.1-mini",
             instructions=instructions,
             input=message,
-            previous_response_id=previous_response_id
+            previous_response_id=previous_response_id,
+            truncation="auto"
         )
 
         output_text = next(
