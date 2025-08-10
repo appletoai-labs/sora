@@ -165,45 +165,50 @@ export const ChatInterface = () => {
           headers: { Authorization: `Bearer ${token}` },
         },
       )
-      .then(() => {})
+      .then(() => { })
       .catch((err) => {
         console.error("Failed to sync last session", err)
       })
   }
 
   const fetchLastSession = async () => {
-    startGlobalLoading()
-    const token = localStorage.getItem("authToken")
+    startGlobalLoading();
+    const token = localStorage.getItem("authToken");
     if (!token) {
-      endGlobalLoading()
-      return
+      endGlobalLoading();
+      return;
     }
 
     try {
       const res = await axios.get(`${API_BASE}/chatproxy/lastsession`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-      if (res.data?.sessionId) {
-        localStorage.setItem("sessionId", res.data.sessionId)
-        localStorage.setItem("isViewingPastSession", res.data.isViewingPastSession)
-        setCurrentSessionId(res.data.sessionId)
-        setIsViewingPastSession(res.data.isViewingPastSession === true)
-        await loadSessionAndMessages(res.data.sessionId) // This call also uses start/endGlobalLoading
-      } else {
-        console.warn("No last session found on backend")
+      // ✅ New user / no session yet
+      if (!res.data?.sessionId) {
+        console.info("No last session found — probably a new user.");
+        return;
       }
+
+      // ✅ Session exists
+      localStorage.setItem("sessionId", res.data.sessionId);
+      localStorage.setItem("isViewingPastSession", res.data.isViewingPastSession);
+      setCurrentSessionId(res.data.sessionId);
+      setIsViewingPastSession(res.data.isViewingPastSession === true);
+      await loadSessionAndMessages(res.data.sessionId);
+
     } catch (err) {
-      console.error("Failed to fetch last session", err)
+      console.error("Failed to fetch last session", err);
       toast({
         title: "Error",
         description: "Failed to fetch last session details.",
         variant: "destructive",
-      })
+      });
     } finally {
-      endGlobalLoading()
+      endGlobalLoading();
     }
-  }
+  };
+
 
   const handleSessionSelect = (sessionId: any) => {
     if (!sessionId) return

@@ -53,8 +53,15 @@ const App = () => (
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/immediate-support" element={<ImmediateSupport />} />
 
-                  <Route path="/learn-more" element={<LearnMore/>} />
-                  <Route path="/subscription" element={<Subscription />} />
+                  <Route path="/learn-more" element={<LearnMore />} />
+                  <Route
+                    path="/subscription"
+                    element={
+                      <ProtectedRoute requireNonPremium>
+                        <Subscription />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/chattrials"
                     element={
@@ -81,10 +88,10 @@ const App = () => (
                   <Route index element={<DashboardHome />} />
                   <Route path="chat" element={<ChatInterface />} />
                   <Route path="immediate-support" element={<ImmediateSupport />} />
-                  <Route path="research" element={<Research/>} />
+                  <Route path="research" element={<Research />} />
                   <Route path="clarity" element={<Clarity />} />
                   <Route path="checkin" element={<DailyCheckin />} />
-                  <Route path="brain-dashboard" element={<BrainInsight/>} />
+                  <Route path="brain-dashboard" element={<BrainInsight />} />
                   <Route path="sensory" element={<Sensory />} />
                   <Route path="goals" element={<Goals />} />
                   <Route path="executive" element={<Executive />} />
