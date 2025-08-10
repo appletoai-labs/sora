@@ -17,9 +17,6 @@ router.post("/create-checkout-session", auth, async (req, res) => {
                     quantity: 1,
                 },
             ],
-            subscription_data: {
-                cancel_at_period_end: true,
-            },
             success_url: `${process.env.CLIENT_URL}/app`,
             cancel_url: `${process.env.CLIENT_URL}/payment-cancel`,
             customer_email: req.user.email,

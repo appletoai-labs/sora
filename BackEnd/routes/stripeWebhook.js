@@ -27,9 +27,13 @@ webhookRouter.post(
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
+        const subscriptionId = session.subscription;
         const userId = session.metadata.userId;
 
         try {
+          await stripe.subscriptions.update(subscriptionId, {
+            cancel_at_period_end: true,
+          });
           await User.findByIdAndUpdate(userId, {
             isPremium: true,
             chatCount: 0,
