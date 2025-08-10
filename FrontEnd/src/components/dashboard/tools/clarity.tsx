@@ -602,7 +602,7 @@ const Clarity: FC = () => {
           <Button
             variant="ghost"
             onClick={() => setActiveView("main")}
-            className="text-sora-teal hover:text-sora-teal/80"
+            className="text-sora-teal hover:text-white"
           >
             ← Back to Clarity Tools
           </Button>
@@ -685,7 +685,7 @@ const Clarity: FC = () => {
           <Button
             variant="ghost"
             onClick={() => setActiveView("main")}
-            className="text-sora-teal hover:text-sora-teal/80"
+            className="text-sora-teal hover:text-white"
           >
             ← Back to Clarity Tools
           </Button>
@@ -781,7 +781,7 @@ const Clarity: FC = () => {
             <Button
               variant="ghost"
               onClick={() => setActiveView("taskForm")}
-              className="text-sora-teal hover:text-sora-teal/80"
+              className="text-sora-teal hover:text-white"
             >
               ← Back to Task Form
             </Button>
@@ -931,7 +931,7 @@ const Clarity: FC = () => {
             <Button
               variant="ghost"
               onClick={() => setActiveView("overwhelmForm")}
-              className="text-sora-teal hover:text-sora-teal/80"
+              className="text-sora-teal hover:text-white"
             >
               ← Back to Overwhelm Form
             </Button>

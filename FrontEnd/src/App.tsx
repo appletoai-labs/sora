@@ -65,7 +65,7 @@ const App = () => (
                   <Route
                     path="/chattrials"
                     element={
-                      <ProtectedRoute>
+                      <ProtectedRoute requireNonPremium>
                         <Trialchat />
                       </ProtectedRoute>
                     }

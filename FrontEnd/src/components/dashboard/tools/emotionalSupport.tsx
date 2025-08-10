@@ -1081,7 +1081,7 @@ const EmotionalSupport: FC = () => {
                     <Button
                         variant="ghost"
                         onClick={() => setActiveView('main')}
-                        className="text-sora-teal hover:text-sora-teal/80"
+                        className="text-sora-teal hover:text-white"
                     >
                         ← Back to Emotional Support
                     </Button>
@@ -1227,7 +1227,7 @@ const EmotionalSupport: FC = () => {
                         <Button
                             variant="ghost"
                             onClick={() => setActiveView('strategies')}
-                            className="text-sora-teal hover:text-sora-teal/80"
+                            className="text-sora-teal hover:text-white"
                         >
                             ← Back to Form
                         </Button>
