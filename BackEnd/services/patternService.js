@@ -4,69 +4,32 @@ const { openai } = require("@ai-sdk/openai");
 const { generateText } = require("ai");
 
 const formatResponse = (text) => {
-  if (!text) return '';
-
-  // Escape HTML to avoid XSS attacks
-  text = text.replace(/[&<>"']/g, (char) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }[char]));
-
   // Remove text inside [...] or 【...】
   text = text.replace(/\[.*?\]|\u3010.*?\u3011/g, '');
 
-  // Handle code blocks (```lang\n...\n```)
-  text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-    return `<pre><code class="language-${lang || 'plaintext'}">${code}</code></pre>`;
-  });
-
-  // Inline code (`code`)
-  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-  // Headings (#, ##, ###...)
-  text = text.replace(/^###### (.*)$/gm, '<h6>$1</h6>');
-  text = text.replace(/^##### (.*)$/gm, '<h5>$1</h5>');
-  text = text.replace(/^#### (.*)$/gm, '<h4>$1</h4>');
-  text = text.replace(/^### (.*)$/gm, '<h3>$1</h3>');
-  text = text.replace(/^## (.*)$/gm, '<h2>$1</h2>');
-  text = text.replace(/^# (.*)$/gm, '<h1>$1</h1>');
-
-  // Bold (**text**)
+  // Convert **bold** Markdown to <strong> HTML tags
   text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-  // Italic (*text* or _text_)
-  text = text.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
+  // Convert "### " at start of a line to <h3>...</h3>
+  text = text.replace(/^###\s*(.*)$/gm, '<h3>$1</h3>');
 
-  // Underline (__text__)
-  text = text.replace(/__(.*?)__/g, '<u>$1</u>');
+  // Convert "## " at start of a line to <h2>...</h2>
+  text = text.replace(/^##\s*(.*)$/gm, '<h2>$1</h2>');
 
-  // Links [text](url)
-  text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  // Convert bullet points starting with "- "
+  text = text
+    .split('\n')
+    .map((line) => {
+      const trimmed = line.trimStart();
+      if (trimmed.startsWith('- ')) {
+        return '• ' + trimmed.slice(2);
+      }
+      return line;
+    })
+    .join('\n');
 
-  // Blockquotes (> text)
-  text = text.replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>');
-
-  // Numbered lists
-  text = text.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>');
-  text = text.replace(/(<li>.*<\/li>)/gs, '<ol>$1</ol>');
-
-  // Bullet lists (- item or * item)
-  text = text.replace(/^(-|\*)\s+(.*)$/gm, '<li>$2</li>');
-  text = text.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
-
-  // Replace double newlines with paragraph breaks
-  text = text.replace(/\n\s*\n/g, '</p><p>');
-
-  // Replace single newlines with <br>
-  text = text.replace(/\n/g, '<br>');
-
-  // Wrap in paragraph if not already HTML
-  if (!/^<.+>$/.test(text.trim())) {
-    text = `<p>${text}</p>`;
-  }
+  // Replace all newlines with HTML <br>
+  text = text.split('\n').join('<br>');
 
   return text;
 };
