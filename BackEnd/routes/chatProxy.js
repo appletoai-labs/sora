@@ -402,6 +402,36 @@ router.post("/session/end/:session_id", auth, async (req, res) => {
   }
 });
 
+const formatResponse = (text) => {
+  // Remove text inside [...] or 【...】
+  text = text.replace(/\[.*?\]|\u3010.*?\u3011/g, '');
+
+  // Convert **bold** Markdown to <strong> HTML tags
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+  // Convert "### " at start of a line to <h3>...</h3>
+  text = text.replace(/^###\s*(.*)$/gm, '<h3>$1</h3>');
+
+  // Convert "## " at start of a line to <h2>...</h2>
+  text = text.replace(/^##\s*(.*)$/gm, '<h2>$1</h2>');
+
+  // Convert bullet points starting with "- "
+  text = text
+    .split('\n')
+    .map((line) => {
+      const trimmed = line.trimStart();
+      if (trimmed.startsWith('- ')) {
+        return '• ' + trimmed.slice(2);
+      }
+      return line;
+    })
+    .join('\n');
+
+  // Replace all newlines with HTML <br>
+  text = text.split('\n').join('<br>');
+
+  return text;
+};
 
 
 router.post("/insight/:session_id", auth, async (req, res) => {
@@ -494,12 +524,14 @@ Now, write the **full insight report** following the structure above.
 
 
     const insightText = result.text;
+    // Format the insight text
+    const formattedInsightText = formatResponse(insightText);
 
 
     const insightDoc = new Insight({
       sessionId,
       userId,
-      summary: insightText,
+      summary: formattedInsightText,
       mainConcern: "",
       moodInsight: "",
       tags: []
@@ -513,6 +545,7 @@ Now, write the **full insight report** following the structure above.
     res.status(500).json({ error: "Failed to generate insight" });
   }
 });
+
 
 router.get("/sessions/recent", auth, async (req, res) => {
   try {

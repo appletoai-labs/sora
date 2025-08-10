@@ -523,17 +523,7 @@ const Research: React.FC = () => {
           {insights.map((insight) => (
             <Card key={insight._id} className="bg-sora-card border border-sora-teal/20">
               <CardContent className="p-6">
-                <p className="text-gray-300 font-medium mb-3 line-clamp-3">{insight.summary}</p>
-                {insight.mainConcern && (
-                  <p className="text-gray-400 text-sm mb-1">
-                    <span className="font-semibold">Main Concern:</span> {insight.mainConcern}
-                  </p>
-                )}
-                {insight.tags && insight.tags.length > 0 && (
-                  <p className="text-gray-400 text-sm">
-                    <span className="font-semibold">Tags:</span> {insight.tags.join(", ")}
-                  </p>
-                )}
+                <p className="text-gray-300 font-medium mb-3 line-clamp-3" dangerouslySetInnerHTML={{ __html: insight.summary }}></p>
                 <p className="text-gray-500 text-xs mt-3">
                   Generated on: {new Date(insight.createdAt).toLocaleDateString()}
                 </p>
@@ -561,7 +551,12 @@ const Research: React.FC = () => {
           {selectedInsight && (
             <ScrollArea className="max-h-[500px] pr-4">
               <div className="space-y-4">
-                <p className="text-gray-300 font-medium text-lg">{selectedInsight.summary}</p>
+                {/* Render summary with HTML */}
+                <div
+                  className="text-gray-300 font-medium text-lg"
+                  dangerouslySetInnerHTML={{ __html: selectedInsight.summary }}
+                ></div>
+
                 {selectedInsight.mainConcern && (
                   <p className="text-gray-400">
                     <span className="font-semibold text-sora-teal">Main Concern:</span> {selectedInsight.mainConcern}
@@ -583,6 +578,7 @@ const Research: React.FC = () => {
               </div>
             </ScrollArea>
           )}
+
           <Button onClick={() => setSelectedInsight(null)} className="mt-4 bg-sora-teal text-sora-dark">
             Close
           </Button>
@@ -638,13 +634,19 @@ const Research: React.FC = () => {
           {selectedPattern && (
             <ScrollArea className="max-h-[500px] pr-4">
               <div className="space-y-4">
-                <p className="text-gray-300 font-medium text-lg whitespace-pre-wrap">{selectedPattern.patternsText}</p>
+                {/* Render patterns with HTML */}
+                <div
+                  className="text-gray-300 font-medium text-lg"
+                  dangerouslySetInnerHTML={{ __html: selectedPattern.patternsText }}
+                ></div>
+
                 <p className="text-gray-500 text-sm mt-4">
                   Generated on: {new Date(selectedPattern.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </ScrollArea>
           )}
+
           <Button onClick={() => setSelectedPattern(null)} className="mt-4 bg-sora-teal text-sora-dark">
             Close
           </Button>

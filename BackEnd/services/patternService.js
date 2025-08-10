@@ -4,42 +4,35 @@ const { openai } = require("@ai-sdk/openai");
 const { generateText } = require("ai");
 
 const formatResponse = (text) => {
-  // Keep only the main content (cut off anything after Research Note if GPT adds extra)
-  const match = text.match(/([\s\S]*?(?:\*\*Research Note:.*|Research Note:.*))/i);
-  if (match) {
-    text = match[1];
-  }
+  // Remove text inside [...] or 【...】
+  text = text.replace(/\[.*?\]|\u3010.*?\u3011/g, '');
 
-  // Remove markdown bold ** ** completely
-  text = text.replace(/\*\*(.*?)\*\*/g, '$1');
+  // Convert **bold** Markdown to <strong> HTML tags
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-  // Convert ### headings to <h3>
+  // Convert "### " at start of a line to <h3>...</h3>
   text = text.replace(/^###\s*(.*)$/gm, '<h3>$1</h3>');
 
-  // Convert ## headings to <h2>
+  // Convert "## " at start of a line to <h2>...</h2>
   text = text.replace(/^##\s*(.*)$/gm, '<h2>$1</h2>');
 
-  // Convert "- " list items to <li> inside <ul>
-  // We'll wrap them into a single <ul> after processing
-  let lines = text.split('\n').map(line => {
-    if (line.trim().startsWith('- ')) {
-      return `<li>${line.trim().slice(2)}</li>`;
-    }
-    return line;
-  });
+  // Convert bullet points starting with "- "
+  text = text
+    .split('\n')
+    .map((line) => {
+      const trimmed = line.trimStart();
+      if (trimmed.startsWith('- ')) {
+        return '• ' + trimmed.slice(2);
+      }
+      return line;
+    })
+    .join('\n');
 
-  text = lines.join('\n');
+  // Replace all newlines with HTML <br>
+  text = text.split('\n').join('<br>');
 
-  // Wrap consecutive <li> items with <ul> tags
-  text = text.replace(/(<li>[\s\S]*?<\/li>)/g, match => `<ul>${match}</ul>`)
-             .replace(/<\/ul>\s*<ul>/g, ''); // merge multiple ul blocks
-
-  // Convert newlines to <br> (only for non-list lines)
-  text = text.replace(/(?<!<\/li>)\n/g, '<br>');
-
-  return text.trim();
+  return text;
 };
-
 
 
 async function generatePatternsForSession(userId, sessionId) {
