@@ -337,22 +337,6 @@ export const Trialchat = () => {
   };
 
 
-  const fetchLatestPreviousResponseId = async (): Promise<string | null> => {
-    try {
-      const res = await axios.get(`${API_BASE}/chatproxy/latest/responseid`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      });
-
-      return res.data.previousResponseId || null;
-    } catch (error) {
-      console.error("Error fetching previousResponseId:", error);
-      return null;
-    }
-  };
-
-
   const handleSendMessage = async (text: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -386,15 +370,6 @@ export const Trialchat = () => {
       }
 
       let previousId = localStorage.getItem("previousResponseId");
-      if (!previousId || previousId === "null") {
-        const fetchedId = await fetchLatestPreviousResponseId();
-        if (fetchedId) {
-          previousId = fetchedId;
-          localStorage.setItem("previousResponseId", previousId);
-        } else {
-          console.warn("No previousResponseId available.");
-        }
-      }
 
       const response = await axios.post(
         `${API_BASE}/chatproxy/chattrials`,
