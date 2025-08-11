@@ -137,10 +137,6 @@ router.post("/chattrials", auth, async (req, res) => {
       });
     }
 
-    // If session does not exist or is under limit, proceed
-
-    // ✨ Get summary of past context
-    const contextSummary = await summarizeRecentChats(userId);
 
     // ✨ Include context summary in payload
     const flaskRes = await axios.post(`${FLASK_API_BASE}/api/chat`, {
@@ -149,7 +145,6 @@ router.post("/chattrials", auth, async (req, res) => {
       previous_response_id,
       session_id,
       session_type,
-      context_summary: contextSummary, // New field
     });
 
     const botReply = flaskRes.data.message;
