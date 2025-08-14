@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 
 const corsOptions = {
-  origin: ["http://localhost:8080", "https://sora-henna-six.vercel.app"],
+  origin: ["http://localhost:8080", "https://sora-henna-six.vercel.app", "https://www.sora-ally.com"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,

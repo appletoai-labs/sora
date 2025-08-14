@@ -10,7 +10,7 @@ import base64
 import os
 
 app = Flask(__name__)
-CORS(app, origins=['http://localhost:8080','https://sora-henna-six.vercel.app'])
+CORS(app, origins=['http://localhost:8080','https://sora-henna-six.vercel.app','https://www.sora-ally.com'])
 
 @app.route('/api/chat', methods=['POST'])
 def api_chat():
