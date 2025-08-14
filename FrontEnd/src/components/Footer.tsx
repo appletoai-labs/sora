@@ -33,13 +33,13 @@ const Footer = () => {
 
           {/* Support */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Support</h3>
+            {/* <h3 className="font-semibold text-foreground">Support</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>Help Center</li>
               <li>Community Guidelines</li>
               <li>Crisis Resources</li>
               <li>Professional Integration</li>
-            </ul>
+            </ul> */}
           </div>
 
           {/* Privacy */}

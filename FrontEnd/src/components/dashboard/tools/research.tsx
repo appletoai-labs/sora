@@ -1,8 +1,20 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
-import { Brain, MessageCircle, BarChart, Lightbulb, Book, ClipboardList, Zap, Download, FileText, X, Loader2, Check, ArrowRight, Clock, Eye, ArrowLeft, Search, Bookmark, ExternalLink } from 'lucide-react'
+import { useState, useEffect, useRef } from "react" // Import useRef
+import {
+  MessageCircle,
+  Lightbulb,
+  ClipboardList,
+  Download,
+  Loader2,
+  Check,
+  ArrowRight,
+  ArrowLeft,
+  Search,
+  Bookmark,
+  ExternalLink,
+} from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
@@ -61,69 +73,81 @@ interface AcademicReference {
 }
 
 const Research: React.FC = () => {
+  const { user } = useAuth()
+  const { toast } = useToast()
+  const navigate = useNavigate()
+  const API_BASE = import.meta.env.REACT_APP_BACKEND_URL
 
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const API_BASE = import.meta.env.REACT_APP_BACKEND_URL;
+  const [conversationCount, setConversationCount] = useState(0)
+  const [insightCount, setInsightCount] = useState(0)
+  const [checkinCount, setCheckinCount] = useState(0)
+  const [patternCount, setPatternCount] = useState(0)
 
-  const [conversationCount, setConversationCount] = useState(0);
-  const [insightCount, setInsightCount] = useState(0);
-  const [checkinCount, setCheckinCount] = useState(0);
-  const [patternCount, setPatternCount] = useState(0);
+  const [showInsightsList, setShowInsightsList] = useState(false)
+  const [showPatternsList, setShowPatternsList] = useState(false)
+  const [showAcademicConnections, setShowAcademicConnections] = useState(false) // New state for academic connections view
 
-  const [showInsightsList, setShowInsightsList] = useState(false);
-  const [showPatternsList, setShowPatternsList] = useState(false);
-  const [showAcademicConnections, setShowAcademicConnections] = useState(false); // New state for academic connections view
+  const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null)
+  const [selectedPattern, setSelectedPattern] = useState<Pattern | null>(null)
+  const [selectedAcademicRef, setSelectedAcademicRef] = useState<AcademicReference | null>(null)
 
-  const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null);
-  const [selectedPattern, setSelectedPattern] = useState<Pattern | null>(null);
-  const [selectedAcademicRef, setSelectedAcademicRef] = useState<AcademicReference | null>(null);
+  const [insights, setInsights] = useState<Insight[]>([])
+  const [patterns, setPatterns] = useState<Pattern[]>([])
+  const [academicSearchResults, setAcademicSearchResults] = useState<AcademicReference[]>([])
+  const [savedAcademicConnections, setSavedAcademicConnections] = useState<AcademicReference[]>([])
 
-  const [insights, setInsights] = useState<Insight[]>([]);
-  const [patterns, setPatterns] = useState<Pattern[]>([]);
-  const [academicSearchResults, setAcademicSearchResults] = useState<AcademicReference[]>([]);
-  const [savedAcademicConnections, setSavedAcademicConnections] = useState<AcademicReference[]>([]);
-
-  const [academicSearchQuery, setAcademicSearchQuery] = useState("");
-  const [isLoadingReport, setIsLoadingReport] = useState(false);
-  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
-  const [isLoadingPatterns, setIsLoadingPatterns] = useState(false);
-  const [isLoadingAcademicSearch, setIsLoadingAcademicSearch] = useState(false);
-  const [isLoadingSavedConnections, setIsLoadingSavedConnections] = useState(false);
+  const [academicSearchQuery, setAcademicSearchQuery] = useState("")
+  const [isLoadingReport, setIsLoadingReport] = useState(false)
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false)
+  const [isLoadingPatterns, setIsLoadingPatterns] = useState(false)
+  const [isLoadingAcademicSearch, setIsLoadingAcademicSearch] = useState(false)
+  const [isLoadingSavedConnections, setIsLoadingSavedConnections] = useState(false)
 
   // New: General loading state for initial stats
-  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isLoadingStats, setIsLoadingStats] = useState(true)
+
+  // Ref for the academic search input
+  const academicSearchInputRef = useRef<HTMLInputElement>(null)
 
   const token = localStorage.getItem("authToken")
 
   useEffect(() => {
     if (user && token) {
-      setIsLoadingStats(true);
-      fetchResearchStats().finally(() => setIsLoadingStats(false));
+      setIsLoadingStats(true)
+      fetchResearchStats().finally(() => setIsLoadingStats(false))
     }
-  }, [user, token]);
+  }, [user, token])
+
+  // Effect to scroll to top when a specific view is activated
+  useEffect(() => {
+    if (showInsightsList || showPatternsList || showAcademicConnections) {
+      // Use requestAnimationFrame to ensure scroll happens after DOM updates
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" }) // Added smooth behavior for better UX
+      })
+    }
+  }, [showInsightsList, showPatternsList, showAcademicConnections])
 
   const fetchResearchStats = async () => {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("authToken")
       const [chatRes, insightRes, checkinRes, patternRes] = await Promise.all([
         axios.get(`${API_BASE}/api/research/stats/conversations`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API_BASE}/api/research/stats/insights`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API_BASE}/api/research/stats/checkins`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API_BASE}/api/research/stats/patterns`, { headers: { Authorization: `Bearer ${token}` } }),
-      ]);
-      setConversationCount(chatRes.data.count);
-      setInsightCount(insightRes.data.count);
-      setCheckinCount(checkinRes.data.count);
-      setPatternCount(patternRes.data.count);
+      ])
+      setConversationCount(chatRes.data.count)
+      setInsightCount(insightRes.data.count)
+      setCheckinCount(checkinRes.data.count)
+      setPatternCount(patternRes.data.count)
     } catch (error) {
-      console.error("Error fetching research stats:", error);
+      console.error("Error fetching research stats:", error)
       toast({
         title: "Error",
         description: "Failed to load research statistics.",
         variant: "destructive",
-      });
+      })
     }
   }
 
@@ -220,7 +244,15 @@ const Research: React.FC = () => {
     setShowAcademicConnections(true)
     setShowInsightsList(false)
     setShowPatternsList(false)
+    setAcademicSearchResults([]) // Clear previous search results
+    setAcademicSearchQuery("") // Clear search query
+
     await fetchSavedAcademicConnections()
+
+    // Focus the search input after the view has rendered
+    requestAnimationFrame(() => {
+      academicSearchInputRef.current?.focus()
+    })
   }
 
   const handleAcademicSearch = async () => {
@@ -286,14 +318,16 @@ const Research: React.FC = () => {
       const response = await axios.post(`${API_BASE}/api/research/academic-connections`, ref, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      setSavedAcademicConnections(prev => [...prev, response.data])
+      setSavedAcademicConnections((prev) => [...prev, response.data])
       toast({
         title: "Saved",
         description: `"${ref.title}" has been saved to your connections.`,
       })
       // Mark the item as saved in search results if it was clicked from there
-      setAcademicSearchResults(prev =>
-        prev.map(item => (item.title === ref.title && item.summary === ref.summary ? { ...item, saved: true } : item))
+      setAcademicSearchResults((prev) =>
+        prev.map((item) =>
+          item.title === ref.title && item.summary === ref.summary ? { ...item, saved: true } : item,
+        ),
       )
     } catch (error) {
       console.error("Error saving academic connection:", error)
@@ -317,9 +351,7 @@ const Research: React.FC = () => {
             My Sora Codex Profile
           </h1>
         </div>
-        <p className="text-gray-300 text-lg max-w-3xl mx-auto">
-          Building your personalized neurodivergent blueprint
-        </p>
+        <p className="text-gray-300 text-lg max-w-3xl mx-auto">Building your personalized neurodivergent blueprint</p>
         <div className="bg-gradient-to-r from-sora-orange to-sora-teal text-sora-dark font-semibold py-3 px-6 rounded-lg mt-6 inline-block shadow-lg">
           🚀 Enhanced research features launching soon! Start building your foundation today.
         </div>
@@ -335,9 +367,7 @@ const Research: React.FC = () => {
             <CardTitle className="text-sora-teal text-xl">Conversation Foundation</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-300 mb-4">
-              Every chat with SORA contributes your unique neurodivergent profile.
-            </p>
+            <p className="text-gray-300 mb-4">Every chat with SORA contributes your unique neurodivergent profile.</p>
             <div className="grid grid-cols-2 gap-4">
               <StatItem number={conversationCount} label="Conversations" />
               <StatItem number={insightCount} label="Insights" />
@@ -369,9 +399,7 @@ const Research: React.FC = () => {
             <CardTitle className="text-sora-teal text-xl">Clarity Log Integration</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-300 mb-4">
-              Your daily check-ins provide structured data for pattern recognition.
-            </p>
+            <p className="text-gray-300 mb-4">Your daily check-ins provide structured data for pattern recognition.</p>
             <div className="grid grid-cols-2 gap-4">
               <StatItem number={checkinCount} label="Check-ins" />
               <StatItem number={patternCount} label="Patterns" />
@@ -431,9 +459,7 @@ const Research: React.FC = () => {
             <CardTitle className="text-sora-teal text-xl">Personal Codex Report</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-300 mb-4">
-              Comprehensive research document about your neurodivergent profile.
-            </p>
+            <p className="text-gray-300 mb-4">Comprehensive research document about your neurodivergent profile.</p>
             <Button
               onClick={handleGenerateCodexReport}
               className="w-full mt-4 bg-sora-teal text-sora-dark hover:bg-sora-teal/80"
@@ -458,9 +484,7 @@ const Research: React.FC = () => {
             <CardTitle className="text-sora-teal text-xl">Academic Connections</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-300 mb-4">
-              Explore and save relevant research papers and studies.
-            </p>
+            <p className="text-gray-300 mb-4">Explore and save relevant research papers and studies.</p>
             <Button
               onClick={handleViewAcademicConnections}
               className="w-full mt-4 bg-sora-teal text-sora-dark hover:bg-sora-teal/80"
@@ -475,14 +499,11 @@ const Research: React.FC = () => {
       <div className="cta-section bg-gradient-to-r from-sora-teal to-sora-orange text-sora-dark p-8 rounded-xl text-center mt-10 shadow-xl">
         <h3 className="text-3xl font-bold mb-4">Start Building Your Research Today</h3>
         <p className="text-lg mb-6 opacity-90">
-          Every conversation and check-in contributes to your personalized neurodivergent profile. The more you
-          engage, the more insights SORA ALLY can provide.
+          Every conversation and check-in contributes to your personalized neurodivergent profile. The more you engage,
+          the more insights SORA ALLY can provide.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button
-            onClick={() => navigate("/app/chat")}
-            className="bg-sora-dark text-sora-teal hover:bg-gray-800"
-          >
+          <Button onClick={() => navigate("/app/chat")} className="bg-sora-dark text-sora-teal hover:bg-gray-800">
             <MessageCircle className="w-5 h-5 mr-2" />
             Talk to SORA ALLY
           </Button>
@@ -515,7 +536,7 @@ const Research: React.FC = () => {
       <Button
         variant="ghost"
         onClick={() => setShowInsightsList(false)}
-        className="text-sora-teal hover:text-sora-teal/80 mb-8"
+        className="text-sora-teal hover:text-white mb-8"
       >
         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Research Profile
       </Button>
@@ -528,7 +549,10 @@ const Research: React.FC = () => {
           {insights.map((insight) => (
             <Card key={insight._id} className="bg-sora-card border border-sora-teal/20">
               <CardContent className="p-6">
-                <p className="text-gray-300 font-medium mb-3 line-clamp-3" dangerouslySetInnerHTML={{ __html: insight.summary }}></p>
+                <p
+                  className="text-gray-300 font-medium mb-3 line-clamp-3"
+                  dangerouslySetInnerHTML={{ __html: insight.summary }}
+                ></p>
                 <p className="text-gray-500 text-xs mt-3">
                   Generated on: {new Date(insight.createdAt).toLocaleDateString()}
                 </p>
@@ -549,9 +573,7 @@ const Research: React.FC = () => {
         <DialogContent className="sm:max-w-[800px] bg-sora-card text-white border-sora-teal/30">
           <DialogHeader>
             <DialogTitle className="text-sora-teal">Insight Details</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              A deeper look into this specific insight.
-            </DialogDescription>
+            <DialogDescription className="text-gray-400">A deeper look into this specific insight.</DialogDescription>
           </DialogHeader>
           {selectedInsight && (
             <ScrollArea className="max-h-[500px] pr-4">
@@ -597,7 +619,7 @@ const Research: React.FC = () => {
       <Button
         variant="ghost"
         onClick={() => setShowPatternsList(false)}
-        className="text-sora-teal hover:text-sora-teal/80 mb-8"
+        className="text-sora-teal hover:text-white mb-8"
       >
         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Research Profile
       </Button>
@@ -610,7 +632,10 @@ const Research: React.FC = () => {
           {patterns.map((pattern) => (
             <Card key={pattern._id} className="bg-sora-card border border-sora-teal/20">
               <CardContent className="p-6">
-                <p className="text-gray-300 font-medium mb-3 line-clamp-3 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: pattern.patternsText }}></p>
+                <p
+                  className="text-gray-300 font-medium mb-3 line-clamp-3 whitespace-pre-wrap"
+                  dangerouslySetInnerHTML={{ __html: pattern.patternsText }}
+                ></p>
 
                 <p className="text-gray-500 text-xs mt-3">
                   Generated on: {new Date(pattern.createdAt).toLocaleDateString()}
@@ -632,9 +657,7 @@ const Research: React.FC = () => {
         <DialogContent className="sm:max-w-[800px] bg-sora-card text-white border-sora-teal/30">
           <DialogHeader>
             <DialogTitle className="text-sora-teal">Pattern Details</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              A deeper look into this specific pattern.
-            </DialogDescription>
+            <DialogDescription className="text-gray-400">A deeper look into this specific pattern.</DialogDescription>
           </DialogHeader>
           {selectedPattern && (
             <ScrollArea className="max-h-[500px] pr-4">
@@ -665,7 +688,7 @@ const Research: React.FC = () => {
       <Button
         variant="ghost"
         onClick={() => setShowAcademicConnections(false)}
-        className="text-sora-teal hover:text-sora-teal/80 mb-8"
+        className="text-sora-teal hover:text-white mb-8"
       >
         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Research Profile
       </Button>
@@ -675,6 +698,7 @@ const Research: React.FC = () => {
       {/* Search Bar */}
       <div className="flex w-full max-w-lg items-center space-x-2 mb-10">
         <Input
+          ref={academicSearchInputRef} // Apply the ref here
           type="text"
           placeholder="Search academic papers..."
           value={academicSearchQuery}
@@ -686,12 +710,12 @@ const Research: React.FC = () => {
           }}
           className="flex-1 bg-sora-muted border-sora-teal/30 text-white placeholder:text-gray-500 focus-visible:ring-sora-teal"
         />
-        <Button onClick={handleAcademicSearch} disabled={isLoadingAcademicSearch} className="bg-sora-teal text-sora-dark hover:bg-sora-teal/80">
-          {isLoadingAcademicSearch ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Search className="w-4 h-4" />
-          )}
+        <Button
+          onClick={handleAcademicSearch}
+          disabled={isLoadingAcademicSearch}
+          className="bg-sora-teal text-sora-dark hover:bg-sora-teal/80"
+        >
+          {isLoadingAcademicSearch ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           <span className="ml-2">Search</span>
         </Button>
       </div>
@@ -700,27 +724,25 @@ const Research: React.FC = () => {
       {academicSearchResults.length > 0 && (
         <div className="mb-10">
           <h3 className="text-2xl font-bold text-gray-200 mb-4">Search Results</h3>
-          <p className="text-gray-400 mb-4">
-            Note: These are AI-generated conceptual references for demonstration.
-          </p>
+          <p className="text-gray-400 mb-4">Note: These are AI-generated conceptual references for demonstration.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {academicSearchResults.map((ref, index) => (
               <Card key={`search-${index}`} className="bg-sora-card border border-sora-orange/20">
                 <CardContent className="p-4">
-                  <h4 className="text-lg font-semibold text-sora-orange cursor-pointer hover:underline"
-                    onClick={() => handleOpenAcademicRefDetail(ref)}>
+                  <h4
+                    className="text-lg font-semibold text-sora-orange cursor-pointer hover:underline"
+                    onClick={() => handleOpenAcademicRefDetail(ref)}
+                  >
                     {ref.title}
                   </h4>
-                  <p className="text-gray-400 text-sm mt-1 mb-2">
-                    {ref.authors.join(", ")}
-                  </p>
+                  <p className="text-gray-400 text-sm mt-1 mb-2">{ref.authors.join(", ")}</p>
                   <div className="flex justify-end gap-2">
                     {ref.sourceUrl && (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => window.open(ref.sourceUrl, "_blank")}
-                        className="text-gray-400 hover:text-sora-teal"
+                        className="text-gray-400 hover:text-white"
                         title="Open Source"
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -731,7 +753,7 @@ const Research: React.FC = () => {
                       size="sm"
                       onClick={() => handleSaveAcademicConnection(ref)}
                       disabled={ref.saved}
-                      className={`text-gray-400 ${ref.saved ? 'cursor-not-allowed opacity-50' : 'hover:text-sora-teal'}`}
+                      className={`text-gray-400 ${ref.saved ? "cursor-not-allowed opacity-50" : "hover:text-white"}`}
                       title={ref.saved ? "Already Saved" : "Save Connection"}
                     >
                       <Bookmark className="w-4 h-4" />
@@ -759,20 +781,20 @@ const Research: React.FC = () => {
             {savedAcademicConnections.map((ref) => (
               <Card key={ref._id} className="bg-sora-card border border-sora-teal/20">
                 <CardContent className="p-4">
-                  <h4 className="text-lg font-semibold text-sora-teal cursor-pointer hover:underline"
-                    onClick={() => handleOpenAcademicRefDetail(ref)}>
+                  <h4
+                    className="text-lg font-semibold text-sora-teal cursor-pointer hover:underline"
+                    onClick={() => handleOpenAcademicRefDetail(ref)}
+                  >
                     {ref.title}
                   </h4>
-                  <p className="text-gray-400 text-sm mt-1 mb-2">
-                    {ref.authors.join(", ")}
-                  </p>
+                  <p className="text-gray-400 text-sm mt-1 mb-2">{ref.authors.join(", ")}</p>
                   <div className="flex justify-end gap-2">
                     {ref.sourceUrl && (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => window.open(ref.sourceUrl, "_blank")}
-                        className="text-gray-400 hover:text-sora-teal"
+                        className="text-gray-400 hover:text-white"
                         title="Open Source"
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -802,7 +824,12 @@ const Research: React.FC = () => {
                 {selectedAcademicRef.sourceUrl && (
                   <p className="text-gray-400 text-sm">
                     <span className="font-semibold text-sora-teal">Source:</span>{" "}
-                    <a href={selectedAcademicRef.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-sora-orange hover:underline">
+                    <a
+                      href={selectedAcademicRef.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sora-orange hover:underline"
+                    >
                       {selectedAcademicRef.sourceUrl}
                     </a>
                   </p>
@@ -811,11 +838,16 @@ const Research: React.FC = () => {
             </ScrollArea>
           )}
           <div className="flex justify-end gap-2 mt-4">
-            {selectedAcademicRef && !selectedAcademicRef.saved && selectedAcademicRef._id === undefined && ( // Only show save button for new search results
-              <Button onClick={() => handleSaveAcademicConnection(selectedAcademicRef)} className="bg-sora-teal text-sora-dark">
-                <Bookmark className="w-4 h-4 mr-2" /> Save Connection
-              </Button>
-            )}
+            {selectedAcademicRef &&
+              !selectedAcademicRef.saved &&
+              selectedAcademicRef._id === undefined && ( // Only show save button for new search results
+                <Button
+                  onClick={() => handleSaveAcademicConnection(selectedAcademicRef)}
+                  className="bg-sora-teal text-sora-dark"
+                >
+                  <Bookmark className="w-4 h-4 mr-2" /> Save Connection
+                </Button>
+              )}
             <Button onClick={() => setSelectedAcademicRef(null)} className="bg-gray-700 text-white hover:bg-gray-600">
               Close
             </Button>
@@ -824,7 +856,6 @@ const Research: React.FC = () => {
       </Dialog>
     </div>
   )
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br via-gray-900 to-sora-dark p-6 text-white">
@@ -849,10 +880,13 @@ const Research: React.FC = () => {
       )}
 
       <div className="max-w-6xl mx-auto">
-        {showInsightsList ? renderInsightsList() :
-          showPatternsList ? renderPatternsList() :
-            showAcademicConnections ? renderAcademicConnectionsView() :
-              renderMainResearchView()}
+        {showInsightsList
+          ? renderInsightsList()
+          : showPatternsList
+            ? renderPatternsList()
+            : showAcademicConnections
+              ? renderAcademicConnectionsView()
+              : renderMainResearchView()}
       </div>
     </div>
   )

@@ -791,7 +791,7 @@ const Community: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setActiveView("main")}
-                className="text-sora-teal hover:text-sora-teal/80 mb-4 md:mb-6"
+                className="text-sora-teal hover:text-white mb-4 md:mb-6"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back to Community
@@ -1004,7 +1004,7 @@ const Community: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => setActiveView("main")}
-                className="text-sora-teal hover:text-sora-teal/80 mb-4 md:mb-6"
+                className="text-sora-teal hover:text-white mb-4 md:mb-6"
               >
                 <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Back to Community

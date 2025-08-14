@@ -4,7 +4,7 @@ const router = express.Router();
 const ChatSession = require("../models/ChatSession"); // Adjust the path if needed
 const auth = require("../middleware/auth");
 const Insight = require("../models/insights");
-const ResponseDB = require("../models/previousResponse"); 
+const ResponseDB = require("../models/previousResponse");
 const User = require("../models/User"); // Adjust the path if needed
 const generateSessionTitle = require("../utils/generateSessionTitle");
 const { generatePatternsForSession } = require("../services/patternService");
@@ -137,10 +137,6 @@ router.post("/chattrials", auth, async (req, res) => {
       });
     }
 
-    // If session does not exist or is under limit, proceed
-
-    // ✨ Get summary of past context
-    const contextSummary = await summarizeRecentChats(userId);
 
     // ✨ Include context summary in payload
     const flaskRes = await axios.post(`${FLASK_API_BASE}/api/chat`, {
@@ -149,7 +145,6 @@ router.post("/chattrials", auth, async (req, res) => {
       previous_response_id,
       session_id,
       session_type,
-      context_summary: contextSummary, // New field
     });
 
     const botReply = flaskRes.data.message;
@@ -238,18 +233,16 @@ router.post("/chat", auth, async (req, res) => {
         { role: "assistant", content: botReply, ResponseId: responseId }
       );
 
-      // ✨ Update title dynamically (only if you want to allow changes later)
-      chatSession.title =
-        message?.slice(0, 50) ||
-        botReply?.slice(0, 50) ||
-        chatSession.title ||
-        "New Chat";
+      // ✅ Only set title if it doesn't already exist
+      if (!chatSession.title) {
+        chatSession.title = message?.slice(0, 50) || "New Chat";
+      }
     } else {
       console.log("Creating new chat session with message:", message);
       chatSession = new ChatSession({
         userId,
-        // ✨ Title when creating new session
-        title: message?.slice(0, 50) || botReply?.slice(0, 50) || "New Chat",
+        // ✅ First message becomes title
+        title: message?.slice(0, 50) || "New Chat",
         sessionType: session_type || "general",
         messages: [
           { role: "user", content: message },
@@ -257,6 +250,7 @@ router.post("/chat", auth, async (req, res) => {
         ],
       });
     }
+
 
     await chatSession.save();
     const messageCount = chatSession.messages.length;

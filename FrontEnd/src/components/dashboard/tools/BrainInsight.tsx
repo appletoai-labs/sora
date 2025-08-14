@@ -76,7 +76,7 @@ const BrainInsights: React.FC = () => {
         <Button
           variant="ghost"
           onClick={() => navigate("/app/research")}
-          className="text-sora-teal hover:text-sora-teal/80 mb-8"
+          className="text-sora-teal hover:text-white mb-8"
         >
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Research Profile
         </Button>
