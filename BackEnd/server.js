@@ -27,7 +27,7 @@ const app = express();
 app.use("/api/stripe-webhook", stripeWebhookRoutes);
 
 // Body parsing middleware (after webhook!)
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "10mb" })); 
 app.use(express.urlencoded({ extended: true }));
 
 // Security
