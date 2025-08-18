@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import ScrollToTop from "../ScrollToTop";
 
 export const DashboardLayout = () => {
+  const navigate = useNavigate()
   const { user, logout } = useAuth();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(max-width: 1024px)");
@@ -81,7 +82,10 @@ export const DashboardLayout = () => {
                 </Button>
               )}
 
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent">
+              <h1
+                onClick={() => navigate("dashboard")}
+                className="text-2xl font-bold bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent cursor-pointer"
+              >
                 Dashboard
               </h1>
             </div>

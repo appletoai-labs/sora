@@ -11,6 +11,7 @@ const API_BASE = import.meta.env.REACT_APP_BACKEND_URL
 
 const SubscriptionSection = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const [billingInterval, setBillingInterval] = useState<"month" | "year">("month")
   const { toast } = useToast()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -46,6 +47,7 @@ const SubscriptionSection = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ interval: billingInterval }), // 👈 pass monthly/yearly
       })
 
       const session = await response.json()
@@ -73,13 +75,31 @@ const SubscriptionSection = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-sora-teal to-sora-orange bg-clip-text text-transparent mb-2">
             SORA Personal
           </h1>
-          <CardTitle className="text-3xl text-white mb-4">Your 24/7 Neurodivergent Ally</CardTitle>
-          <p className="text-gray-300 text-5xl font-extrabold mb-2">
-            $14<span className="text-xl font-normal text-gray-400">/month</span>
-          </p>
-          <p className="text-sora-teal text-lg font-semibold">Launch special - first 6 months</p>
-          <p className="text-gray-400 text-sm mt-1">Then $19/month</p>
+          <CardTitle className="text-3xl text-white mb-4">
+            Your 24/7 Neurodivergent Ally
+          </CardTitle>
+
+          {/* Switch between monthly/yearly */}
+          <div className="flex justify-center gap-4 mb-6">
+            <Button
+              variant={billingInterval === "month" ? "default" : "outline"}
+              onClick={() => setBillingInterval("month")}
+              className={billingInterval === "month" ? "bg-sora-teal text-white" : "text-white"}
+            >
+              $7.99 / month
+            </Button>
+            <Button
+              variant={billingInterval === "year" ? "default" : "outline"}
+              onClick={() => setBillingInterval("year")}
+              className={billingInterval === "year" ? "bg-sora-teal text-white" : "text-white"}
+            >
+              $59.99 / year
+            </Button>
+          </div>
+
+          <p className="text-sora-teal text-lg font-semibold">Introductory Offer</p>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <h3 className="text-xl font-semibold text-white mb-3">What's Included:</h3>
           <ul className="space-y-2 text-gray-300">
@@ -100,6 +120,7 @@ const SubscriptionSection = () => {
               </li>
             ))}
           </ul>
+
           <Button
             onClick={handleSubscribe}
             disabled={isLoading}
@@ -109,10 +130,13 @@ const SubscriptionSection = () => {
               <>
                 <Loader2 className="animate-spin mr-2 w-5 h-5" /> Redirecting to Stripe...
               </>
+            ) : billingInterval === "month" ? (
+              "Start Your Journey – $7.99/month →"
             ) : (
-              "Start Your Journey – $14/month →"
+              "Start Your Journey – $59.99/year →"
             )}
           </Button>
+
           <Button
             variant="outline"
             onClick={() => navigate("/chattrials")}
