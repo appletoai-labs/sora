@@ -35,6 +35,7 @@ import BrainInsight from './components/dashboard/tools/BrainInsight';
 
 import { UiPreferencesProvider } from '@/context/UiPreferencesContext';
 import { AppWrapper } from './layout/AppWrapper';
+import DataProtection from './pages/dataprotection';
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,9 @@ const App = () => (
                   <Route path="/" element={<Index />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/immediate-support" element={<ImmediateSupport />} />
+                  
+                  <Route path="/data-protection" element={<DataProtection/>} />
+
 
                   <Route path="/learn-more" element={<LearnMore />} />
                   <Route

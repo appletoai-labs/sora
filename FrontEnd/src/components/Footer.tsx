@@ -57,27 +57,11 @@ const Footer = () => {
               </li>
               <li>
                 <Link 
-                  to="/privacy" 
+                  to="/data-protection" 
                   className="text-muted-foreground hover:text-sora-teal transition-colors"
                 >
                   Data Protection
                 </Link>
-              </li>
-              <li>
-                <a 
-                  href="#" 
-                  className="text-muted-foreground hover:text-sora-teal transition-colors"
-                >
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="#" 
-                  className="text-muted-foreground hover:text-sora-teal transition-colors"
-                >
-                  Accessibility
-                </a>
               </li>
             </ul>
           </div>
