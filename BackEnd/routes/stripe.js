@@ -8,20 +8,32 @@ const router = express.Router();
 // 🎯 Authenticated route to create a Stripe Checkout session
 router.post("/create-checkout-session", auth, async (req, res) => {
     try {
+        const { interval } = req.body; // "monthly" or "yearly"
+
+        let priceId;
+        if (interval === "month") {
+            priceId = process.env.STRIPE_PRICE_MONTHLY_ID;
+        } else if (interval === "year") {
+            priceId = process.env.STRIPE_PRICE_YEARLY_ID;
+        } else {
+            return res.status(400).json({ message: "Invalid plan selected" });
+        }
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "subscription",
             line_items: [
                 {
-                    price: process.env.STRIPE_PRICE_ID,
+                    price: priceId,
                     quantity: 1,
                 },
             ],
-            success_url: `${process.env.CLIENT_URL}/app`,
+            success_url: `${process.env.CLIENT_URL}/app?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.CLIENT_URL}/payment-cancel`,
             customer_email: req.user.email,
             metadata: {
                 userId: req.user._id.toString(),
+                plan: interval,
             },
         });
 

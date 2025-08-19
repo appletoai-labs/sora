@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   Home, MessageCircle, Lightbulb, FileText, Calendar,
@@ -59,6 +59,7 @@ export const DashboardSidebar = ({
   collapsed: boolean;
   setCollapsed: (val: boolean) => void;
 }) => {
+  const navigate = useNavigate()
   const location = useLocation();
 
   const SidebarContent = () => (
@@ -70,7 +71,11 @@ export const DashboardSidebar = ({
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
-        {!collapsed && <SoraLogo />}
+        {!collapsed && (
+          <div onClick={() => navigate("/")} className="cursor-pointer">
+            <SoraLogo />
+          </div>
+        )}
         {!isTablet && (
           <Button
             variant="ghost"
