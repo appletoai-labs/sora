@@ -12,10 +12,10 @@ const Navigation = () => {
   const { user, logout } = useAuth();
 
   const navItems = [
-    { label: "How It Works", href: "#functions" },
-    { label: "About SORA ALLY", href: "#about" },
-    { label: "For Professionals", href: "#integration" },
-    { label: "Privacy", href: "#privacy" },
+    { label: "How It Works", href: "/" },
+    { label: "About SORA ALLY", href: "/" },
+    { label: "For Professionals", href: "/" },
+    { label: "Privacy", href: "/privacy" },
     { label: "Dashboard", href: "/app" },
   ];
 
