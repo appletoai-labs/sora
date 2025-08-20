@@ -510,7 +510,7 @@ const Privacy = () => {
                       <Badge variant="outline" className="mb-2">
                         Email
                       </Badge>
-                      <p className="text-sm">privacy@soraally.com</p>
+                      <p className="text-sm">privacy@sora-ally.com</p>
                     </div>
                     <div>
                       <Badge variant="outline" className="mb-2">
@@ -563,7 +563,7 @@ const Privacy = () => {
                   Questions about privacy? We're here to help. Your privacy isn't just a policy to us—it's fundamental
                   to your neurodivergent research journey.
                 </p>
-                <a href="mailto:privacy@soraally.com">
+                <a href="mailto:privacy@sora-ally.com">
                   <Button className="bg-sora-teal hover:bg-sora-teal/90 text-white">
                     Contact Our Privacy Team
                   </Button>

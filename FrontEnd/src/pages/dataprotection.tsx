@@ -455,7 +455,7 @@ const DataProtection = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <Mail className="h-8 w-8 text-sora-teal mx-auto mb-2" />
-                  <p className="text-sm text-gray-300">📧 Email: privacy@soraally.com</p>
+                  <p className="text-sm text-gray-300">📧 Email: privacy@sora-ally.com</p>
                 </div>
                 <div>
                   <Clock className="h-8 w-8 text-sora-orange mx-auto mb-2" />
