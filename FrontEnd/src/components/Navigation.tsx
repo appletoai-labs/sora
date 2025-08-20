@@ -15,7 +15,7 @@ const Navigation = () => {
     { label: "How It Works", href: "#functions" },
     { label: "About SORA ALLY", href: "#about" },
     { label: "For Professionals", href: "#integration" },
-    { label: "Privacy", href: "#privacy" },
+    { label: "Privacy", href: "/privacy" },
     { label: "Dashboard", href: "/app" },
   ];
 
