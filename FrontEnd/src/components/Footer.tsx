@@ -77,10 +77,12 @@ const Footer = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-sora-teal">
-                <Mail className="w-4 h-4 mr-2" />
-                Contact
-              </Button>
+              <a href="mailto:privacy@sora-ally.com">
+                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  <Mail className="w-4 h-4 mr-2" />
+                  Contact
+                </Button>
+              </a>
               <div className="text-sm text-muted-foreground">
                 🧠 Neurodivergence is natural
               </div>
