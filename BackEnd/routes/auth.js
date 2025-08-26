@@ -11,14 +11,18 @@ const router = express.Router()
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-// 📧 Setup Nodemailer (use your SMTP or Gmail service)
 const transporter = nodemailer.createTransport({
-  service: "gmail", // or use custom SMTP
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: false, // STARTTLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  debug: true, // 🔧 enable debug output
+  logger: true,
 });
+
 // 1️⃣ Forgot Password
 router.post("/forgot-password", async (req, res) => {
   try {
