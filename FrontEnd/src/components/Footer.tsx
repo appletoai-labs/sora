@@ -63,7 +63,7 @@ const Footer = () => {
                   Data Protection
                 </Link>
               </li>
-              <li className="text-muted-foreground hover:text-sora-teal transition-colors">
+              <li className="text-muted-foreground transition-colors">
                 privacy@sora-ally.com
               </li>
             </ul>
