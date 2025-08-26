@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    resetOtp: {
+      type: String,
+    },
+    resetOtpExpires: {
+      type: Date,
+    },
 
     passwordResetExpires: {
       type: Date,

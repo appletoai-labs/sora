@@ -8,11 +8,128 @@ const LastSession = require("../models/lastsession") // Adjust the path if neede
 
 const router = express.Router()
 
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: false, // STARTTLS
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  debug: true, // 🔧 enable debug output
+  logger: true,
+});
+
+// 1️⃣ Forgot Password
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("📩 Forgot password request for:", email);
+
+    if (!email) {
+      console.log("❌ No email provided");
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    console.log("🔍 User found in DB:", user ? user.email : "NONE");
+
+    if (!user) {
+      console.log("❌ User not found in DB");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log("✅ Generated OTP:", otp);
+
+    user.resetOtp = otp;
+    user.resetOtpExpires = Date.now() + 10 * 60 * 1000;
+    await user.save();
+    console.log("💾 Saved OTP for user:", user.email);
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Password Reset OTP",
+      text: `Your OTP is: ${otp}. It will expire in 10 minutes.`,
+    });
+    console.log("📧 Email sent to:", user.email);
+
+    res.json({ message: "OTP sent to email" });
+  } catch (err) {
+    console.error("🔥 Forgot password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// 2️⃣ Verify OTP
+router.post("/verify-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    console.log("📩 Verify OTP request for:", email, "OTP:", otp);
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    console.log("🔍 User found:", user ? user.email : "NONE");
+
+    if (!user || !user.resetOtp) {
+      console.log("❌ Invalid request, no user/OTP");
+      return res.status(400).json({ message: "Invalid request" });
+    }
+
+    if (user.resetOtp !== otp || user.resetOtpExpires < Date.now()) {
+      console.log("❌ OTP mismatch or expired");
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    console.log("✅ OTP verified successfully for:", user.email);
+    res.json({ message: "OTP verified" });
+  } catch (err) {
+    console.error("🔥 Verify OTP error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// 3️⃣ Reset Password
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    console.log("📩 Reset password request:", { email, otp, newPassword });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    console.log("🔍 User found:", user ? user.email : "NONE");
+
+    if (!user || !user.resetOtp) {
+      console.log("❌ Invalid reset request");
+      return res.status(400).json({ message: "Invalid request" });
+    }
+
+    if (user.resetOtp !== otp || user.resetOtpExpires < Date.now()) {
+      console.log("❌ OTP mismatch or expired");
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    user.password = newPassword;
+    user.resetOtp = undefined;
+    user.resetOtpExpires = undefined;
+    await user.save();
+    console.log("✅ Password reset successful for:", user.email);
+
+    res.json({ message: "Password reset successful" });
+  } catch (err) {
+    console.error("🔥 Reset password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 // 🔐 Register a new user
 router.post(
   "/register",
   [
-    body("email").isEmail().normalizeEmail(),
+    body("email").isEmail(),
     body("password").isLength({ min: 8 }),
     body("firstName").trim().notEmpty(),
     body("lastName").trim().notEmpty(),
@@ -77,7 +194,7 @@ router.post("/logout", auth, async (req, res) => {
 // 🔑 Login existing user
 router.post(
   "/login",
-  [body("email").isEmail().normalizeEmail(), body("password").notEmpty()],
+  [body("email").isEmail(), body("password").notEmpty()],
   async (req, res) => {
     try {
       const errors = validationResult(req)
