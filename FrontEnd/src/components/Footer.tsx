@@ -63,6 +63,9 @@ const Footer = () => {
                   Data Protection
                 </Link>
               </li>
+              <li>
+                privacy@sora-ally.com
+              </li>
             </ul>
           </div>
         </div>
