@@ -1164,14 +1164,7 @@ const Executive = () => {
                                 )}
                             </Button>
 
-                            <Button
-                                variant="outline"
-                                onClick={() => setShowBrainDump(true)}
-                                className="border-sora-teal text-sora-teal hover:bg-sora-teal hover:text-sora-dark"
-                            >
-                                <Brain className="w-5 h-5 mr-2" />
-                                Brain Dump Instead
-                            </Button>
+                            
                         </div>
                     </CardContent>
                 </Card>

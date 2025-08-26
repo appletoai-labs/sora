@@ -1,5 +1,7 @@
 import React from "react";
+import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import ExerciseModal from "../components/ExerciseModal";
 import {
   Heart,
   AlertTriangle,
@@ -25,7 +27,34 @@ import {
   HandHeart
 } from "lucide-react";
 
+interface Exercise {
+  title: string;
+  description: string;
+  steps: string[];
+}
+
 export const ImmediateSupport = () => {
+  const relaxationExercise: Exercise = {
+    title: "Progressive Muscle Relaxation",
+    description: "Release physical tension by tensing and relaxing different muscle groups.",
+    steps: [
+      "Tense your shoulders for 5 seconds, then relax.",
+      "Clench your fists for 5 seconds, then relax.",
+      "Tighten your stomach muscles for 5 seconds, then relax.",
+      "Press your legs firmly into the ground for 5 seconds, then relax.",
+      "Take a deep breath in... and let go slowly.",
+    ],
+  };
+
+  const [showExerciseModal, setShowExerciseModal] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+
+  const handleStartExercise = (exercise: Exercise) => {
+    console.log("Opening modal with exercise:", exercise);
+    setSelectedExercise(exercise);
+    setShowExerciseModal(true);
+  };
+
   const navigate = useNavigate();
   return (
     <div className="min-h-screen text-white relative overflow-hidden">
@@ -141,7 +170,9 @@ export const ImmediateSupport = () => {
               Release physical tension by tensing and relaxing different muscle groups.
             </p>
 
-            <button className="bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-black px-8 py-3 rounded-lg font-semibold flex items-center mb-8 transition-all">
+            <button 
+            onClick={() => handleStartExercise(relaxationExercise)}
+            className="bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-black px-8 py-3 rounded-lg font-semibold flex items-center mb-8 transition-all">
               <Play className="w-5 h-5 mr-2" />
               Start Guided Relaxation
             </button>
@@ -317,6 +348,15 @@ export const ImmediateSupport = () => {
           Your 24/7 AI companion designed for ADHD + Autism. Not here to "fix" you, but to help you work with your brain, not against it.
         </p>
       </footer>
+
+      {selectedExercise && (
+        <ExerciseModal
+          isOpen={showExerciseModal}
+          onClose={() => setShowExerciseModal(false)}
+          exercise={selectedExercise}
+        />
+      )}
+
     </div>
   );
 };
