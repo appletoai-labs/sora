@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Loader2 } from "lucide-react" // Import Loader2 for spinners
 import { useToast } from "@/hooks/use-toast"
 import SupportCards from "../../components/supportCards"
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import axios from "axios"
 import SoraLogo from "../SoraLogo"
 
@@ -32,7 +33,7 @@ const suggestions = [
 export const ChatInterface = () => {
   const API_BASE = `${import.meta.env.REACT_APP_BACKEND_URL}/api`
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
-
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -631,7 +632,7 @@ export const ChatInterface = () => {
           </ScrollArea>
 
           {/* Suggestions */}
-          {showSuggestions && messages.length <= 1 && (
+          {showSuggestions && messages.length <= 1 && !isMobile && (
             <div className="px-3 sm:px-6">
               <SuggestionChips
                 suggestions={suggestions}
