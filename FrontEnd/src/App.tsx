@@ -36,6 +36,7 @@ import BrainInsight from './components/dashboard/tools/BrainInsight';
 import { UiPreferencesProvider } from '@/context/UiPreferencesContext';
 import { AppWrapper } from './layout/AppWrapper';
 import DataProtection from './pages/dataprotection';
+import DonationPage from './pages/donation';
 
 const queryClient = new QueryClient();
 
@@ -53,7 +54,7 @@ const App = () => (
                   <Route path="/" element={<Index />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/immediate-support" element={<ImmediateSupport />} />
-                  
+                  <Route path="/donation" element={<DonationPage/>} />
                   <Route path="/data-protection" element={<DataProtection/>} />
 
 
@@ -61,7 +62,7 @@ const App = () => (
                   <Route
                     path="/subscription"
                     element={
-                      <ProtectedRoute requireNonPremium>
+                      <ProtectedRoute>
                         <Subscription />
                       </ProtectedRoute>
                     }
@@ -69,7 +70,7 @@ const App = () => (
                   <Route
                     path="/chattrials"
                     element={
-                      <ProtectedRoute requireNonPremium>
+                      <ProtectedRoute>
                         <Trialchat />
                       </ProtectedRoute>
                     }
@@ -84,7 +85,7 @@ const App = () => (
                 <Route
                   path="/app"
                   element={
-                    <ProtectedRoute requirePremium>
+                    <ProtectedRoute>
                       <DashboardLayout />
                     </ProtectedRoute>
                   }

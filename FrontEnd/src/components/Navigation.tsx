@@ -17,6 +17,8 @@ const Navigation = () => {
     { label: "For Professionals", href: "/" },
     { label: "Privacy", href: "/privacy" },
     { label: "Dashboard", href: "/app" },
+    { label: "Donations", href: "/donation" },
+
   ];
 
   return (

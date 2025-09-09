@@ -20,6 +20,7 @@ const Routine = require("./routes/executive");
 const CalendarTask = require("./routes/calendar");
 const stripeRoutes = require("./routes/stripe");
 const stripeWebhookRoutes = require("./routes/stripeWebhook");
+const donationStripeRoutes = require("./routes/donationStripe");
 
 
 const app = express();
@@ -65,6 +66,7 @@ app.use("/api/executive", Routine);
 app.use("/api/calendar", CalendarTask);
 app.use("/api/research", researchroutes)
 app.use("/api/stripe", stripeRoutes);
+app.use("/api/donation-stripe", donationStripeRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
