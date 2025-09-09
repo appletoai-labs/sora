@@ -66,7 +66,7 @@ const About = () => {
               </div>
             </div>
 
-            <Button variant="hero" size="lg" className="text-lg px-8 py-4" onClick={() => navigate("/chattrials")}>
+            <Button variant="hero" size="lg" className="text-lg px-8 py-4" onClick={() => navigate("/app/chat")}>
               Build Your Codex
             </Button>
           </div>
