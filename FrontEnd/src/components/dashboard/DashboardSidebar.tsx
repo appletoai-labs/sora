@@ -6,6 +6,7 @@ import {
   Home, MessageCircle, Lightbulb, FileText, Calendar,
   Hand, Target, List, Users, BarChart3, ChevronLeft, ChevronRight,
   Activity, HeartPulse, AlertTriangle,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SoraLogo from "../SoraLogo";
@@ -42,6 +43,12 @@ const sidebarItems = [
     items: [
       { name: "Emotional Support", href: "/app/emotional-support", icon: HeartPulse },
       { name: "Crisis Support", href: "/app/immediate-support", icon: AlertTriangle },
+    ],
+  },
+  {
+    title: "DONATION",
+    items: [
+      { name: "Donation Support", href: "/donation", icon: Heart },
     ],
   },
 ];
