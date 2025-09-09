@@ -48,7 +48,7 @@ const sidebarItems = [
   {
     title: "DONATION",
     items: [
-      { name: "Donation Support", href: "/donation", icon: Heart },
+      { name: "Support", href: "/donation", icon: Heart },
     ],
   },
 ];
