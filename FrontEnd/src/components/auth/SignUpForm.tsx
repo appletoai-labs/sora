@@ -80,7 +80,7 @@ export const SignUpForm = () => {
         title: "Account created successfully!",
         description: "Welcome to SORA ALLY !",
       })
-      navigate("/donation")
+      navigate("/app")
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred")
     } finally {

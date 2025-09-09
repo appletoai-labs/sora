@@ -43,7 +43,7 @@ export const SignInForm = () => {
     try {
       await login(email, password)
       toast({ title: "Welcome back!", description: "Signed in successfully." })
-      navigate("/donation")
+      navigate("/app")
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred")
     } finally {

@@ -112,9 +112,9 @@ export default function DonationPage() {
                     <Button
                         variant="outline"
                         onClick={() => navigate("/app")}
-                        className="w-full border-sora-teal/40 text-gray-300 hover:bg-sora-dark/60 flex items-center justify-center gap-2 mt-2"
+                        className="w-full border-sora-teal/40 text-gray-300 flex items-center justify-center gap-2 mt-2"
                     >
-                        <XCircle className="w-5 h-5" /> Cancel
+                        <XCircle className="w-5 h-5" /> Continue to Dashboard
                     </Button>
 
                     {/* Impact Message */}
